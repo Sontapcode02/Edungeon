@@ -21,10 +21,9 @@ public class SocketClient : MonoBehaviour
     private BinaryWriter _writer;
     private Thread _receiveThread;
     private bool _isConnected;
-
     private ConcurrentQueue<Packet> _packetQueue = new ConcurrentQueue<Packet>();
     public Action<Packet> OnPacketReceived;
-    public string MyPlayerId { get; private set; }
+    public string MyPlayerId { get; set; }
     public Action<string> OnCheckRoomResult;
     void Awake()
     {
@@ -36,9 +35,7 @@ public class SocketClient : MonoBehaviour
     // XÓA HÀM START() ĐI ĐỂ KHÔNG TỰ KẾT NỐI
     public void ConnectAndJoin(string playerName, string roomId, bool isHost)
     {
-        // 1. KIỂM TRA KẾT NỐI
-        // Nếu ở Home đã ConnectOnly() rồi thì bỏ qua bước này.
-        // Nếu debug thẳng vào GameScene (chưa có kết nối) thì nó sẽ tự kết nối.
+        MyPlayerId = null;
         if (!_isConnected)
         {
             try
@@ -62,13 +59,7 @@ public class SocketClient : MonoBehaviour
             }
         }
 
-        // 2. TẠO ID (Nếu chưa có)
-        // Lưu ý: Nếu ở Home đã check room, ID có thể chưa được tạo, nên tạo lại cho chắc.
-        if (string.IsNullOrEmpty(MyPlayerId))
-        {
-            // ID = Tên + Số ngẫu nhiên (Ví dụ: DaiCa_999)
-            MyPlayerId = playerName + "_" + UnityEngine.Random.Range(100, 999);
-        }
+        
 
         Debug.Log($"Đang gửi lệnh... Role: {(isHost ? "HOST" : "CLIENT")} | Room: {roomId}");
 
@@ -82,7 +73,7 @@ public class SocketClient : MonoBehaviour
         Send(new Packet
         {
             type = isHost ? "CREATE_ROOM" : "JOIN_ROOM",
-            playerId = MyPlayerId,
+            playerId = null,
             payload = payloadJson
         });
     }

@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 2277412170066262089}
   - component: {fileID: 3370330849043045868}
   - component: {fileID: 2369102514414005066}
-  - component: {fileID: 5833365414934040127}
   - component: {fileID: 2271395931656228305}
   m_Layer: 0
   m_Name: Mask
@@ -175,20 +174,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerId: 
   IsLocal: 0
-  speed: 5
---- !u!114 &5833365414934040127
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9206208414828873169}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08d9ef858986a9a4cb673e182f1fd632, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   moveSpeed: 5
+  smoothTime: 10
 --- !u!95 &2271395931656228305
 Animator:
   serializedVersion: 5

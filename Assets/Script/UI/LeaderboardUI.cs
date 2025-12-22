@@ -5,18 +5,23 @@ using Newtonsoft.Json;
 
 public class LeaderboardUI : MonoBehaviour
 {
-    public Text leaderboardText;
+    public Transform content; // Kéo cái Content trong ScrollView vào
+    public GameObject rowPrefab; // T?o 1 prefab Text ho?c Row ?? hi?n tên + ?i?m
 
-    public void UpdateList(string jsonArray)
+    public void UpdateList(string jsonPayload)
     {
-        var list = JsonConvert.DeserializeObject<List<PlayerState>>(jsonArray);
+        // Xóa c?
+        foreach (Transform child in content) Destroy(child.gameObject);
 
-        string display = "LEADERBOARD:\n";
+        // Deserialize danh sách
+        var list = JsonConvert.DeserializeObject<List<PlayerState>>(jsonPayload);
+
+        // T?o m?i
         foreach (var p in list)
         {
-            display += $"{p.playerId}: {p.score}\n";
+            GameObject row = Instantiate(rowPrefab, content);
+            // Gi? s? Prefab có component Text
+            row.GetComponent<Text>().text = $"{p.name}: {p.score} ?i?m";
         }
-        leaderboardText.text = display;
     }
 }
-
