@@ -237,7 +237,39 @@ public class SocketClient : MonoBehaviour
             _isConnected = false; // Ngắt kết nối luôn nếu gửi lỗi để tránh spam
         }
     }
+    public void Disconnect()
+    {
+        if (!_isConnected) return;
 
+        Debug.Log("[SocketClient] Đang chủ động ngắt kết nối...");
+        _isConnected = false;
+
+        try
+        {
+            if (_stream != null) _stream.Close();
+            if (_client != null) _client.Close();
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"Lỗi khi đóng kết nối: {e.Message}");
+        }
+        finally
+        {
+            _stream = null;
+            _client = null;
+            _reader = null;
+            _writer = null;
+
+            // Quan trọng: Reset lại ID để lần sau vào lại sạch sẽ
+            MyPlayerId = null;
+
+            // Xóa sạch hàng đợi gói tin cũ
+            Packet temp;
+            while (_packetQueue.TryDequeue(out temp)) { }
+
+            Debug.Log("[SocketClient] Đã ngắt kết nối thành công.");
+        }
+    }
     void OnApplicationQuit()
     {
         _isConnected = false;

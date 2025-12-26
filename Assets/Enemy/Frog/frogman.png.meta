@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d19af74445712f84cbed0f6146398f83
+guid: 22b0fd10773b3e54c82a08435a6e244f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -149,349 +149,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Slime1_Walk_full_0
+      name: frogman_0
       rect:
         serializedVersion: 2
-        x: 152
-        y: 214
-        width: 18
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3904aec6a791b4b4681286cba6d3a97e
-      internalID: 239398025
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_1
-      rect:
-        serializedVersion: 2
-        x: 228
-        y: 234
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 17fe767849a3ac94a9f096b27fe2199b
-      internalID: -769031116
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_2
-      rect:
-        serializedVersion: 2
-        x: 277
-        y: 214
-        width: 23
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 234942a64512bf84c84bfdada94e9ec8
-      internalID: 1690804696
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_3
-      rect:
-        serializedVersion: 2
-        x: 339
-        y: 214
-        width: 26
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fe7be2fe84dc4024fbd770bdbc7231f0
-      internalID: 522848347
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_4
-      rect:
-        serializedVersion: 2
-        x: 24
-        y: 214
-        width: 17
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5c4e8c75cc3e7d6438e4daed48d04905
-      internalID: -765651866
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_5
-      rect:
-        serializedVersion: 2
-        x: 88
-        y: 214
-        width: 17
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c7065f3b13fb8d548b4e72f240d006bb
-      internalID: -1089991831
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_6
-      rect:
-        serializedVersion: 2
-        x: 215
-        y: 214
-        width: 20
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 664b4ad9a931bcc42966ba715266bfc0
-      internalID: 1292706331
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_7
-      rect:
-        serializedVersion: 2
-        x: 408
-        y: 225
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: df91688ebce25524d83397dc0a825831
-      internalID: 1598148763
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_8
-      rect:
-        serializedVersion: 2
-        x: 470
-        y: 214
-        width: 20
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3e5969116711a63489b208cfd0c1a22d
-      internalID: -2139729940
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_9
-      rect:
-        serializedVersion: 2
-        x: 403
-        y: 214
-        width: 27
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 908471eb3abac004e91ff4130331d5c9
-      internalID: 163825904
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_10
-      rect:
-        serializedVersion: 2
-        x: 151
-        y: 150
-        width: 18
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 92b6f1fadb24f5f4fb1091a9f567c54b
-      internalID: 832793748
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_11
-      rect:
-        serializedVersion: 2
-        x: 217
-        y: 170
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bea843711c318f54694889d99fadc745
-      internalID: 749307833
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_12
-      rect:
-        serializedVersion: 2
-        x: 277
-        y: 150
-        width: 23
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3e7645ae31c10c143ad1220a80baaddd
-      internalID: -1186556173
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_13
-      rect:
-        serializedVersion: 2
-        x: 339
-        y: 150
-        width: 26
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 682995296b9ed3446b23a078db03fb2a
-      internalID: 595465579
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_14
-      rect:
-        serializedVersion: 2
-        x: 24
-        y: 150
-        width: 17
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 982f8da04b2a9cc4ca226a72ff87fe9d
-      internalID: 1151603986
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_15
-      rect:
-        serializedVersion: 2
-        x: 88
-        y: 150
-        width: 17
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a4bf9e36b79eba3458ea8378cb44db70
-      internalID: -1216337828
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_16
-      rect:
-        serializedVersion: 2
-        x: 214
-        y: 150
+        x: 30
+        y: 786
         width: 21
-        height: 20
+        height: 45
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -499,41 +163,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bbfc660f00f027d4b96c259f2a78ad9e
-      internalID: -1040272278
+      spriteID: f3e2f96db4899cb4f8b28e2e3bfd03ad
+      internalID: -1338764264
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_17
+      name: frogman_1
       rect:
         serializedVersion: 2
-        x: 421
-        y: 161
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 46596a9cfb2ca41408dd1e66be14d74c
-      internalID: 2143758472
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_18
-      rect:
-        serializedVersion: 2
-        x: 470
-        y: 150
+        x: 110
+        y: 786
         width: 21
-        height: 17
+        height: 60
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -541,41 +184,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 11d9aa15036a53142b6716faff9eb875
-      internalID: 839463936
+      spriteID: 2f5202c5386df1c4f85999cc722da90c
+      internalID: 820683733
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_19
+      name: frogman_2
       rect:
         serializedVersion: 2
-        x: 403
-        y: 150
-        width: 27
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 03f0435e676b2a44bb3cfb6a7435e270
-      internalID: -635004490
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_20
-      rect:
-        serializedVersion: 2
-        x: 146
-        y: 86
+        x: 190
+        y: 786
         width: 21
-        height: 22
+        height: 52
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -583,125 +205,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 18f2bc0338df2344ba11a87c9c4218db
-      internalID: -964917584
+      spriteID: a7cbc70ddf506034794d967e52480ea7
+      internalID: -1069277535
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_21
-      rect:
-        serializedVersion: 2
-        x: 221
-        y: 106
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b7fba52fe71c40146a848d9c06a23f6f
-      internalID: 237930767
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_22
+      name: frogman_3
       rect:
         serializedVersion: 2
         x: 270
-        y: 86
-        width: 26
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7e681798e4007a14e8b9b1cb76c0fdfd
-      internalID: -287807212
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_23
-      rect:
-        serializedVersion: 2
-        x: 337
-        y: 86
-        width: 25
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: df7f28ccd5b4f704c90723a3a4b595c5
-      internalID: 231694786
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_24
-      rect:
-        serializedVersion: 2
-        x: 24
-        y: 86
-        width: 18
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fe81a75f993557e4bb764d280f2008e0
-      internalID: 1496986821
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_25
-      rect:
-        serializedVersion: 2
-        x: 86
-        y: 86
-        width: 17
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7acbbd7c929448644829877bc2c9e343
-      internalID: 1636273530
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_26
-      rect:
-        serializedVersion: 2
-        x: 210
-        y: 86
+        y: 786
         width: 21
-        height: 20
+        height: 46
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -709,20 +226,503 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 30116114d10b0de48940f45e3695fd60
-      internalID: 996972161
+      spriteID: e874ffd397c8dc54ea1f62f0cc14eb9a
+      internalID: 1414605829
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_27
+      name: frogman_4
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 690
+        width: 35
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2c8cd74b10cddb4eb763d4b62141f78
+      internalID: -1417145523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_5
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 690
+        width: 50
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 849db7641b6b9a1469b9611801429048
+      internalID: 705526695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_6
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 690
+        width: 47
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36995aa7c7f8b1740865e28f12cd08be
+      internalID: -1709453294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_7
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 690
+        width: 35
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69b2581848e26824db15b14ccfc49f32
+      internalID: -38579617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_8
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 601
+        width: 21
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bb3c4f459742134b82685c80a1dbc9d
+      internalID: -683272460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_9
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 586
+        width: 21
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7a15a5881d5d5f48a8523de75203ae5
+      internalID: 1282843819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_10
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 594
+        width: 21
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de7ddc998dd659645843960b3374c3b6
+      internalID: -78694901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_11
+      rect:
+        serializedVersion: 2
+        x: 269
+        y: 600
+        width: 21
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69eb332a7008a124aae89b0e93e6edd6
+      internalID: -568306278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_12
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 498
+        width: 35
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0adb68dbd18c9294d9781baf97d46ae7
+      internalID: -917153971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_13
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 498
+        width: 50
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d71a1b4f2ed699479f4a581f9b47218
+      internalID: -78992813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_14
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 498
+        width: 47
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed2722dbebdc01e4e9afeabfcb83808b
+      internalID: 636401394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_15
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 498
+        width: 35
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4794d3523ebb37845b5ae5f9bfdcd716
+      internalID: 1596420973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_16
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 402
+        width: 30
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c738584c6eee404b9aeba90e1b3b2a7
+      internalID: -491680769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_17
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 402
+        width: 28
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43a96df2917659b45b6d635503dc4b77
+      internalID: -1951664244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_18
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 402
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a19b2f91a18f2740a75c73f662cc422
+      internalID: -1096656404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_19
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 405
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad2dabb44809d134db06e3563bfe9c63
+      internalID: -753367564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_20
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 402
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f2166ebfdabac04aad169c19d904b34
+      internalID: 1709045763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_21
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 399
+        width: 28
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43efce1e9c575244896f2b0d1b157d12
+      internalID: 886005612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_22
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 306
+        width: 32
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03a5df35e35918a45be35b0bc872e887
+      internalID: -783189653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_23
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 306
+        width: 32
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b57b3918450954b47970c95e9e2197c3
+      internalID: 2132852497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_24
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 306
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 707352f4317805647b84d1a6774b1f3e
+      internalID: -1599354140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_25
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 308
+        width: 34
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6899f66cedb59db4da7511012f881229
+      internalID: -2030725845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_26
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 306
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ad929be80adcce43934c651bc98a0d0
+      internalID: -1237488520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_27
       rect:
         serializedVersion: 2
         x: 419
-        y: 96
-        width: 4
-        height: 4
+        y: 306
+        width: 32
+        height: 23
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -730,20 +730,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b6bdec47d17621a4a966dd3352b1b518
-      internalID: -675208779
+      spriteID: 5d97901f8fe949a4fa322f3bc39db9e5
+      internalID: -1710827186
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_28
+      name: frogman_28
       rect:
         serializedVersion: 2
-        x: 471
-        y: 86
-        width: 22
-        height: 16
+        x: 30
+        y: 210
+        width: 30
+        height: 26
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -751,20 +751,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8cd2e448f904ba0468894e88bf9997eb
-      internalID: -532296558
+      spriteID: e5dcb938f4610ec48a77d953a5a0c2aa
+      internalID: -393880605
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_29
+      name: frogman_29
       rect:
         serializedVersion: 2
-        x: 405
-        y: 86
-        width: 23
-        height: 8
+        x: 110
+        y: 210
+        width: 28
+        height: 30
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -772,19 +772,292 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0bacfd59c48ec374a8a9436aa95e1db5
-      internalID: -1998018092
+      spriteID: 9b12ecc2e66188f4fbe55374dc4a0ccd
+      internalID: 354411709
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_30
+      name: frogman_30
       rect:
         serializedVersion: 2
-        x: 153
-        y: 22
-        width: 21
+        x: 190
+        y: 210
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9209b3c078b555849ab3565e711e1ac9
+      internalID: 357178096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_31
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 212
+        width: 28
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f7b4d7ef15501d4e9e23587fcc30c63
+      internalID: 147473996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_32
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 210
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c662f47ce1c476048bb4da908f20b3c8
+      internalID: -495103070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_33
+      rect:
+        serializedVersion: 2
+        x: 430
+        y: 210
+        width: 28
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11c3b3045322d5f4caecb00d4557d9ca
+      internalID: 2113811904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_34
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 114
+        width: 32
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3feccc9e9c54f3240aa3ef9329668518
+      internalID: -357723268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_35
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 114
+        width: 32
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91736e625a68f384fa1f81dfb24dac86
+      internalID: -865549144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_36
+      rect:
+        serializedVersion: 2
+        x: 187
+        y: 114
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bee7ea985d5d2f9438549fcd98f7de89
+      internalID: 589784116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_37
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 116
+        width: 34
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76ee6805a656ec349915194a400a70de
+      internalID: -1616138832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_38
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 114
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44353908effc9a74c8fedefbd0ab7c1b
+      internalID: 1745207355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_39
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 114
+        width: 32
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1240deafd1ce4e54d9443e9c1b00c7d6
+      internalID: -64362440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_40
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 18
+        width: 32
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e05729bd6ee5c694c938c78613ebaa33
+      internalID: 104553005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_41
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 18
+        width: 42
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebb05f806fb9f5c4ba51c53d793e6f49
+      internalID: -840179864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_42
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 17
+        width: 44
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 523d07dcfe6c79a4f94b6248995ef15e
+      internalID: 2094545292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frogman_43
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 16
+        width: 45
         height: 22
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -793,20 +1066,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 91fb64a627a80c545a18381670ad6ff2
-      internalID: -29475951
+      spriteID: f698ef0de30517248abb8fd5651562a9
+      internalID: -1860340021
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_31
+      name: frogman_44
       rect:
         serializedVersion: 2
-        x: 223
-        y: 42
-        width: 4
-        height: 4
+        x: 353
+        y: 16
+        width: 47
+        height: 18
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -814,20 +1087,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 364a79c237cfff54a8e086a994e3e875
-      internalID: -492779425
+      spriteID: acc1a3f2b12def544870f5ff27226907
+      internalID: -1958965121
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_32
+      name: frogman_45
       rect:
         serializedVersion: 2
-        x: 280
-        y: 22
-        width: 26
-        height: 25
+        x: 433
+        y: 16
+        width: 47
+        height: 14
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -835,155 +1108,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6bab819ff3902bc418925326f18e7972
-      internalID: 144304515
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_33
-      rect:
-        serializedVersion: 2
-        x: 342
-        y: 22
-        width: 25
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f76781efd618eab4d86d735ec71e1daf
-      internalID: -1174685453
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_34
-      rect:
-        serializedVersion: 2
-        x: 23
-        y: 22
-        width: 18
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 69038d15747240c40b69cb968d1eb86f
-      internalID: 973619945
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_35
-      rect:
-        serializedVersion: 2
-        x: 89
-        y: 22
-        width: 17
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d8f4b648ca8fdbf43953bc7c33429d30
-      internalID: 819797017
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_36
-      rect:
-        serializedVersion: 2
-        x: 217
-        y: 22
-        width: 21
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fbf36b96edaf974449a0d8b1825cf9b8
-      internalID: -300740655
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_37
-      rect:
-        serializedVersion: 2
-        x: 409
-        y: 32
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ebb48d1630c38574f9cca53a399d029a
-      internalID: -1534688523
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_38
-      rect:
-        serializedVersion: 2
-        x: 467
-        y: 22
-        width: 22
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fa644d35c59818a4e869d19e33c9437c
-      internalID: -933779030
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_39
-      rect:
-        serializedVersion: 2
-        x: 404
-        y: 22
-        width: 23
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 24066ce15e6106e49afbf9595fc582d2
-      internalID: 1454970151
+      spriteID: 4ea2c85fb2414dd42aafb67755f80cfc
+      internalID: -1860928888
       vertices: []
       indices: 
       edges: []
@@ -999,46 +1125,52 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Slime1_Walk_full_0: 239398025
-      Slime1_Walk_full_1: -769031116
-      Slime1_Walk_full_10: 832793748
-      Slime1_Walk_full_11: 749307833
-      Slime1_Walk_full_12: -1186556173
-      Slime1_Walk_full_13: 595465579
-      Slime1_Walk_full_14: 1151603986
-      Slime1_Walk_full_15: -1216337828
-      Slime1_Walk_full_16: -1040272278
-      Slime1_Walk_full_17: 2143758472
-      Slime1_Walk_full_18: 839463936
-      Slime1_Walk_full_19: -635004490
-      Slime1_Walk_full_2: 1690804696
-      Slime1_Walk_full_20: -964917584
-      Slime1_Walk_full_21: 237930767
-      Slime1_Walk_full_22: -287807212
-      Slime1_Walk_full_23: 231694786
-      Slime1_Walk_full_24: 1496986821
-      Slime1_Walk_full_25: 1636273530
-      Slime1_Walk_full_26: 996972161
-      Slime1_Walk_full_27: -675208779
-      Slime1_Walk_full_28: -532296558
-      Slime1_Walk_full_29: -1998018092
-      Slime1_Walk_full_3: 522848347
-      Slime1_Walk_full_30: -29475951
-      Slime1_Walk_full_31: -492779425
-      Slime1_Walk_full_32: 144304515
-      Slime1_Walk_full_33: -1174685453
-      Slime1_Walk_full_34: 973619945
-      Slime1_Walk_full_35: 819797017
-      Slime1_Walk_full_36: -300740655
-      Slime1_Walk_full_37: -1534688523
-      Slime1_Walk_full_38: -933779030
-      Slime1_Walk_full_39: 1454970151
-      Slime1_Walk_full_4: -765651866
-      Slime1_Walk_full_5: -1089991831
-      Slime1_Walk_full_6: 1292706331
-      Slime1_Walk_full_7: 1598148763
-      Slime1_Walk_full_8: -2139729940
-      Slime1_Walk_full_9: 163825904
+      frogman_0: -1338764264
+      frogman_1: 820683733
+      frogman_10: -78694901
+      frogman_11: -568306278
+      frogman_12: -917153971
+      frogman_13: -78992813
+      frogman_14: 636401394
+      frogman_15: 1596420973
+      frogman_16: -491680769
+      frogman_17: -1951664244
+      frogman_18: -1096656404
+      frogman_19: -753367564
+      frogman_2: -1069277535
+      frogman_20: 1709045763
+      frogman_21: 886005612
+      frogman_22: -783189653
+      frogman_23: 2132852497
+      frogman_24: -1599354140
+      frogman_25: -2030725845
+      frogman_26: -1237488520
+      frogman_27: -1710827186
+      frogman_28: -393880605
+      frogman_29: 354411709
+      frogman_3: 1414605829
+      frogman_30: 357178096
+      frogman_31: 147473996
+      frogman_32: -495103070
+      frogman_33: 2113811904
+      frogman_34: -357723268
+      frogman_35: -865549144
+      frogman_36: 589784116
+      frogman_37: -1616138832
+      frogman_38: 1745207355
+      frogman_39: -64362440
+      frogman_4: -1417145523
+      frogman_40: 104553005
+      frogman_41: -840179864
+      frogman_42: 2094545292
+      frogman_43: -1860340021
+      frogman_44: -1958965121
+      frogman_45: -1860928888
+      frogman_5: 705526695
+      frogman_6: -1709453294
+      frogman_7: -38579617
+      frogman_8: -683272460
+      frogman_9: 1282843819
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

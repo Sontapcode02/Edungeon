@@ -20,7 +20,7 @@ public class MessageHandler : MonoBehaviour
     [Header("UI")]
     public QuizUI quizUI;
     public LeaderboardUI leaderboardUI;
-
+    public UnityEngine.UI.Button leaveRoomButton;
     [Header("Host UI")]
     public TextMeshProUGUI idRoom;
 
@@ -41,7 +41,14 @@ public class MessageHandler : MonoBehaviour
         // 2. Setup giao diện ban đầu
         SetupRoleUI();
         if (idRoom) idRoom.text = "ID: " + myRoom;
-
+        if (leaveRoomButton != null)
+        {
+            leaveRoomButton.onClick.AddListener(OnLeaveButtonClicked);
+        }
+        else
+        {
+            Debug.LogWarning("Chưa gắn nút LeaveRoomButton vào MessageHandler kìa đại ca!");
+        }
         // 3. Kích hoạt kết nối mạng
         SocketClient.Instance.OnPacketReceived += HandlePacket;
         // Gửi lệnh Join hoặc Create tùy vai trò (đã xử lý bên ConnectAndJoin)
@@ -206,7 +213,18 @@ public class MessageHandler : MonoBehaviour
             playerScript.OnServerDataReceived(new Vector3(state.x, state.y, 0));
         }
     }
+    public void OnLeaveButtonClicked()
+    {
+        Debug.Log(">>> Bấm nút rời phòng!");
+        // 1. Chủ động ngắt kết nối TCP
+        if (SocketClient.Instance != null)
+        {
+            SocketClient.Instance.Disconnect();
+        }
 
+        // 2. Quay về Home (Dùng lại hàm BackToHome có sẵn)
+        BackToHome();
+    }
     void BackToHome()
     {
         if (SocketClient.Instance) SocketClient.Instance.OnPacketReceived -= HandlePacket;

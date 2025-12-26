@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d19af74445712f84cbed0f6146398f83
+guid: 1c6d1f99e8bda0742badca593eea81a0
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -149,13 +149,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Slime1_Walk_full_0
+      name: goblinsword_0
       rect:
         serializedVersion: 2
-        x: 152
-        y: 214
-        width: 18
-        height: 22
+        x: 18
+        y: 265
+        width: 29
+        height: 55
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,188 +163,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3904aec6a791b4b4681286cba6d3a97e
-      internalID: 239398025
+      spriteID: 248f806f3b8cda048881b6e36b2fa774
+      internalID: -712574193
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_1
+      name: goblinsword_1
       rect:
         serializedVersion: 2
-        x: 228
-        y: 234
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 17fe767849a3ac94a9f096b27fe2199b
-      internalID: -769031116
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_2
-      rect:
-        serializedVersion: 2
-        x: 277
-        y: 214
-        width: 23
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 234942a64512bf84c84bfdada94e9ec8
-      internalID: 1690804696
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_3
-      rect:
-        serializedVersion: 2
-        x: 339
-        y: 214
-        width: 26
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fe7be2fe84dc4024fbd770bdbc7231f0
-      internalID: 522848347
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_4
-      rect:
-        serializedVersion: 2
-        x: 24
-        y: 214
-        width: 17
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5c4e8c75cc3e7d6438e4daed48d04905
-      internalID: -765651866
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_5
-      rect:
-        serializedVersion: 2
-        x: 88
-        y: 214
-        width: 17
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c7065f3b13fb8d548b4e72f240d006bb
-      internalID: -1089991831
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_6
-      rect:
-        serializedVersion: 2
-        x: 215
-        y: 214
-        width: 20
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 664b4ad9a931bcc42966ba715266bfc0
-      internalID: 1292706331
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_7
-      rect:
-        serializedVersion: 2
-        x: 408
-        y: 225
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: df91688ebce25524d83397dc0a825831
-      internalID: 1598148763
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_8
-      rect:
-        serializedVersion: 2
-        x: 470
-        y: 214
-        width: 20
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3e5969116711a63489b208cfd0c1a22d
-      internalID: -2139729940
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_9
-      rect:
-        serializedVersion: 2
-        x: 403
-        y: 214
+        x: 84
+        y: 262
         width: 27
-        height: 11
+        height: 57
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -352,20 +184,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 908471eb3abac004e91ff4130331d5c9
-      internalID: 163825904
+      spriteID: fa94bd3abdf4db642b3fb9ecf8391f4a
+      internalID: -1965183379
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_10
+      name: goblinsword_2
       rect:
         serializedVersion: 2
-        x: 151
-        y: 150
-        width: 18
-        height: 22
+        x: 148
+        y: 265
+        width: 29
+        height: 55
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -373,20 +205,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 92b6f1fadb24f5f4fb1091a9f567c54b
-      internalID: 832793748
+      spriteID: 17c879b59862b7047b8933affcdd0c9f
+      internalID: -1079548360
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_11
+      name: goblinsword_3
       rect:
         serializedVersion: 2
-        x: 217
-        y: 170
-        width: 4
-        height: 4
+        x: 212
+        y: 265
+        width: 29
+        height: 55
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -394,167 +226,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bea843711c318f54694889d99fadc745
-      internalID: 749307833
+      spriteID: 059bf2910c91a44429d44133fd22e822
+      internalID: -165638971
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_12
+      name: goblinsword_4
       rect:
         serializedVersion: 2
-        x: 277
-        y: 150
-        width: 23
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3e7645ae31c10c143ad1220a80baaddd
-      internalID: -1186556173
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_13
-      rect:
-        serializedVersion: 2
-        x: 339
-        y: 150
-        width: 26
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 682995296b9ed3446b23a078db03fb2a
-      internalID: 595465579
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_14
-      rect:
-        serializedVersion: 2
-        x: 24
-        y: 150
-        width: 17
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 982f8da04b2a9cc4ca226a72ff87fe9d
-      internalID: 1151603986
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_15
-      rect:
-        serializedVersion: 2
-        x: 88
-        y: 150
-        width: 17
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a4bf9e36b79eba3458ea8378cb44db70
-      internalID: -1216337828
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_16
-      rect:
-        serializedVersion: 2
-        x: 214
-        y: 150
-        width: 21
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bbfc660f00f027d4b96c259f2a78ad9e
-      internalID: -1040272278
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_17
-      rect:
-        serializedVersion: 2
-        x: 421
-        y: 161
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 46596a9cfb2ca41408dd1e66be14d74c
-      internalID: 2143758472
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_18
-      rect:
-        serializedVersion: 2
-        x: 470
-        y: 150
-        width: 21
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 11d9aa15036a53142b6716faff9eb875
-      internalID: 839463936
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_19
-      rect:
-        serializedVersion: 2
-        x: 403
-        y: 150
+        x: 278
+        y: 262
         width: 27
-        height: 11
+        height: 57
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -562,293 +247,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 03f0435e676b2a44bb3cfb6a7435e270
-      internalID: -635004490
+      spriteID: 7c67d36c610eceb4da8c6531eafb796c
+      internalID: 805133722
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_20
-      rect:
-        serializedVersion: 2
-        x: 146
-        y: 86
-        width: 21
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 18f2bc0338df2344ba11a87c9c4218db
-      internalID: -964917584
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_21
-      rect:
-        serializedVersion: 2
-        x: 221
-        y: 106
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b7fba52fe71c40146a848d9c06a23f6f
-      internalID: 237930767
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_22
-      rect:
-        serializedVersion: 2
-        x: 270
-        y: 86
-        width: 26
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7e681798e4007a14e8b9b1cb76c0fdfd
-      internalID: -287807212
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_23
-      rect:
-        serializedVersion: 2
-        x: 337
-        y: 86
-        width: 25
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: df7f28ccd5b4f704c90723a3a4b595c5
-      internalID: 231694786
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_24
-      rect:
-        serializedVersion: 2
-        x: 24
-        y: 86
-        width: 18
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fe81a75f993557e4bb764d280f2008e0
-      internalID: 1496986821
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_25
-      rect:
-        serializedVersion: 2
-        x: 86
-        y: 86
-        width: 17
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7acbbd7c929448644829877bc2c9e343
-      internalID: 1636273530
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_26
-      rect:
-        serializedVersion: 2
-        x: 210
-        y: 86
-        width: 21
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 30116114d10b0de48940f45e3695fd60
-      internalID: 996972161
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_27
-      rect:
-        serializedVersion: 2
-        x: 419
-        y: 96
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b6bdec47d17621a4a966dd3352b1b518
-      internalID: -675208779
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_28
-      rect:
-        serializedVersion: 2
-        x: 471
-        y: 86
-        width: 22
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8cd2e448f904ba0468894e88bf9997eb
-      internalID: -532296558
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_29
-      rect:
-        serializedVersion: 2
-        x: 405
-        y: 86
-        width: 23
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0bacfd59c48ec374a8a9436aa95e1db5
-      internalID: -1998018092
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_30
-      rect:
-        serializedVersion: 2
-        x: 153
-        y: 22
-        width: 21
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 91fb64a627a80c545a18381670ad6ff2
-      internalID: -29475951
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_31
-      rect:
-        serializedVersion: 2
-        x: 223
-        y: 42
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 364a79c237cfff54a8e086a994e3e875
-      internalID: -492779425
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_32
-      rect:
-        serializedVersion: 2
-        x: 280
-        y: 22
-        width: 26
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6bab819ff3902bc418925326f18e7972
-      internalID: 144304515
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Slime1_Walk_full_33
+      name: goblinsword_5
       rect:
         serializedVersion: 2
         x: 342
-        y: 22
-        width: 25
-        height: 25
+        y: 265
+        width: 29
+        height: 55
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -856,20 +268,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f76781efd618eab4d86d735ec71e1daf
-      internalID: -1174685453
+      spriteID: eeae300e7e12c7d42a862fdae637b85d
+      internalID: 1854498941
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_34
+      name: goblinsword_6
       rect:
         serializedVersion: 2
-        x: 23
-        y: 22
-        width: 18
-        height: 17
+        x: 406
+        y: 267
+        width: 32
+        height: 53
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -877,20 +289,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 69038d15747240c40b69cb968d1eb86f
-      internalID: 973619945
+      spriteID: e3030d950c591224490c1b29b50d5e37
+      internalID: -1632114007
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_35
+      name: goblinsword_7
       rect:
         serializedVersion: 2
-        x: 89
-        y: 22
-        width: 17
-        height: 20
+        x: 471
+        y: 264
+        width: 32
+        height: 56
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -898,20 +310,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d8f4b648ca8fdbf43953bc7c33429d30
-      internalID: 819797017
+      spriteID: 63478451de7bc7f4a9765019fd067e5d
+      internalID: -1468178410
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_36
+      name: goblinsword_8
       rect:
         serializedVersion: 2
-        x: 217
-        y: 22
-        width: 21
-        height: 20
+        x: 541
+        y: 258
+        width: 28
+        height: 55
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -919,20 +331,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fbf36b96edaf974449a0d8b1825cf9b8
-      internalID: -300740655
+      spriteID: d55b31300618dfc4ea804fb0cefe8af5
+      internalID: 1722453187
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_37
+      name: goblinsword_9
       rect:
         serializedVersion: 2
-        x: 409
-        y: 32
-        width: 4
-        height: 4
+        x: 606
+        y: 259
+        width: 28
+        height: 53
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -940,20 +352,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ebb48d1630c38574f9cca53a399d029a
-      internalID: -1534688523
+      spriteID: 568e41ff624c29d4595689dda57f2254
+      internalID: -749325268
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_38
+      name: goblinsword_10
       rect:
         serializedVersion: 2
-        x: 467
-        y: 22
-        width: 22
-        height: 16
+        x: 667
+        y: 267
+        width: 31
+        height: 50
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -961,20 +373,146 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa644d35c59818a4e869d19e33c9437c
-      internalID: -933779030
+      spriteID: 45a8be8c08505ed449d5146cbde16e54
+      internalID: -2030493893
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Slime1_Walk_full_39
+      name: goblinsword_11
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 200
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bbb99a7ca010b744bcee1e14216cc71
+      internalID: 457178673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_12
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 200
+        width: 28
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc643dc3ed4c51142874ae6eb96d6adc
+      internalID: -1067635805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_13
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 201
+        width: 29
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec02a42ea51561f4899acf255c9fb9d5
+      internalID: -1317942127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_14
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 201
+        width: 35
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 924208a9eca9416429391a927a6088b3
+      internalID: 1490661646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_15
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 200
+        width: 46
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc2a9a6a6eb9f214db229d75a1791a72
+      internalID: -1470666478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_16
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 200
+        width: 34
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11d8e1695f4b9eb48bf8ed4aece14916
+      internalID: 782521534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_17
       rect:
         serializedVersion: 2
         x: 404
-        y: 22
-        width: 23
-        height: 8
+        y: 200
+        width: 29
+        height: 53
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -982,8 +520,659 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 24066ce15e6106e49afbf9595fc582d2
-      internalID: 1454970151
+      spriteID: 8e085253451d9f2458cf3cbf21c505ab
+      internalID: 1960510919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_18
+      rect:
+        serializedVersion: 2
+        x: 471
+        y: 200
+        width: 24
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4b6f25fc88643d40a7d4000855128ce
+      internalID: -691207229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_19
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 200
+        width: 47
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e226bb90394d4f40a20e31207370256
+      internalID: 1925114792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_20
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 200
+        width: 40
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4fa1a9377a13394488724811d761e6d
+      internalID: 1605684861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_21
+      rect:
+        serializedVersion: 2
+        x: 664
+        y: 200
+        width: 35
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d844519e1c65a243b95014d5190d39f
+      internalID: -651187116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_22
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 130
+        width: 31
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97987f84e61d197408b11a08f6bbee40
+      internalID: 782319084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_23
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 128
+        width: 30
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa6affc892de94645ab4bf81d8de2398
+      internalID: -2120746698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_24
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 130
+        width: 32
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb621eed484b41d4ba931a7e8102c48e
+      internalID: 1392521464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_25
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 130
+        width: 31
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ad1624dafc0bd74bb213b5de3b6942c
+      internalID: 383220356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_26
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 128
+        width: 29
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1204578508f1da40b7ffdb958a61f3d
+      internalID: -1971996006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_27
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 130
+        width: 31
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1ceebfd5083fdc41ab81f410a0fe5b9
+      internalID: -342350537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_28
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 131
+        width: 32
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e322a507751f65c4cb1946592ecd13de
+      internalID: 218453999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_29
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 131
+        width: 29
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6518487218238d8469c16ec3c8c669c4
+      internalID: 1012555917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_30
+      rect:
+        serializedVersion: 2
+        x: 539
+        y: 131
+        width: 29
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddfa650b90e9dcb4181849865b37e9d4
+      internalID: -1996602744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_31
+      rect:
+        serializedVersion: 2
+        x: 604
+        y: 131
+        width: 29
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6961a7d0ad6d6504aabe31f0a869e876
+      internalID: -1472080692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_32
+      rect:
+        serializedVersion: 2
+        x: 668
+        y: 131
+        width: 28
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b6d69821a0630247a6509857d193c39
+      internalID: -1736244462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_33
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 70
+        width: 34
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf476641eb7a7144f8ecd81a1dc4bedd
+      internalID: -186469045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_34
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 70
+        width: 46
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf050f488c291004ca6bfa759d2e2e41
+      internalID: 2114053473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_35
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 71
+        width: 35
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28a9f9bd6f5e3394d909e7b42bbbddd8
+      internalID: 645557855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_36
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 71
+        width: 29
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92b2780bef4232b4f9a0d0c10d5b1fb7
+      internalID: 65766240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_37
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 70
+        width: 28
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbc5439641ac93949acd1f25bd05cfd9
+      internalID: 941146837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_38
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 70
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 607d289b14c47b741bb89654a6963826
+      internalID: -966991328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_39
+      rect:
+        serializedVersion: 2
+        x: 409
+        y: 70
+        width: 29
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f589c5d8c492e5144851499a8b0914ad
+      internalID: 1353518483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_40
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 70
+        width: 24
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ccefecd9fffc884ca78a280d8bbdfc8
+      internalID: 1366468009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_41
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 70
+        width: 47
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4869047e1fe60a4abbc8ea48a6c7809
+      internalID: -1569232429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_42
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 70
+        width: 41
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81cb31cd57100ff478fc6403e714268c
+      internalID: 2035595368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_43
+      rect:
+        serializedVersion: 2
+        x: 663
+        y: 70
+        width: 35
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 932da8fc50a9f5a4aab15af7fb5a49c4
+      internalID: 293992573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_44
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 7
+        width: 32
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24326b79a98e9874f946625aecf45973
+      internalID: 202753693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_45
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 2
+        width: 29
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70faf746bbf9d064f8509a2c1756853b
+      internalID: -1617744302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_46
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 2
+        width: 42
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f7e547fea905f045b50a95be959957f
+      internalID: -464147860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_47
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 0
+        width: 43
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d096325134448d7449001157c3d89496
+      internalID: 400591682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblinsword_48
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 0
+        width: 46
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbc7e486356ef3a4ba49562655066b56
+      internalID: -1706873602
       vertices: []
       indices: 
       edges: []
@@ -999,46 +1188,55 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Slime1_Walk_full_0: 239398025
-      Slime1_Walk_full_1: -769031116
-      Slime1_Walk_full_10: 832793748
-      Slime1_Walk_full_11: 749307833
-      Slime1_Walk_full_12: -1186556173
-      Slime1_Walk_full_13: 595465579
-      Slime1_Walk_full_14: 1151603986
-      Slime1_Walk_full_15: -1216337828
-      Slime1_Walk_full_16: -1040272278
-      Slime1_Walk_full_17: 2143758472
-      Slime1_Walk_full_18: 839463936
-      Slime1_Walk_full_19: -635004490
-      Slime1_Walk_full_2: 1690804696
-      Slime1_Walk_full_20: -964917584
-      Slime1_Walk_full_21: 237930767
-      Slime1_Walk_full_22: -287807212
-      Slime1_Walk_full_23: 231694786
-      Slime1_Walk_full_24: 1496986821
-      Slime1_Walk_full_25: 1636273530
-      Slime1_Walk_full_26: 996972161
-      Slime1_Walk_full_27: -675208779
-      Slime1_Walk_full_28: -532296558
-      Slime1_Walk_full_29: -1998018092
-      Slime1_Walk_full_3: 522848347
-      Slime1_Walk_full_30: -29475951
-      Slime1_Walk_full_31: -492779425
-      Slime1_Walk_full_32: 144304515
-      Slime1_Walk_full_33: -1174685453
-      Slime1_Walk_full_34: 973619945
-      Slime1_Walk_full_35: 819797017
-      Slime1_Walk_full_36: -300740655
-      Slime1_Walk_full_37: -1534688523
-      Slime1_Walk_full_38: -933779030
-      Slime1_Walk_full_39: 1454970151
-      Slime1_Walk_full_4: -765651866
-      Slime1_Walk_full_5: -1089991831
-      Slime1_Walk_full_6: 1292706331
-      Slime1_Walk_full_7: 1598148763
-      Slime1_Walk_full_8: -2139729940
-      Slime1_Walk_full_9: 163825904
+      goblinsword_0: -712574193
+      goblinsword_1: -1965183379
+      goblinsword_10: -2030493893
+      goblinsword_11: 457178673
+      goblinsword_12: -1067635805
+      goblinsword_13: -1317942127
+      goblinsword_14: 1490661646
+      goblinsword_15: -1470666478
+      goblinsword_16: 782521534
+      goblinsword_17: 1960510919
+      goblinsword_18: -691207229
+      goblinsword_19: 1925114792
+      goblinsword_2: -1079548360
+      goblinsword_20: 1605684861
+      goblinsword_21: -651187116
+      goblinsword_22: 782319084
+      goblinsword_23: -2120746698
+      goblinsword_24: 1392521464
+      goblinsword_25: 383220356
+      goblinsword_26: -1971996006
+      goblinsword_27: -342350537
+      goblinsword_28: 218453999
+      goblinsword_29: 1012555917
+      goblinsword_3: -165638971
+      goblinsword_30: -1996602744
+      goblinsword_31: -1472080692
+      goblinsword_32: -1736244462
+      goblinsword_33: -186469045
+      goblinsword_34: 2114053473
+      goblinsword_35: 645557855
+      goblinsword_36: 65766240
+      goblinsword_37: 941146837
+      goblinsword_38: -966991328
+      goblinsword_39: 1353518483
+      goblinsword_4: 805133722
+      goblinsword_40: 1366468009
+      goblinsword_41: -1569232429
+      goblinsword_42: 2035595368
+      goblinsword_43: 293992573
+      goblinsword_44: 202753693
+      goblinsword_45: -1617744302
+      goblinsword_46: -464147860
+      goblinsword_47: 400591682
+      goblinsword_48: -1706873602
+      goblinsword_5: 1854498941
+      goblinsword_6: -1632114007
+      goblinsword_7: -1468178410
+      goblinsword_8: 1722453187
+      goblinsword_9: -749325268
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
