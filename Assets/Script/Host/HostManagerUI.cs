@@ -4,12 +4,12 @@ using UnityEngine.UI;
 public class HostUIManager : MonoBehaviour
 {
     public Button startGameBtn;
-    public Button nextQuestionBtn;
+    // Bỏ nút nextQuestionBtn
 
     void Start()
     {
+        // Chỉ xử lý sự kiện Start Game
         startGameBtn.onClick.AddListener(() => SendHostAction("START_GAME"));
-        nextQuestionBtn.onClick.AddListener(() => SendHostAction("NEXT_QUESTION"));
     }
 
     void SendHostAction(string actionName)

@@ -21,7 +21,7 @@ public class LeaderboardUI : MonoBehaviour
         {
             GameObject row = Instantiate(rowPrefab, content);
             // Gi? s? Prefab có component Text
-            row.GetComponent<Text>().text = $"{p.name}: {p.score} ?i?m";
+            row.GetComponent<Text>().text = $"{p.playerName}: {p.score} ?i?m";
         }
     }
 }

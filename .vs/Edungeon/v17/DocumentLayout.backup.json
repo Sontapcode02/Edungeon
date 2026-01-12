@@ -1,0 +1,225 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\ASUS\\unity\\Edungeon\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\network\\messagehandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\network\\messagehandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\home\\homeuimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\home\\homeuimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\network\\socketclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\network\\socketclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\ui\\uimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\ui\\uimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\enemypatrol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\enemypatrol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\network\\messageprotocol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\network\\messageprotocol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\ui\\leaderboardui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\ui\\leaderboardui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\chatmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\chatmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|c:\\users\\asus\\unity\\edungeon\\assets\\script\\host\\hostmanagerui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\host\\hostmanagerui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\host\\spectatorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\host\\spectatorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\player\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\player\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|C:\\Users\\ASUS\\unity\\Edungeon\\assets\\script\\quiz\\quizui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0C6577A-BA5D-ABEE-867B-B5F8752FB1D2}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\quiz\\quizui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SocketClient.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Network\\SocketClient.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\Network\\SocketClient.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Network\\SocketClient.cs",
+              "RelativeToolTip": "Assets\\Script\\Network\\SocketClient.cs",
+              "ViewState": "AgIAAOMAAAAAAAAAAAAcwPsAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T17:24:36.41Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "UIManager.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\UI\\UIManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\UI\\UIManager.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\UI\\UIManager.cs",
+              "RelativeToolTip": "Assets\\Script\\UI\\UIManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-19T10:11:42.014Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MessageHandler.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Network\\MessageHandler.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\Network\\MessageHandler.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Network\\MessageHandler.cs",
+              "RelativeToolTip": "Assets\\Script\\Network\\MessageHandler.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAawDoAAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T17:17:14.018Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "EnemyPatrol.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\EnemyPatrol.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\EnemyPatrol.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\EnemyPatrol.cs",
+              "RelativeToolTip": "Assets\\Script\\EnemyPatrol.cs",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAgwG4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-23T15:48:10.634Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "HomeUIManager.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Home\\HomeUIManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\Home\\HomeUIManager.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Home\\HomeUIManager.cs",
+              "RelativeToolTip": "Assets\\Script\\Home\\HomeUIManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADAAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-20T08:54:30.711Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MessageProtocol.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Network\\MessageProtocol.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\Network\\MessageProtocol.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Network\\MessageProtocol.cs",
+              "RelativeToolTip": "Assets\\Script\\Network\\MessageProtocol.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T17:17:13.452Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "LeaderboardUI.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\UI\\LeaderboardUI.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\UI\\LeaderboardUI.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\UI\\LeaderboardUI.cs",
+              "RelativeToolTip": "Assets\\Script\\UI\\LeaderboardUI.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T17:13:27.069Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ChatManager.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\ChatManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\ChatManager.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\ChatManager.cs",
+              "RelativeToolTip": "Assets\\Script\\ChatManager.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAwwFAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-26T10:06:43.956Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "PlayerController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Player\\PlayerController.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\Player\\PlayerController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Player\\PlayerController.cs",
+              "RelativeToolTip": "Assets\\Script\\Player\\PlayerController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAB8AAAAFAAAA",
+              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJXSURBVDhP3dK9TxNhHMDx3/P02mu50p5IaSNoCLS\u002BkEuJEN4aNTB0IDiYIBJMNyZXRTBxcBNnnUBHEgaHTgy1CaVOphJICBhaG\u002Bi1R6XHlfZK27v22nucjIn\u002BBfrZv9sX4J9nAACIkAg1NzPHWketrXVvnXHedzL9j/rpwECgtrW1hcZmxi6Jt0VL4GlAW3m90nZ669TsGHBofJTXMSEE40M8LCtysIZre0wrs2ejbHssYj/mvLn2Y\u002BnYo2hK0KSbgnyGH85X85/VhhoUKGEYXgGmQgchNlPILG0L20Muq8voG/Ed0hTdqGpVyXPZY6lr9WebyU0uU8hAUkouAoZuoSQ4iU4eu8G9T4XjYapcL1\u002BjEAWTNye/GpDhBQFSklRJ6WnpyREga0NXh\u002B7FxTgYsXFtmpu\u002Bm5WzZxe1i0\u002Bd0FmlwkdhcLW4YPDK4JGqqfN\u002Bzh9HCOkAAIQQnJWyot1i10wGE\u002BqwdojtTLtOG2kNI1yMQlTHAABNvQmAoJEsJfO/YgAAWZbZcqP8fn1nvTchJXoiyciHhY0FNiEm3E1oPu\u002Bz9bGUz\u002BkDFamQKqbMhWqBC\u002B2HzgEAxKKo7BZ2\u002BS5j15L/un9JqkjIgAwr8yPzi6tfVuWUnHrnKDlK1MTARCN3lkvH0rE7TdJ8mzpPaTRFQ0WrJHZ\u002B7DwZHxuPpS/Si6yZhaneKZ7r4HjWzGpqTU1HX0YbiBCCN/Y3Rk8KJ28i3yM3hJIAdosdutu6D2zENrs8u3z2e5u/YYSQznBMjG1jH4AO3mK16FVUxasS9aHpmyn/Z/Af\u002BgnU5B69svpg\u002BgAAAABJRU5ErkJggg==",
+              "WhenOpened": "2025-12-17T17:13:27.078Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "SpectatorController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Host\\SpectatorController.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\Host\\SpectatorController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Host\\SpectatorController.cs",
+              "RelativeToolTip": "Assets\\Script\\Host\\SpectatorController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABsAAAAdAAAA",
+              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJXSURBVDhP3dK9TxNhHMDx3/P02mu50p5IaSNoCLS\u002BkEuJEN4aNTB0IDiYIBJMNyZXRTBxcBNnnUBHEgaHTgy1CaVOphJICBhaG\u002Bi1R6XHlfZK27v22nucjIn\u002BBfrZv9sX4J9nAACIkAg1NzPHWketrXVvnXHedzL9j/rpwECgtrW1hcZmxi6Jt0VL4GlAW3m90nZ669TsGHBofJTXMSEE40M8LCtysIZre0wrs2ejbHssYj/mvLn2Y\u002BnYo2hK0KSbgnyGH85X85/VhhoUKGEYXgGmQgchNlPILG0L20Muq8voG/Ed0hTdqGpVyXPZY6lr9WebyU0uU8hAUkouAoZuoSQ4iU4eu8G9T4XjYapcL1\u002BjEAWTNye/GpDhBQFSklRJ6WnpyREga0NXh\u002B7FxTgYsXFtmpu\u002Bm5WzZxe1i0\u002Bd0FmlwkdhcLW4YPDK4JGqqfN\u002Bzh9HCOkAAIQQnJWyot1i10wGE\u002BqwdojtTLtOG2kNI1yMQlTHAABNvQmAoJEsJfO/YgAAWZbZcqP8fn1nvTchJXoiyciHhY0FNiEm3E1oPu\u002Bz9bGUz\u002BkDFamQKqbMhWqBC\u002B2HzgEAxKKo7BZ2\u002BS5j15L/un9JqkjIgAwr8yPzi6tfVuWUnHrnKDlK1MTARCN3lkvH0rE7TdJ8mzpPaTRFQ0WrJHZ\u002B7DwZHxuPpS/Si6yZhaneKZ7r4HjWzGpqTU1HX0YbiBCCN/Y3Rk8KJ28i3yM3hJIAdosdutu6D2zENrs8u3z2e5u/YYSQznBMjG1jH4AO3mK16FVUxasS9aHpmyn/Z/Af\u002BgnU5B69svpg\u002BgAAAABJRU5ErkJggg==",
+              "WhenOpened": "2025-12-21T15:37:28.458Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "HostManagerUI.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Host\\HostManagerUI.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\Host\\HostManagerUI.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Host\\HostManagerUI.cs",
+              "RelativeToolTip": "Assets\\Script\\Host\\HostManagerUI.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T13:11:33.793Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "QuizUI.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Quiz\\QuizUI.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\Quiz\\QuizUI.cs",
+              "ToolTip": "C:\\Users\\ASUS\\unity\\Edungeon\\Assets\\Script\\Quiz\\QuizUI.cs",
+              "RelativeToolTip": "Assets\\Script\\Quiz\\QuizUI.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAABHAAAA",
+              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKzSURBVDhPzZLLThNRAIbPmfullLa0ECjICAQJTQhEIcZIvOxYsVI3RlOiGx/ArbA3ccWGFyBxtsZoNREWhEQUUikTC5QSLNPL1F6mw/TMzGmPCy9RX0C/7Zf/X30A/GtoAAAghMBYLEaPPxqngQIo5bpCzXTPQE3TfjlwC1B7z/fA4uIircU0SlO17weEEJhIJiRTNiO7R7vdRacY8lgvQA1RwtTCFJrkJpl9eT\u002BiV/SOpJFsC0jozX7Jyp1XOltHb44ws7m5KdiCfc1E5l1IwwlJkABDM6hD6PjQz/c/LbLFMDLRA\u002BACOl/Mv8wH8g8tYBWqoLo6\u002BGTwHZOhMl26oc9V7erlXn\u002BvrIQUjWO4OoCgPBoe5dkWO6s39Em9prNN3HQDfGD8tHYaabrNlMiL75mt3JaIMY7KnEzGImObIieutmG74rW8r0E5WGJpNhMUg1ZACLB\u002Byp8dCg3h48pxs2AXyhhgl9rOb8OSVSKe5\u002B3TNP1M6pNeDLYH13qsnk\u002BKoFgUoKoiKzo8y6MgF6yGpBAWOdHlaO7MtM0WAxwAMI\u002BJBzx0WD40pspTuCE2SCQSoaAEu9y6G08VUhfSRpq1HCueM3Nh48xgLMe6GhbDG/Tc/bmQwAk3Hc/pQh4q\u002B3v8YYd3zulI9xNIKjzF1wtWoVWzawc\u002B3vdqdngW15v1lOVab9uordH3Ht\u002BTGMJMuC13FLfwGIHkEvLQRRvbwZJVSo50jWRM18yWG\u002BWdYd/wx\u002Bnz0we5Sm6rhmt782i\u002BTscX4p5P8LUhgH26qStpIx0wzgwZeajedJobmdeZ0oAwUEqyycLKnZVG/nNe33A38omFhLV\u002BY51AQghU11T5hDoJ7hzsSNlGFnQynSQaiNrRw2hpaWnJ/Tvf34HgR8qqqlLLkWX4U3Qb3US9rbYBAOSPxX/HN3jEanHkfSErAAAAAElFTkSuQmCC",
+              "WhenOpened": "2025-12-19T10:01:10.56Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

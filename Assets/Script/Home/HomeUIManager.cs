@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class HomeUIManager : MonoBehaviour
 {
-
     [Header("--- PANEL ---")]
     public GameObject joinPanel;
     public GameObject loadingPanel;
@@ -16,6 +15,7 @@ public class HomeUIManager : MonoBehaviour
     public TMP_InputField idRoomInput;
     public Button joinButton;
     public Button openCreatePanelButton;
+
     [Header("--- LOADING UI ---")]
     public TextMeshProUGUI statusText;
 
@@ -24,29 +24,40 @@ public class HomeUIManager : MonoBehaviour
     public TMP_InputField maxPlayerInput;
     public Button confirmCreateButton;
     public Button backButton;
+
+    // Biến lưu tạm để dùng khi Server phản hồi thành công
+    private string tempHostName;
+    private string tempRoomId;
+
     void Start()
     {
         ShowPanel(joinPanel);
 
         joinButton.onClick.AddListener(OnJoinClicked);
+        confirmCreateButton.onClick.RemoveListener(OnConfirmHostSetup);
         confirmCreateButton.onClick.AddListener(OnConfirmHostSetup);
         backButton.onClick.AddListener(OnBackClicked);
         if (openCreatePanelButton) openCreatePanelButton.onClick.AddListener(OnCreateRoomButton);
-        if (confirmCreateButton) confirmCreateButton.onClick.AddListener(OnConfirmHostSetup);
-        // --- KẾT NỐI SERVER NGAY KHI VÀO GAME ĐỂ SẴN SÀNG CHECK ---
+
+        // 1. Kết nối Server ngay khi mở game
         SocketClient.Instance.ConnectOnly();
 
-        // --- LẮNG NGHE KẾT QUẢ CHECK TỪ SERVER ---
+        // 2. Lắng nghe các sự kiện từ Server trả về
         SocketClient.Instance.OnCheckRoomResult += HandleCheckRoomResult;
+        SocketClient.Instance.OnCreateRoomResult -= HandleCreateRoomResult;
+        SocketClient.Instance.OnCreateRoomResult += HandleCreateRoomResult; // <--- Cần thêm sự kiện này bên SocketClient
     }
 
     void OnDestroy()
     {
-        // Nhớ hủy đăng ký khi chuyển cảnh để tránh lỗi
         if (SocketClient.Instance != null)
+        {
             SocketClient.Instance.OnCheckRoomResult -= HandleCheckRoomResult;
+            SocketClient.Instance.OnCreateRoomResult -= HandleCreateRoomResult;
+        }
     }
 
+    // --- PHẦN KHÁCH (JOIN) ---
     void OnJoinClicked()
     {
         string playerName = nameInput.text;
@@ -63,11 +74,10 @@ public class HomeUIManager : MonoBehaviour
         statusText.text = "Đang kiểm tra phòng...";
         statusText.color = Color.yellow;
 
-        // --- GỬI LỆNH CHECK LÊN SERVER (THẬT 100%) ---
+        // Gửi lệnh check
         SocketClient.Instance.SendCheckRoom(roomId);
     }
 
-    // Hàm này tự động chạy khi Server trả lời
     void HandleCheckRoomResult(string result)
     {
         if (result == "FOUND")
@@ -77,21 +87,20 @@ public class HomeUIManager : MonoBehaviour
             // Lưu info
             PlayerPrefs.SetString("PLAYER_NAME", nameInput.text);
             PlayerPrefs.SetString("ROOM_ID", idRoomInput.text);
-            PlayerPrefs.SetInt("IS_HOST", 0);
+            PlayerPrefs.SetInt("IS_HOST", 0); // Khách
             PlayerPrefs.Save();
 
-            // Chuyển cảnh
-            SceneManager.LoadScene("Game"); // Đổi tên Scene cho đúng
+            SceneManager.LoadScene("Game");
         }
         else
         {
             Debug.Log("Không tìm thấy phòng!");
             ShowError("Phòng không tồn tại hoặc sai ID!");
-
-            // Đợi 1 tí rồi cho quay lại nhập (dùng Invoke hoặc Coroutine)
             Invoke("BackToJoin", 2f);
         }
     }
+
+    // --- PHẦN CHỦ PHÒNG (HOST) ---
     void OnCreateRoomButton()
     {
         string playerName = nameInput.text;
@@ -100,29 +109,62 @@ public class HomeUIManager : MonoBehaviour
             ShowError("Đại ca nhập tên trước đã!");
             return;
         }
+        // Lưu tạm tên
+        tempHostName = playerName;
 
-        // Chuyển sang màn hình Setup cho Host
+        // Chuyển sang màn hình Setup
         ShowPanel(hostSetupPanel);
     }
-    // Hàm này gán vào nút "Xác nhận tạo" (Confirm)
+
+    // Nút xác nhận tạo phòng
     void OnConfirmHostSetup()
     {
-        string questionData = questionPathInput.text; // Sau này xử lý import file
+        // 1. Chuẩn bị dữ liệu
+        confirmCreateButton.interactable = false;
+        string roomId = GenerateRoomID();
         string maxPlayers = maxPlayerInput.text;
-        string playerName = nameInput.text;
+        if (string.IsNullOrEmpty(maxPlayers)) maxPlayers = "4";
 
-        if (string.IsNullOrEmpty(maxPlayers)) maxPlayers = "4"; // Mặc định 4 người
+        tempRoomId = roomId; // Lưu tạm ID
 
-        // Save thông tin Host
-        PlayerPrefs.SetString("PLAYER_NAME", playerName);
-        PlayerPrefs.SetString("ROOM_ID", GenerateRoomID()); // Tự sinh ID ngẫu nhiên
-        PlayerPrefs.SetInt("IS_HOST", 1); // 1 là Host
-        PlayerPrefs.SetString("MAX_PLAYERS", maxPlayers);
-        PlayerPrefs.Save();
-        SocketClient.Instance.ConnectOnly();
-        // Host thì vào game luôn, không cần check phòng
-        SceneManager.LoadScene("Game");
-        
+        // 2. Hiện Loading chờ Server
+        ShowPanel(loadingPanel);
+        statusText.text = "Đang tạo phòng...";
+        statusText.color = Color.yellow;
+
+        // 3. Gửi lệnh TẠO PHÒNG lên Server (Thay vì vào game luôn)
+        HandshakeData data = new HandshakeData();
+        data.roomId = roomId;
+        data.playerName = tempHostName;
+
+        SocketClient.Instance.Send(new Packet
+        {
+            type = "CREATE_ROOM",
+            payload = JsonUtility.ToJson(data)
+        });
+    }
+
+    // Hàm xử lý khi Server báo "Tạo thành công"
+    void HandleCreateRoomResult(string result)
+    {
+        confirmCreateButton.interactable = true;
+        if (result == "SUCCESS")
+        {
+            // Lưu Prefs
+            PlayerPrefs.SetString("PLAYER_NAME", tempHostName);
+            PlayerPrefs.SetString("ROOM_ID", tempRoomId);
+            PlayerPrefs.SetInt("IS_HOST", 1); // Host
+            PlayerPrefs.SetString("MAX_PLAYERS", maxPlayerInput.text);
+            PlayerPrefs.Save();
+
+            // Lúc này mới chuyển cảnh
+            SceneManager.LoadScene("Game");
+        }
+        else
+        {
+            ShowError("Tạo phòng thất bại: " + result);
+            Invoke("BackToJoin", 2f);
+        }
     }
 
     // --- UTILS ---
@@ -136,7 +178,6 @@ public class HomeUIManager : MonoBehaviour
         joinPanel.SetActive(false);
         loadingPanel.SetActive(false);
         hostSetupPanel.SetActive(false);
-
         panelToShow.SetActive(true);
     }
 
@@ -149,16 +190,15 @@ public class HomeUIManager : MonoBehaviour
         }
         else
         {
-            // Nếu đang ở màn hình Join mà lỗi thì có thể hiện popup (hiện tại log tạm)
             Debug.LogError(msg);
         }
     }
 
     string GenerateRoomID()
     {
-        // Random ID phòng 6 số
         return Random.Range(100000, 999999).ToString();
     }
+
     void BackToJoin()
     {
         ShowPanel(joinPanel);

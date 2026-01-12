@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 public class MessageHandler : MonoBehaviour
 {
+    [Header("Game fllow object")]
+    public GameObject lobbyGate;  
+    public GameObject enemyContainer;
+
     [Header("Host Settings")]
     public GameObject spectatorCameraPrefab;
     public GameObject hostControlUI;
@@ -13,7 +17,7 @@ public class MessageHandler : MonoBehaviour
 
     [Header("Player Settings")]
     // Lưu ý: Biến này kiểu PlayerController thì Instantiate sẽ ra PlayerController
-    public PlayerController playerPrefab;
+    public GameObject playerPrefab;  // Nếu prefab là GameObject
     public Transform playersContainer;
     public Transform spawnPoint;
 
@@ -26,11 +30,12 @@ public class MessageHandler : MonoBehaviour
 
     private bool isAmHost = false;
 
-    // Dictionary quản lý nhân vật (Key: ID, Value: Script điều khiển)
     private Dictionary<string, PlayerController> otherPlayers = new Dictionary<string, PlayerController>();
 
     void Start()
     {
+        enemyContainer.SetActive(false);
+        
         // 1. Lấy dữ liệu từ Home gửi sang
         string myName = PlayerPrefs.GetString("PLAYER_NAME", "Unknown");
         string myRoom = PlayerPrefs.GetString("ROOM_ID", "Default");
@@ -40,7 +45,7 @@ public class MessageHandler : MonoBehaviour
 
         // 2. Setup giao diện ban đầu
         SetupRoleUI();
-        if (idRoom) idRoom.text = "ID: " + myRoom;
+        if (idRoom) idRoom.text = myRoom;
         if (leaveRoomButton != null)
         {
             leaveRoomButton.onClick.AddListener(OnLeaveButtonClicked);
@@ -49,10 +54,22 @@ public class MessageHandler : MonoBehaviour
         {
             Debug.LogWarning("Chưa gắn nút LeaveRoomButton vào MessageHandler kìa đại ca!");
         }
+
         // 3. Kích hoạt kết nối mạng
         SocketClient.Instance.OnPacketReceived += HandlePacket;
-        // Gửi lệnh Join hoặc Create tùy vai trò (đã xử lý bên ConnectAndJoin)
-        SocketClient.Instance.ConnectAndJoin(myName, myRoom, isAmHost);
+
+        // --- FIX: Gửi lệnh JOIN_ROOM cho Guest ---
+        if (!isAmHost)
+        {
+            // Nếu là Khách -> Gửi lệnh Join để Server thực sự add vào phòng
+            Debug.Log(">>> Tôi là Khách, đang gửi lệnh xin vào phòng...");
+            SocketClient.Instance.SendJoinRoom(myName, myRoom);
+        }
+        else
+        {
+            // Nếu là Host -> Server đã biết lúc CREATE_ROOM rồi
+            Debug.Log(">>> Tôi là Host, đang chờ nhận dữ liệu từ Server...");
+        }
     }
 
     void OnDestroy()
@@ -63,7 +80,7 @@ public class MessageHandler : MonoBehaviour
         }
     }
 
-    void SetupRoleUI()
+    void SetupRoleUI()      
     {
         if (isAmHost)
         {
@@ -85,11 +102,17 @@ public class MessageHandler : MonoBehaviour
     {
         switch (packet.type)
         {
-            case "GAME_STARTED": // Sửa cho khớp với Server (GAME_STARTED)
-                Debug.Log("Game Started!");
-                // Ẩn UI chờ, hiện UI game (nếu cần)
+            case "START_GAME":
+                Debug.Log(">>> Nhận lệnh START_GAME từ Server! Chuyển cảnh ngay!");
                 break;
-
+            case "OPEN_GATE":
+                if (lobbyGate != null)
+                {
+                    Debug.Log("Server lệnh mở cổng!");
+                    lobbyGate.SetActive(false);
+                    enemyContainer.SetActive(true);
+                }
+                break;
             case "ROOM_DESTROYED":
                 Debug.LogWarning("Phòng đã bị hủy: " + packet.payload);
                 BackToHome();
@@ -104,6 +127,14 @@ public class MessageHandler : MonoBehaviour
                 UpdatePlayerPosition(packet);
                 break;
 
+            case "CHAT_RECEIVE":
+                ChatManager.Instance.OnMessageReceived(packet.payload);
+                break;
+
+            case "CHAT_STATUS":
+                bool isMuted = (packet.payload == "MUTED");
+                ChatManager.Instance.UpdateChatStatus(isMuted);
+                break;
             case "ANSWER_RESULT":
                 if (quizUI) quizUI.ShowResult(packet.payload);
                 break;
@@ -117,7 +148,7 @@ public class MessageHandler : MonoBehaviour
                 var list = JsonConvert.DeserializeObject<List<PlayerState>>(packet.payload);
                 foreach (var state in list)
                 {
-                    SpawnPlayer(state.playerId, state.name, new Vector2(state.x, state.y));
+                    SpawnPlayer(state.playerId, state.playerName, new Vector2(state.x, state.y));
                 }
                 break;
 
@@ -136,7 +167,7 @@ public class MessageHandler : MonoBehaviour
                 }
 
                 // Gọi hàm spawn
-                SpawnPlayer(newState.playerId, newState.name, spawnPos);
+                SpawnPlayer(newState.playerId, newState.playerName, spawnPos);
                 break;
             case "JOIN_SUCCESS":
                 {
@@ -191,7 +222,8 @@ public class MessageHandler : MonoBehaviour
         Vector3 finalPos = (initialPos == Vector2.zero && spawnPoint != null)
                            ? spawnPoint.position
                            : (Vector3)initialPos;
-        PlayerController pCtrl = Instantiate(playerPrefab, finalPos, Quaternion.identity, playersContainer);
+        GameObject playerObj = Instantiate(playerPrefab, finalPos, Quaternion.identity, playersContainer);
+        PlayerController pCtrl = playerObj.GetComponent<PlayerController>();
 
         // Khởi tạo (Lúc này hàm Initialize bên PlayerController sẽ tự gọi Cinemachine)
         bool isMe = (id == SocketClient.Instance.MyPlayerId);
@@ -200,7 +232,7 @@ public class MessageHandler : MonoBehaviour
         otherPlayers.Add(id, pCtrl);
     }
 
-    // --- HÀM UPDATE VỊ TRÍ (ĐÃ HOÀN THIỆN) ---
+
     void UpdatePlayerPosition(Packet packet)
     {
         var state = JsonConvert.DeserializeObject<PlayerState>(packet.payload);
@@ -213,10 +245,10 @@ public class MessageHandler : MonoBehaviour
             playerScript.OnServerDataReceived(new Vector3(state.x, state.y, 0));
         }
     }
+    
     public void OnLeaveButtonClicked()
     {
         Debug.Log(">>> Bấm nút rời phòng!");
-        // 1. Chủ động ngắt kết nối TCP
         if (SocketClient.Instance != null)
         {
             SocketClient.Instance.Disconnect();

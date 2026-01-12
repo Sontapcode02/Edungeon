@@ -25,6 +25,8 @@ public class SocketClient : MonoBehaviour
     public Action<Packet> OnPacketReceived;
     public string MyPlayerId { get; set; }
     public Action<string> OnCheckRoomResult;
+    public System.Action<string> OnCreateRoomResult;
+    
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -32,7 +34,6 @@ public class SocketClient : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // XÓA HÀM START() ĐI ĐỂ KHÔNG TỰ KẾT NỐI
     public void ConnectAndJoin(string playerName, string roomId, bool isHost)
     {
         MyPlayerId = null;
@@ -55,21 +56,15 @@ public class SocketClient : MonoBehaviour
             catch (Exception e)
             {
                 Debug.LogError($"Lỗi kết nối chết người: {e.Message}");
-                return; // Không kết nối được thì nghỉ chơi
+                return;
             }
         }
 
-        
-
         Debug.Log($"Đang gửi lệnh... Role: {(isHost ? "HOST" : "CLIENT")} | Room: {roomId}");
 
-        // 3. CHUẨN BỊ DỮ LIỆU
-        var handshake = new HandshakeData { name = playerName, roomId = roomId };
+        var handshake = new HandshakeData { playerName = playerName, roomId = roomId };
         string payloadJson = JsonConvert.SerializeObject(handshake);
 
-        // 4. GỬI GÓI TIN XÁC NHẬN
-        // Nếu là Host -> Gửi lệnh TẠO (CREATE_ROOM)
-        // Nếu là Khách -> Gửi lệnh VÀO (JOIN_ROOM)
         Send(new Packet
         {
             type = isHost ? "CREATE_ROOM" : "JOIN_ROOM",
@@ -77,6 +72,7 @@ public class SocketClient : MonoBehaviour
             payload = payloadJson
         });
     }
+    
     public void ConnectOnly()
     {
         if (_isConnected) return;
@@ -99,16 +95,45 @@ public class SocketClient : MonoBehaviour
             Debug.LogError("Lỗi kết nối: " + e.Message);
         }
     }
+    
     public void SendCheckRoom(string roomId)
     {
-        if (!_isConnected) ConnectOnly(); // Chưa kết nối thì kết nối luôn
+        if (!_isConnected) ConnectOnly();
 
         Send(new Packet
         {
             type = "CHECK_ROOM",
-            payload = roomId // Gửi mỗi cái ID phòng lên thôi
+            payload = roomId
         });
     }
+
+    // --- THÊM HÀM NÀY ---
+    public void SendJoinRoom(string playerName, string roomId)
+    {
+        if (!_isConnected)
+        {
+            Debug.LogError("[SocketClient] SendJoinRoom thất bại: Chưa kết nối Server!");
+            return;
+        }
+
+        var handshakeData = new HandshakeData
+        {
+            playerName = playerName,
+            roomId = roomId
+        };
+
+        string payloadJson = JsonConvert.SerializeObject(handshakeData);
+
+        Send(new Packet
+        {
+            type = "JOIN_ROOM",
+            playerId = null,
+            payload = payloadJson
+        });
+
+        Debug.Log($"[SocketClient] Đã gửi lệnh JOIN_ROOM: {playerName} vào phòng {roomId}");
+    }
+
     private void ReceiveLoop()
     {
         Debug.Log(">>> [ReceiveLoop] Bắt đầu lắng nghe Server...");
@@ -117,11 +142,8 @@ public class SocketClient : MonoBehaviour
         {
             try
             {
-                // Kiểm tra xem có dữ liệu đến không
                 if (_client.Available > 0 || _stream.DataAvailable)
                 {
-                    // 1. Đọc độ dài (4 byte đầu tiên)
-                    // Nếu Server gửi thiếu header này là Client treo luôn ở đây
                     byte[] lengthBuffer = new byte[4];
                     int bytesRead = _stream.Read(lengthBuffer, 0, 4);
 
@@ -132,16 +154,13 @@ public class SocketClient : MonoBehaviour
                         break;
                     }
 
-                    int length = BitConverter.ToInt32(lengthBuffer, 0); // Convert byte sang int
-                    // Debug.Log($">>> [ReceiveLoop] Đã nhận tín hiệu! Độ dài gói tin: {length}");
+                    int length = BitConverter.ToInt32(lengthBuffer, 0);
 
-                    if (length <= 0) continue; // Bỏ qua nếu gói tin rỗng
+                    if (length <= 0) continue;
 
-                    // 2. Đọc nội dung (Payload)
                     byte[] buffer = new byte[length];
                     int totalBytesRead = 0;
 
-                    // Vòng lặp đọc cho đến khi đủ dữ liệu (đề phòng mạng lag bị cắt gói)
                     while (totalBytesRead < length)
                     {
                         int read = _stream.Read(buffer, totalBytesRead, length - totalBytesRead);
@@ -188,22 +207,28 @@ public class SocketClient : MonoBehaviour
             if (packet.type == "CHECK_ROOM_RESPONSE")
             {
                 Console.WriteLine(packet.type);
-                OnCheckRoomResult?.Invoke(packet.payload); // Bắn tin "FOUND" hoặc "NOT_FOUND" ra UI
+                OnCheckRoomResult?.Invoke(packet.payload);
             }
             OnPacketReceived?.Invoke(packet);
+            if (packet.type == "ROOM_CREATED")
+            {
+                OnCreateRoomResult?.Invoke("SUCCESS");
+            }
+            else if (packet.type == "ERROR")
+            {
+                OnCreateRoomResult?.Invoke(packet.payload);
+            }
         }
     }
 
     public void Send(Packet packet)
     {
-        // 1. Kiểm tra kết nối trước
         if (!_isConnected)
         {
             Debug.LogWarning("[SocketClient] Send thất bại: Chưa kết nối Server!");
             return;
         }
 
-        // 2. Gắn ID của mình vào nếu gói tin chưa có
         if (string.IsNullOrEmpty(packet.playerId))
         {
             packet.playerId = MyPlayerId;
@@ -211,32 +236,28 @@ public class SocketClient : MonoBehaviour
 
         try
         {
-            // 3. Đóng gói dữ liệu (Serialize)
-            // Dùng Newtonsoft.Json cho chuẩn với Server
             string json = JsonConvert.SerializeObject(packet);
             byte[] buffer = Encoding.UTF8.GetBytes(json);
 
-            // 4. Gửi đi (Thread Safe)
-            // Dùng lock để đảm bảo không bị tranh chấp nếu gửi từ nhiều luồng
             if (_writer != null)
             {
                 lock (_writer)
                 {
-                    _writer.Write(buffer.Length); // Gửi độ dài trước (4 bytes)
-                    _writer.Write(buffer);        // Gửi nội dung tin nhắn sau
-                    _writer.Flush();              // QUAN TRỌNG: Đẩy dữ liệu đi ngay lập tức!
+                    _writer.Write(buffer.Length);
+                    _writer.Write(buffer);
+                    _writer.Flush();
                 }
             }
 
-            // Log ra để biết là đã gửi thành công
             Debug.Log($"[Client >> Server] Gửi: {packet.type} | Payload: {packet.payload}");
         }
         catch (Exception e)
         {
             Debug.LogError($"[SocketClient] Lỗi khi gửi tin: {e.Message}");
-            _isConnected = false; // Ngắt kết nối luôn nếu gửi lỗi để tránh spam
+            _isConnected = false;
         }
     }
+    
     public void Disconnect()
     {
         if (!_isConnected) return;
@@ -260,16 +281,15 @@ public class SocketClient : MonoBehaviour
             _reader = null;
             _writer = null;
 
-            // Quan trọng: Reset lại ID để lần sau vào lại sạch sẽ
             MyPlayerId = null;
 
-            // Xóa sạch hàng đợi gói tin cũ
             Packet temp;
             while (_packetQueue.TryDequeue(out temp)) { }
 
             Debug.Log("[SocketClient] Đã ngắt kết nối thành công.");
         }
     }
+    
     void OnApplicationQuit()
     {
         _isConnected = false;

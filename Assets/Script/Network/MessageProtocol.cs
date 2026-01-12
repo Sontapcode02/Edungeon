@@ -12,7 +12,7 @@ public class Packet
 [Serializable]
 public class HandshakeData
 {
-    public string name;
+    public string playerName;
     public string roomId;
 }
 
@@ -20,7 +20,7 @@ public class HandshakeData
 public class PlayerState
 {
     public string playerId;
-    public string name;
+    public string playerName;   
     public float x;
     public float y;
     public int score;

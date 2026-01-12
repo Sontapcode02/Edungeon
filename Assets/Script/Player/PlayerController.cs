@@ -18,10 +18,15 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Vector3 lastPos;
     private float lastSendTime;
-    void Awake() // Dùng Awake để lấy component trước
+    void Awake()
     {
         anim = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody2D>(); // Nhớ thêm Rigidbody2D vào Prefab (Gravity Scale = 0)
+        rb = GetComponent<Rigidbody2D>();
+        
+        if (rb == null)
+        {
+            Debug.LogError($"[ERROR] Prefab '{gameObject.name}' không có Rigidbody2D! Hãy thêm vào prefab.");
+        }
     }
 
     void Start()
