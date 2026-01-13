@@ -7,3 +7,12 @@ C:\Users\ASUS\Downloads\Server_Edungeon_Unity_C#\Server_Edungeon_Unity_C#\obj\De
 C:\Users\ASUS\Downloads\Server_Edungeon_Unity_C#\Server_Edungeon_Unity_C#\bin\Debug\Server_Edungeon_Unity_C#.exe
 C:\Users\ASUS\Downloads\Server_Edungeon_Unity_C#\Server_Edungeon_Unity_C#\obj\Debug\Server_Edungeon_Unity_C#.exe
 C:\Users\ASUS\Downloads\Server_Edungeon_Unity_C#\Server_Edungeon_Unity_C#\obj\Debug\Server_E.AF45DF60.Up2Date
+C:\Edungeon\Server\Server_Edungeon_Unity_C#\bin\Debug\Server_Edungeon_Unity_C#.exe
+C:\Edungeon\Server\Server_Edungeon_Unity_C#\bin\Debug\Server_Edungeon_Unity_C#.pdb
+C:\Edungeon\Server\Server_Edungeon_Unity_C#\bin\Debug\Newtonsoft.Json.dll
+C:\Edungeon\Server\Server_Edungeon_Unity_C#\bin\Debug\Newtonsoft.Json.xml
+C:\Edungeon\Server\Server_Edungeon_Unity_C#\obj\Debug\Server_Edungeon_Unity_C#.csproj.AssemblyReference.cache
+C:\Edungeon\Server\Server_Edungeon_Unity_C#\obj\Debug\Server_Edungeon_Unity_C#.csproj.CoreCompileInputs.cache
+C:\Edungeon\Server\Server_Edungeon_Unity_C#\obj\Debug\Server_E.AF45DF60.Up2Date
+C:\Edungeon\Server\Server_Edungeon_Unity_C#\obj\Debug\Server_Edungeon_Unity_C#.exe
+C:\Edungeon\Server\Server_Edungeon_Unity_C#\obj\Debug\Server_Edungeon_Unity_C#.pdb

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Cinemachine;
 using System.Collections.Generic;
+
 public class PlayerController : MonoBehaviour
 {
     public string PlayerId;
@@ -9,9 +10,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Settings")]
     public float moveSpeed = 5f;
-    public float smoothTime = 10f;
+
     [Header("Network Smoothing")]
-    public float interpolationDelay = 0.1f;
     private List<PositionSnapshot> serverSnapshots = new List<PositionSnapshot>();
 
     private Animator anim;
@@ -19,20 +19,18 @@ public class PlayerController : MonoBehaviour
     private Vector3 lastPos;
     private float lastSendTime;
 
+    // Biến lưu input để dùng giữa Update và FixedUpdate
+    private Vector2 currentInput;
+
     void Awake()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        
+
         if (rb == null)
         {
             Debug.LogError($"[ERROR] Prefab '{gameObject.name}' không có Rigidbody2D! Hãy thêm vào prefab.");
         }
-    }
-
-    void Start()
-    {
-        lastPos = transform.position;
     }
 
     public void Initialize(string id, bool local)
@@ -41,42 +39,37 @@ public class PlayerController : MonoBehaviour
         IsLocal = local;
         serverSnapshots.Clear();
         serverSnapshots.Add(new PositionSnapshot(transform.position, Time.time));
-        Debug.Log($"[DEBUG] Initialize chạy cho ID: {id} | IsLocal: {local}");
-        if (anim != null)
-        {
-            anim.SetFloat("InputX", 0);
-            anim.SetFloat("InputY", 0);
-            anim.SetBool("IsMoving", false);
-        }
+
         lastPos = transform.position;
+
         if (IsLocal)
         {
-            var vcam = FindObjectOfType<CinemachineVirtualCamera>();
+            // --- SETUP CHO LOCAL PLAYER ---
+            rb.bodyType = RigidbodyType2D.Dynamic; // Để va chạm vật lý
 
+            var vcam = FindObjectOfType<CinemachineVirtualCamera>();
             if (vcam != null)
             {
                 vcam.Follow = transform;
-
                 Debug.Log("Cinemachine đã nhận mục tiêu: " + id);
             }
-            else
-            {
-                Debug.LogError("LỖI: Không tìm thấy CM vcam1 trong Scene!");
-            }
-            if (!local && GetComponent<Rigidbody2D>() != null)
-            {
-                GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
-            }
+        }
+        else
+        {
+            // --- SETUP CHO REMOTE PLAYER ---
+            // Quan trọng: Biến thành Kinematic để không bị vật lý đẩy lung tung
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.velocity = Vector2.zero;
         }
     }
 
-
     public void OnServerDataReceived(Vector3 newPos)
     {
-        // Lưu vị trí kèm thời gian nhận được vào danh sách
+        if (IsLocal) return; // Local thì không nghe Server chỉ đạo vị trí (tránh giật)
+
         serverSnapshots.Add(new PositionSnapshot(newPos, Time.time));
 
-        // Dọn dẹp bộ nhớ: Xóa các điểm quá cũ (cũ hơn 1 giây) để đỡ nặng máy
+        // Dọn dẹp snapshot cũ
         if (serverSnapshots.Count > 20)
         {
             serverSnapshots.RemoveAt(0);
@@ -85,50 +78,75 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // 1. Xử lý Animation (Dùng logic Speed = 0 đại ca đã duyệt)
+        // 1. Xử lý Logic từng frame
+        if (IsLocal)
+        {
+            // Nếu là mình: Chỉ đọc Input (để dành cho FixedUpdate xử lý vật lý)
+            float h = Input.GetAxisRaw("Horizontal");
+            float v = Input.GetAxisRaw("Vertical");
+            currentInput = new Vector2(h, v).normalized;
+        }
+        else
+        {
+            // Nếu là người khác: Tính toán vị trí mượt (Interpolation)
+            InterpolateMovement();
+        }
+
+        // 2. Xử lý Animation (chung cho cả 2)
         UpdateAnimation();
+    }
 
-        // 2. Nếu là mình thì đi bằng phím (Code cũ)
-        if (IsLocal) HandleInput();
+    void FixedUpdate()
+    {
+        // Logic vật lý chỉ chạy cho Local Player
+        if (IsLocal)
+        {
+            MoveLocalPlayer();
+        }
+    }
 
-        // 3. --- LOGIC DI CHUYỂN MƯỢT (INTERPOLATION) ---
-        // Thời gian chúng ta muốn hiển thị (Quá khứ)
-        float renderTime = Time.time - 0.1f;
+    // --- LOGIC DI CHUYỂN LOCAL ---
+    void MoveLocalPlayer()
+    {
+        // Di chuyển bằng Rigidbody
+        rb.MovePosition(rb.position + currentInput * moveSpeed * Time.fixedDeltaTime);
 
-        // Cần ít nhất 2 điểm dữ liệu để nội suy
+        // Gửi vị trí lên Server (Chỉ gửi khi có di chuyển hoặc vừa dừng lại)
+        // Thêm điều kiện: Nếu input khác 0 hoặc (input = 0 nhưng frame trước vừa di chuyển)
+        if (currentInput != Vector2.zero || (Time.time - lastSendTime > 0.1f))
+        {
+            SendPosition();
+        }
+    }
+
+    // --- LOGIC DI CHUYỂN REMOTE (MƯỢT) ---
+    void InterpolateMovement()
+    {
+        float renderTime = Time.time - 0.1f; // Độ trễ giả lập 100ms để mượt
+
         if (serverSnapshots.Count >= 2)
         {
-            // Tìm 2 điểm bao quanh thời gian renderTime
-            // Điểm A (cũ hơn renderTime) và Điểm B (mới hơn renderTime)
             PositionSnapshot snapshotA = serverSnapshots[0];
             PositionSnapshot snapshotB = serverSnapshots[0];
 
-            // Duyệt ngược từ cuối về để tìm điểm phù hợp nhanh hơn
+            // Tìm 2 điểm bao quanh thời gian renderTime
             for (int i = serverSnapshots.Count - 1; i >= 1; i--)
             {
                 if (serverSnapshots[i].timestamp <= renderTime)
                 {
-                    // Đã tìm thấy điểm bắt đầu
                     snapshotA = serverSnapshots[i];
-                    // Điểm kết thúc là điểm ngay sau nó
                     if (i + 1 < serverSnapshots.Count)
                         snapshotB = serverSnapshots[i + 1];
                     else
-                        snapshotB = serverSnapshots[i]; // Hết dữ liệu thì đứng yên
-
+                        snapshotB = serverSnapshots[i];
                     break;
                 }
             }
 
-            // Tính toán tỷ lệ phần trăm (0.0 -> 1.0) giữa A và B
-            // Ví dụ: A lúc 10s, B lúc 12s. RenderTime là 11s -> Tỷ lệ là 0.5
             float timeInterval = snapshotB.timestamp - snapshotA.timestamp;
-
             if (timeInterval > 0.0001f)
             {
                 float t = (renderTime - snapshotA.timestamp) / timeInterval;
-
-                // Di chuyển nhân vật
                 transform.position = Vector3.Lerp(snapshotA.position, snapshotB.position, t);
             }
             else
@@ -138,54 +156,9 @@ public class PlayerController : MonoBehaviour
         }
         else if (serverSnapshots.Count == 1)
         {
-            // Nếu mới có 1 điểm dữ liệu thì dịch chuyển tới đó luôn
             transform.position = Vector3.Lerp(transform.position, serverSnapshots[0].position, Time.deltaTime * 10f);
         }
     }
-
-    void FixedUpdate()
-    {
-        // Di chuyển vật lý phải ở FixedUpdate
-        if (IsLocal)
-        {
-            HandleInputPhysics();
-        }
-    }
-
-    void HandleInputPhysics()
-    {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
-
-        Vector2 movement = new Vector2(h, v).normalized;
-
-        // Di chuyển bằng Rigidbody để không đi xuyên tường
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-
-        // Gửi vị trí lên Server
-        if (movement != Vector2.zero)
-        {
-            SendPosition();
-        }
-    }
-
-    private bool isFirstUpdate = true; 
-    public void SetNewPosition(Vector3 newPos)
-    {
-        if (isFirstUpdate)
-        {
-            // Lần đầu tiên cập nhật vị trí -> Teleport luôn cho đỡ chạy animation
-            transform.position = newPos;
-            lastPos = newPos;
-            isFirstUpdate = false;
-        }
-        else
-        {
-            // Những lần sau thì mới đặt mục tiêu để Update nó Lerp từ từ
-        }
-    }
-
-    // Trong PlayerController.cs
 
     void UpdateAnimation()
     {
@@ -194,54 +167,43 @@ public class PlayerController : MonoBehaviour
         float moveAmount = 0;
         Vector2 dir = Vector2.zero;
 
-        // --- BƯỚC 1: TÍNH TOÁN ---
         if (IsLocal)
         {
-            // Lấy input hiện tại
-            float rawX = Input.GetAxisRaw("Horizontal");
-            float rawY = Input.GetAxisRaw("Vertical");
-            Vector2 inputDir = new Vector2(rawX, rawY);
-
-            if (inputDir.sqrMagnitude > 0.01f)
+            if (currentInput.sqrMagnitude > 0.01f)
             {
                 moveAmount = 1f;
-                dir = inputDir.normalized; // Lấy hướng đi
+                dir = currentInput;
             }
         }
         else
         {
-            // Code cho nhân vật Online
+            // Tính toán dựa trên khoảng cách thực tế di chuyển được
             float dist = Vector3.Distance(transform.position, lastPos);
-            if (dist > 0.02f)
+            if (dist > 0.001f) // Giảm ngưỡng xuống tí cho nhạy
             {
-                moveAmount = dist / Time.deltaTime;
+                moveAmount = 1f; // Chỉ cần có di chuyển là chạy
                 dir = (transform.position - lastPos).normalized;
             }
             lastPos = transform.position;
         }
 
-        // --- BƯỚC 2: CẬP NHẬT ANIMATOR (FIX PAUSE) ---
-
         if (moveAmount > 0.01f)
         {
-            // 1. Cập nhật hướng (InputX, InputY)
             anim.SetFloat("InputX", dir.x);
             anim.SetFloat("InputY", dir.y);
-
-            // 2. [QUAN TRỌNG] Cho Animation CHẠY
-            anim.speed = 1f;
+            anim.speed = 1f; // Chạy animation
         }
         else
         {
-            anim.speed = 0f;
+            anim.speed = 0f; // Dừng animation (đứng yên frame cuối)
         }
     }
 
     void SendPosition()
     {
+        // Giới hạn tốc độ gửi gói tin (ví dụ 20 lần/giây = 0.05s)
         if (Time.time - lastSendTime > 0.05f)
         {
-            // Gửi tọa độ hiện tại (transform.position luôn đúng vì rb.MovePosition cập nhật nó)
             var posData = new { x = transform.position.x, y = transform.position.y };
             string payload = JsonConvert.SerializeObject(posData);
 
@@ -254,21 +216,35 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void HandleInput()
+    // --- XỬ LÝ VA CHẠM ---
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        // Chỉ Local Player mới được quyền báo cáo va chạm lên Server
+        if (!IsLocal) return;
 
-        Vector2 movement = new Vector2(h, v).normalized;
-
-        // Move the player using transform for local input (non-physics)
-        if (movement != Vector2.zero)
+        if (collision.CompareTag("Enemy"))
         {
-            transform.position += (Vector3)(movement * moveSpeed * Time.deltaTime);
-            SendPosition();
+            Debug.Log("Đụng trúng địch!");
+            SocketClient.Instance.Send(new Packet
+            {
+                type = "ENEMY_ENCOUNTER",
+                payload = ""
+            });
+        }
+
+        if (collision.CompareTag("Finish"))
+        {
+            Debug.Log("Về đích!");
+            SocketClient.Instance.Send(new Packet
+            {
+                type = "REACH_FINISH",
+                payload = ""
+            });
         }
     }
 }
+
+// Struct dữ liệu snapshot
 [System.Serializable]
 public struct PositionSnapshot
 {

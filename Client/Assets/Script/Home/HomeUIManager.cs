@@ -119,23 +119,27 @@ public class HomeUIManager : MonoBehaviour
     // Nút xác nhận tạo phòng
     void OnConfirmHostSetup()
     {
-        // 1. Chuẩn bị dữ liệu
         confirmCreateButton.interactable = false;
         string roomId = GenerateRoomID();
         string maxPlayers = maxPlayerInput.text;
         if (string.IsNullOrEmpty(maxPlayers)) maxPlayers = "4";
+        
+        // Lấy đường dẫn file CSV
+        string quizFilePath = questionPathInput.text;
 
-        tempRoomId = roomId; // Lưu tạm ID
+        tempRoomId = roomId;
 
-        // 2. Hiện Loading chờ Server
         ShowPanel(loadingPanel);
         statusText.text = "Đang tạo phòng...";
         statusText.color = Color.yellow;
 
-        // 3. Gửi lệnh TẠO PHÒNG lên Server (Thay vì vào game luôn)
-        HandshakeData data = new HandshakeData();
-        data.roomId = roomId;
-        data.playerName = tempHostName;
+        // Gửi cả đường dẫn CSV lên Server
+        HandshakeData data = new HandshakeData
+        {
+            roomId = roomId,
+            playerName = tempHostName,
+            quizFilePath = quizFilePath  // <--- THÊM DÒNG NÀY
+        };
 
         SocketClient.Instance.Send(new Packet
         {

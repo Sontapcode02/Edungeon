@@ -327,4 +327,32 @@ public class SocketClient : MonoBehaviour
             payload = playerId
         });
     }
+
+    public void SendEnemyEncounter()
+    {
+        Send(new Packet
+        {
+            type = "ENEMY_ENCOUNTER",
+            payload = ""
+        });
+    }
+
+    public void SendAnswer(int questionId, int answerIndex)
+    {
+        var answerData = new { questionId, answerIndex };
+        Send(new Packet
+        {
+            type = "ANSWER",
+            payload = JsonConvert.SerializeObject(answerData)
+        });
+    }
+
+    public void SendReachFinish()
+    {
+        Send(new Packet
+        {
+            type = "REACH_FINISH",
+            payload = ""
+        });
+    }
 }

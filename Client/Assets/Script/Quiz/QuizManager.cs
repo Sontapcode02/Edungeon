@@ -9,7 +9,6 @@ public class QuizManager : MonoBehaviour
 
     private List<QuizData> quizzes = new List<QuizData>();
     private QuizData currentQuiz;
-    private int currentQuizIndex = 0;
 
     void Awake()
     {
@@ -31,7 +30,7 @@ public class QuizManager : MonoBehaviour
         {
             if (string.IsNullOrWhiteSpace(lines[i])) continue;
 
-            string[] parts = lines[i].Split(',');
+            string[] parts = lines[i].Split('|');
             if (parts.Length < 6) continue;
 
             QuizData quiz = new QuizData

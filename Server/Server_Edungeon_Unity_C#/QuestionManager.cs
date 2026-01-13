@@ -1,88 +1,132 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace GameServer
 {
-    // 1. Định nghĩa Class Question chuẩn khớp với Room.cs
-    public class Question
-    {
-        public int Id { get; set; }
-        public string QuestionText { get; set; } // Room.cs đang đòi cái này
-        public string[] Answers { get; set; }    // Room.cs đang đòi cái này
-        public int CorrectIndex { get; set; }    // 0: A, 1: B, 2: C, 3: D
-    }
+    // LƯU Ý: Xóa class Question ở đây đi vì mình đã dùng chung trong GameData.cs rồi!
+    // Nếu đại ca chưa thêm Id vào GameData.cs thì mở file đó ra thêm dòng: public int Id; vào nhé.
 
-    // 2. Class quản lý câu hỏi
     public static class QuestionManager
     {
-        // Danh sách câu hỏi lưu trong RAM
-        private static List<Question> _allQuestions = new List<Question>();
+        // Dictionary lưu câu hỏi theo RoomID
+        private static Dictionary<string, List<Question>> _quizzesByRoom = new Dictionary<string, List<Question>>();
 
-        // Hàm giả lập load câu hỏi (Sau này đại ca thay bằng đọc file JSON/DB)
-        public static void LoadQuestions()
+        // Load quiz từ CSV file (Viết lại thủ công, không dùng CsvHelper)
+        public static bool LoadQuizzesFromCSV(string roomId, string filePath)
         {
-            _allQuestions.Clear();
-            _allQuestions.Add(new Question
+            try
             {
-                Id = 1,
-                QuestionText = "Thủ đô của Việt Nam là gì?",
-                Answers = new[] { "HCM", "Hà Nội", "Đà Nẵng", "Cần Thơ" },
-                CorrectIndex = 1
-            });
+                if (!File.Exists(filePath))
+                {
+                    Console.WriteLine($"[ERROR] File not found: {filePath}");
+                    return false;
+                }
 
-            _allQuestions.Add(new Question
+                var questions = new List<Question>();
+                int idCounter = 1; // Tạo ID tự động
+
+                // Đọc tất cả dòng
+                string[] lines = File.ReadAllLines(filePath);
+
+                // Bắt đầu từ 1 để bỏ qua dòng tiêu đề (Header)
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    // Tách bằng dấu phẩy (CSV chuẩn) hoặc dấu chấm phẩy (nếu Excel lưu kiểu đó)
+                    // Ở đây em dùng dấu phẩy ',' theo chuẩn CsvHelper cũ của đại ca
+                    // *Lưu ý: Nếu nội dung câu hỏi có dấu phẩy thì cách split này sẽ lỗi. 
+                    // Tốt nhất nên dùng dấu '|' như em khuyên, hoặc xử lý chuỗi kỹ hơn.
+                    // Tạm thời em để split ',' để khớp với file cũ của đại ca.
+                    string[] parts = line.Split(',');
+
+                    if (parts.Length >= 6)
+                    {
+                        string qText = parts[0];
+                        string aA = parts[1];
+                        string aB = parts[2];
+                        string aC = parts[3];
+                        string aD = parts[4];
+                        string correctStr = parts[5].Trim().ToUpper();
+
+                        // Sửa cú pháp switch cho chuẩn C# 7.3 (Unity cũ chạy ngon)
+                        int correctIndex = 0;
+                        switch (correctStr)
+                        {
+                            case "A": correctIndex = 0; break;
+                            case "B": correctIndex = 1; break;
+                            case "C": correctIndex = 2; break;
+                            case "D": correctIndex = 3; break;
+                            default: correctIndex = 0; break;
+                        }
+
+                        // Tạo object Question (Dùng class từ GameData.cs)
+                        Question q = new Question();
+                        q.Id = idCounter++; // Nếu GameData.cs chưa có Id thì tạm bỏ qua dòng này hoặc thêm vào
+                        q.QuestionText = qText;
+                        q.Answers = new string[] { aA, aB, aC, aD };
+                        q.CorrectIndex = correctIndex;
+                        q.TimeLimit = 15; // Mặc định
+
+                        questions.Add(q);
+                    }
+                }
+
+                if (questions.Count > 0)
+                {
+                    // Nếu room đã có thì update, chưa có thì thêm mới
+                    if (_quizzesByRoom.ContainsKey(roomId))
+                        _quizzesByRoom[roomId] = questions;
+                    else
+                        _quizzesByRoom.Add(roomId, questions);
+
+                    Console.WriteLine($"[Room {roomId}] Loaded {questions.Count} questions.");
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
             {
-                Id = 2,
-                QuestionText = "1 + 1 bằng mấy?",
-                Answers = new[] { "1", "2", "3", "4" },
-                CorrectIndex = 1
-            });
-
-            _allQuestions.Add(new Question
-            {
-                Id = 3,
-                QuestionText = "Ai là người tạo ra C#?",
-                Answers = new[] { "Bill Gates", "Anders Hejlsberg", "Elon Musk", "Steve Jobs" },
-                CorrectIndex = 1
-            });
-
-            _allQuestions.Add(new Question
-            {
-                Id = 4,
-                QuestionText = "Mặt trời mọc hướng nào?",
-                Answers = new[] { "Tây", "Nam", "Bắc", "Đông" },
-                CorrectIndex = 3
-            });
-
-            _allQuestions.Add(new Question
-            {
-                Id = 5,
-                QuestionText = "Con gì có 4 chân?",
-                Answers = new[] { "Gà", "Vịt", "Chó", "Cá" },
-                CorrectIndex = 2
-            });
-
-            Console.WriteLine($"[System] Loaded {_allQuestions.Count} questions.");
+                Console.WriteLine($"[ERROR] Failed to load CSV: {ex.Message}");
+                return false;
+            }
         }
 
-        // --- HÀM MÀ ROOM.CS ĐANG BÁO LỖI THIẾU ĐÂY ---
-        public static List<Question> GetRandomQuestions(int count)
+        public static List<Question> GetRoomQuizzes(string roomId)
         {
-            // Nếu chưa load thì load data mẫu
-            if (_allQuestions.Count == 0) LoadQuestions();
-
-            // Lấy ngẫu nhiên 'count' câu hỏi (Xáo trộn list rồi lấy)
-            Random rnd = new Random();
-            return _allQuestions.OrderBy(x => rnd.Next()).Take(count).ToList();
+            if (_quizzesByRoom.TryGetValue(roomId, out var questions))
+            {
+                return questions;
+            }
+            return new List<Question>();
         }
 
-        // Hàm check đáp án
-        public static bool CheckAnswer(int questionId, int answerIndex)
+        public static Question GetRandomQuestion(string roomId)
         {
-            var q = _allQuestions.FirstOrDefault(x => x.Id == questionId);
-            if (q == null) return false;
-            return q.CorrectIndex == answerIndex;
+            var questions = GetRoomQuizzes(roomId);
+            if (questions.Count == 0) return null;
+
+            var random = new Random();
+            return questions[random.Next(questions.Count)];
+        }
+
+        // Check đáp án (Giờ check theo Index cho dễ)
+        public static bool CheckAnswer(string roomId, int questionIndexInList, int answerIndex)
+        {
+            var questions = GetRoomQuizzes(roomId);
+            if (questionIndexInList < 0 || questionIndexInList >= questions.Count) return false;
+
+            return questions[questionIndexInList].CorrectIndex == answerIndex;
+        }
+
+        public static void RemoveRoomQuizzes(string roomId)
+        {
+            if (_quizzesByRoom.ContainsKey(roomId))
+                _quizzesByRoom.Remove(roomId);
         }
     }
 }

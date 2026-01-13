@@ -1,11 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Text;
+using Newtonsoft.Json;
+
 namespace GameServer
 {
-    public class ClientHandler
+    // --- XÓA CÁI INTERFACE IClientConnection Ở ĐÂY ĐI NHÉ (VÌ NÓ CÓ CHỖ KHÁC RỒI) ---
+
+    // Giữ nguyên cái ": IClientConnection" này để nó biết là phải tuân thủ
+    public class ClientHandler : IClientConnection
     {
         private TcpClient _client;
         private NetworkStream _stream;
@@ -19,7 +23,9 @@ namespace GameServer
             _stream = client.GetStream();
             _reader = new BinaryReader(_stream);
             _writer = new BinaryWriter(_stream);
-            _session = new PlayerSession { Handler = this };
+
+            // Dòng này giờ sẽ OK
+            _session = new PlayerSession(string.Empty, string.Empty, this);
         }
 
         public void Run()
@@ -28,14 +34,9 @@ namespace GameServer
             {
                 while (_client.Connected)
                 {
-                    // 1. Read Length (4 bytes int)
                     int length = _reader.ReadInt32();
-
-                    // 2. Read Payload
                     byte[] buffer = _reader.ReadBytes(length);
                     string json = Encoding.UTF8.GetString(buffer);
-
-                    // 3. Process
                     ProcessPacket(json);
                 }
             }
@@ -48,124 +49,94 @@ namespace GameServer
 
         private void ProcessPacket(string json)
         {
-            Packet packet = JsonHelper.FromJson<Packet>(json);
+            Packet packet = JsonConvert.DeserializeObject<Packet>(json);
+            if (packet == null) return;
 
-            // Lưu tạm ID kết nối nếu chưa có
             if (string.IsNullOrEmpty(_session.PlayerId)) _session.PlayerId = packet.playerId;
+
             switch (packet.type)
             {
                 case "CREATE_ROOM":
-                    string hostId = _session.PlayerName + "Host_" + Guid.NewGuid().ToString().Substring(0, 6);
+                    string hostId = "Host_" + Guid.NewGuid().ToString().Substring(0, 6);
                     _session.PlayerId = hostId;
-                    // Đọc dữ liệu Handshake từ Client
-                    var createData = JsonHelper.FromJson<HandshakeData>(packet.payload);
-                    string newRoomId = createData.roomId; // Dùng ID mà Client (HomeManager) đã tạo
+
+                    var createData = JsonConvert.DeserializeObject<HandshakeData>(packet.payload);
+                    string newRoomId = createData.roomId;
                     _session.PlayerName = createData.playerName;
+
                     if (Server.Rooms.ContainsKey(newRoomId))
                     {
                         Send(new Packet { type = "ERROR", payload = "ID phòng đã tồn tại!" });
                         return;
                     }
 
-                    // Tạo phòng mới với HostId là người gửi
                     Room newRoom = new Room(newRoomId, _session.PlayerId);
                     Server.Rooms.TryAdd(newRoomId, newRoom);
-
-                    // Cho Host join vào phòng luôn
                     newRoom.Join(_session);
-                    Send(new Packet
-                    {
-                        type = "ROOM_CREATED",
-                        payload = "Success",
-                        playerId = hostId // <--- Gửi ID về cho Host biết
-                    });
+
+                    Send(new Packet { type = "ROOM_CREATED", payload = "Success", playerId = hostId });
                     break;
 
                 case "JOIN_ROOM":
-                    var joinData = JsonHelper.FromJson<HandshakeData>(packet.payload);
+                    var joinData = JsonConvert.DeserializeObject<HandshakeData>(packet.payload);
                     string roomIdToJoin = joinData.roomId;
                     _session.PlayerName = joinData.playerName;
+
                     if (Server.Rooms.TryGetValue(roomIdToJoin, out Room room))
                     {
-                        string clientId = _session.PlayerName + "_" + Guid.NewGuid().ToString().Substring(0, 6);
+                        string clientId = "Guest_" + Guid.NewGuid().ToString().Substring(0, 6);
                         _session.PlayerId = clientId;
                         room.Join(_session);
-                        Send(new Packet
-                        {
-                            type = "JOIN_SUCCESS",
-                            payload = "Success",
-                            playerId = clientId // <--- Gửi ID về cho Client biết
-                        });
+                        Send(new Packet { type = "JOIN_SUCCESS", payload = "Success", playerId = clientId });
                     }
                     else
                     {
-                        Send(new Packet { type = "ERROR", payload = "Không tìm thấy phòng!"  });
+                        Send(new Packet { type = "ERROR", payload = "Không tìm thấy phòng!" });
                     }
                     break;
-                case "CHAT_MESSAGE":
-                    if (_session.CurrentRoom != null)
-                    {
-                        // Gửi nội dung chat vào Room để xử lý
-                        _session.CurrentRoom.HandleChat(_session, packet.payload);
-                    }
-                    break;
-                case "HOST_ACTION":
 
+                case "CHAT_MESSAGE":
+                    if (_session.CurrentRoom != null) _session.CurrentRoom.HandleChat(_session, packet.payload);
+                    break;
+
+                case "HOST_ACTION":
                     HandleHostAction(packet.payload);
                     if (_session.CurrentRoom != null && _session.PlayerId == _session.CurrentRoom.HostId)
                     {
-                        if (packet.payload == "MUTE_CHAT")
-                        {
-                            _session.CurrentRoom.ToggleChat(true);
-                        }
-                        else if (packet.payload == "UNMUTE_CHAT")
-                        {
-                            _session.CurrentRoom.ToggleChat(false);
-                        }
+                        if (packet.payload == "MUTE_CHAT") _session.CurrentRoom.ToggleChat(true);
+                        else if (packet.payload == "UNMUTE_CHAT") _session.CurrentRoom.ToggleChat(false);
                     }
                     break;
+
                 case "CHECK_ROOM":
-                    // Client gửi lên chỉ để hỏi xem phòng có tồn tại không
-                    string roomIdToCheck = packet.payload; // Payload chính là mã phòng
-
+                    string roomIdToCheck = packet.payload;
                     bool exists = Server.Rooms.ContainsKey(roomIdToCheck);
-                    // Gửi trả lời về ngay
-                    Send(new Packet
-                    {
-                        type = "CHECK_ROOM_RESPONSE",
-                        payload = exists ? "FOUND" : "NOT_FOUND"
-
-                    });
-                    
+                    Send(new Packet { type = "CHECK_ROOM_RESPONSE", payload = exists ? "FOUND" : "NOT_FOUND" });
                     break;
+
                 default:
-                    if (_session.CurrentRoom != null)
-                        _session.CurrentRoom.HandlePacket(_session, packet);
+                    if (_session.CurrentRoom != null) _session.CurrentRoom.HandlePacket(_session, packet);
                     break;
-
             }
         }
+
         void HandleHostAction(string actionName)
         {
             if (actionName == "START_GAME" && _session.CurrentRoom != null)
             {
                 Console.WriteLine($"Host {_session.PlayerId} started game. Broadcasting OPEN_GATE...");
-                _session.CurrentRoom.Broadcast(new Packet
-                {
-                    type = "OPEN_GATE",
-                    payload = ""
-                });
+                _session.CurrentRoom.Broadcast(new Packet { type = "OPEN_GATE", payload = "" });
             }
         }
+
+        // Hàm này đáp ứng yêu cầu của Interface
         public void Send(Packet packet)
         {
             try
             {
-                string json = JsonHelper.ToJson(packet);
+                string json = JsonConvert.SerializeObject(packet);
                 byte[] buffer = Encoding.UTF8.GetBytes(json);
-
-                // Protocol: Length Prefix + Data
-                lock (_writer) // Prevent thread collision on write
+                lock (_writer)
                 {
                     _writer.Write(buffer.Length);
                     _writer.Write(buffer);
@@ -180,10 +151,7 @@ namespace GameServer
 
         private void Cleanup()
         {
-            if (_session.CurrentRoom != null)
-            {
-                _session.CurrentRoom.Leave(_session);
-            }
+            if (_session.CurrentRoom != null) _session.CurrentRoom.Leave(_session);
             _client.Close();
         }
     }
