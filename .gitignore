@@ -1,0 +1,32 @@
+# --- PHẦN CHO UNITY (CLIENT) ---
+Client/[Ll]ibrary/
+Client/[Tt]emp/
+Client/[Oo]bj/
+Client/[Bb]uild/
+Client/[Bb]uilds/
+Client/[Ll]ogs/
+Client/[Uu]ser[Ss]ettings/
+Client/MemoryCaptures/
+Client/*.csproj
+Client/*.unityproj
+Client/*.sln
+Client/*.suo
+Client/*.tmp
+Client/*.user
+Client/*.userprefs
+Client/*.pidb
+Client/*.booproj
+Client/*.svd
+Client/*.pdb
+Client/*.opendb
+Client/*.VC.db
+
+# --- PHẦN CHO C# SERVER & VS ---
+Server/bin/
+Server/obj/
+.vs/
+*.user
+*.suo
+*.userprefs
+*.DS_Store
+Thumbs.db
