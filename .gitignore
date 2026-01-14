@@ -30,3 +30,4 @@ Server/obj/
 *.userprefs
 *.DS_Store
 Thumbs.db
+*_clone_*/

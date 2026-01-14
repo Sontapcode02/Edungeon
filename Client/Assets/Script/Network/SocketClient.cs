@@ -169,7 +169,8 @@ public class SocketClient : MonoBehaviour
                     }
 
                     string json = Encoding.UTF8.GetString(buffer);
-                    Debug.Log($">>> [ReceiveLoop] JSON NHẬN ĐƯỢC: {json}"); // <--- QUAN TRỌNG: Dòng này phải hiện!
+                    
+                    
 
                     // 3. Giải mã (Deserialize)
                     Packet packet = JsonConvert.DeserializeObject<Packet>(json);
@@ -202,22 +203,30 @@ public class SocketClient : MonoBehaviour
 
     void Update()
     {
-        while (_packetQueue.TryDequeue(out Packet packet))
+        int processLimit = 20;
+        int processedCount = 0;
+        while (_packetQueue.Count > 0 && processedCount < processLimit)
         {
-            if (packet.type == "CHECK_ROOM_RESPONSE")
+            if (_packetQueue.TryDequeue(out Packet packet))
             {
-                Console.WriteLine(packet.type);
-                OnCheckRoomResult?.Invoke(packet.payload);
+                if (packet.type == "CHECK_ROOM_RESPONSE")
+                {
+                    Console.WriteLine(packet.type);
+                    OnCheckRoomResult?.Invoke(packet.payload);
+                }
+                OnPacketReceived?.Invoke(packet);
+                if (packet.type == "ROOM_CREATED")
+                {
+                    MyPlayerId = packet.playerId;
+                    Debug.Log($"✅ [HOST] Đã nhận danh tính từ Server: {MyPlayerId}");
+                    OnCreateRoomResult?.Invoke("SUCCESS");
+                }
+                else if (packet.type == "ERROR")
+                {
+                    OnCreateRoomResult?.Invoke(packet.payload);
+                }
             }
-            OnPacketReceived?.Invoke(packet);
-            if (packet.type == "ROOM_CREATED")
-            {
-                OnCreateRoomResult?.Invoke("SUCCESS");
-            }
-            else if (packet.type == "ERROR")
-            {
-                OnCreateRoomResult?.Invoke(packet.payload);
-            }
+            processedCount++;
         }
     }
 

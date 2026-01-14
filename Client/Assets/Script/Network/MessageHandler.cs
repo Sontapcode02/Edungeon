@@ -67,7 +67,7 @@ public class MessageHandler : MonoBehaviour
         }
         else
         {
-            // Nếu là Host -> Server đã biết lúc CREATE_ROOM rồi
+
             Debug.Log(">>> Tôi là Host, đang chờ nhận dữ liệu từ Server...");
         }
     }
@@ -100,6 +100,7 @@ public class MessageHandler : MonoBehaviour
 
     void HandlePacket(Packet packet)
     {
+        
         switch (packet.type)
         {
             case "START_GAME":
@@ -122,8 +123,12 @@ public class MessageHandler : MonoBehaviour
                 Debug.LogError("Lỗi từ Server: " + packet.payload);
                 BackToHome();
                 break;
-
+            
             case "MOVE":
+                if (packet.playerId == SocketClient.Instance.MyPlayerId)
+                {
+                    return;
+                }
                 UpdatePlayerPosition(packet);
                 break;
 
@@ -263,17 +268,37 @@ public class MessageHandler : MonoBehaviour
 
     void UpdatePlayerPosition(Packet packet)
     {
+        Debug.Log($"[DEBUG] Nhận gói MOVE từ ID: {packet.playerId}");
         var state = JsonConvert.DeserializeObject<PlayerState>(packet.payload);
 
+        // Trường hợp 1: Đã có nhân vật này trong danh sách -> Cập nhật
         if (otherPlayers.TryGetValue(packet.playerId, out PlayerController playerScript))
         {
-            if (playerScript.IsLocal) return;
+            if (playerScript.IsLocal) return; // Nếu là mình thì bỏ qua
 
-            // GỌI HÀM MỚI
+            // Gọi hàm cập nhật vị trí (nhớ là bên PlayerController phải dùng Lerp cho mượt nhé)
             playerScript.OnServerDataReceived(new Vector3(state.x, state.y, 0));
         }
+        // Trường hợp 2: Chưa có nhân vật này (do gói MOVE đến trước gói JOIN) -> Spawn luôn!
+        else
+        {
+            // Chỉ Spawn nếu đó KHÔNG phải là mình
+            if (packet.playerId != SocketClient.Instance.MyPlayerId)
+            {
+                Debug.Log($"[Fix] Nhận MOVE từ {packet.playerId} nhưng chưa thấy người. Đang Spawn gấp...");
+
+                // Spawn ngay tại vị trí mới nhận được
+                SpawnPlayer(packet.playerId, "Player", new Vector2(state.x, state.y));
+
+                // Sau khi spawn xong thì cập nhật vị trí lần nữa cho chắc
+                if (otherPlayers.TryGetValue(packet.playerId, out PlayerController newScript))
+                {
+                    newScript.OnServerDataReceived(new Vector3(state.x, state.y, 0));
+                }
+            }
+        }
     }
-    
+
     public void OnLeaveButtonClicked()
     {
         Debug.Log(">>> Bấm nút rời phòng!");

@@ -92,9 +92,34 @@ namespace GameServer
         {
             lock (_players)
             {
+                // --- DEBUG: Chỉ soi gói MOVE xem nó đi đâu về đâu ---
+                if (packet.type == "MOVE")
+                {
+                    Console.WriteLine($"[BROADCAST DEBUG] Đang phân phát gói MOVE từ {(exclude?.PlayerId ?? "Server")}");
+                    Console.WriteLine($"   - Tổng số người trong phòng: {_players.Count}");
+                }
+                // ---------------------------------------------------
+
                 foreach (var p in _players)
                 {
-                    if (p != exclude) p.Send(packet);
+                    if (p != exclude)
+                    {
+                        // Debug xem có thực sự gọi hàm Send cho Host không
+                        if (p.PlayerId.StartsWith("Host_") && packet.type == "MOVE")
+                        {
+                            Console.WriteLine($"   -> ✅ TÌM THẤY HOST ({p.PlayerId}). Đang gọi p.Send()...");
+                        }
+
+                        p.Send(packet);
+                    }
+                    else
+                    {
+                        // Debug xem ai bị bỏ qua (thường là người gửi)
+                        if (packet.type == "MOVE")
+                        {
+                            Console.WriteLine($"   -> ⛔ Bỏ qua (Exclude): {p.PlayerId}");
+                        }
+                    }
                 }
             }
         }

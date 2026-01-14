@@ -41,7 +41,7 @@ namespace GameServer
                     // *Lưu ý: Nếu nội dung câu hỏi có dấu phẩy thì cách split này sẽ lỗi. 
                     // Tốt nhất nên dùng dấu '|' như em khuyên, hoặc xử lý chuỗi kỹ hơn.
                     // Tạm thời em để split ',' để khớp với file cũ của đại ca.
-                    string[] parts = line.Split(',');
+                    string[] parts = line.Split('|');
 
                     if (parts.Length >= 6)
                     {

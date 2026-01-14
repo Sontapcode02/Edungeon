@@ -28,7 +28,7 @@ namespace GameServer
 
         public void Send(Packet packet)
         {
-            packet.playerId = PlayerId;
+        
             _connection?.Send(packet);
         }
 

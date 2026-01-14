@@ -29,7 +29,8 @@ public class PlayerController : MonoBehaviour
 
         if (rb == null)
         {
-            Debug.LogError($"[ERROR] Prefab '{gameObject.name}' không có Rigidbody2D! Hãy thêm vào prefab.");
+            Debug.LogError($"[BẮT QUẢ TANG] Thằng '{gameObject.name}' (Parent: {transform.parent?.name}) đang kêu gào vì thiếu Rigidbody2D!");
+            this.enabled = false;
         }
     }
 
@@ -37,6 +38,7 @@ public class PlayerController : MonoBehaviour
     {
         PlayerId = id;
         IsLocal = local;
+        Debug.Log($"[PLAYER] Init ID: {id} | IsLocal: {IsLocal}");
         serverSnapshots.Clear();
         serverSnapshots.Add(new PositionSnapshot(transform.position, Time.time));
 
@@ -66,7 +68,7 @@ public class PlayerController : MonoBehaviour
     public void OnServerDataReceived(Vector3 newPos)
     {
         if (IsLocal) return; // Local thì không nghe Server chỉ đạo vị trí (tránh giật)
-
+        Debug.Log($"[PLAYER] {PlayerId} nhận tọa độ mới: {newPos}");
         serverSnapshots.Add(new PositionSnapshot(newPos, Time.time));
 
         // Dọn dẹp snapshot cũ
@@ -201,11 +203,18 @@ public class PlayerController : MonoBehaviour
 
     void SendPosition()
     {
-        // Giới hạn tốc độ gửi gói tin (ví dụ 20 lần/giây = 0.05s)
+        // [QUAN TRỌNG] Thêm dòng này để chặn gửi nếu đứng im (tránh spam log do rơi tự do)
+        // Biến currentInput lấy từ hàm Update()
+        if (currentInput == Vector2.zero) return;
+
+        // Giới hạn tốc độ gửi (0.05s)
         if (Time.time - lastSendTime > 0.05f)
         {
             var posData = new { x = transform.position.x, y = transform.position.y };
             string payload = JsonConvert.SerializeObject(posData);
+
+            // --- THÊM LOG NÀY ĐỂ KIỂM TRA ---
+            Debug.Log($"[GUEST] 📤 Đang gửi MOVE lên Server! Payload: {payload}");
 
             SocketClient.Instance.Send(new Packet
             {
