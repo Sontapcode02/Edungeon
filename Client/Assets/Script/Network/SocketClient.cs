@@ -258,7 +258,6 @@ public class SocketClient : MonoBehaviour
                 }
             }
 
-            Debug.Log($"[Client >> Server] Gửi: {packet.type} | Payload: {packet.payload}");
         }
         catch (Exception e)
         {
@@ -348,11 +347,15 @@ public class SocketClient : MonoBehaviour
 
     public void SendAnswer(int questionId, int answerIndex)
     {
-        var answerData = new { questionId, answerIndex };
+        var data = new { questionId = questionId, answerIndex = answerIndex };
+        string json = JsonConvert.SerializeObject(data);
+
+        Debug.Log($">>> [NET] Đang gửi đáp án: Index {answerIndex} cho câu ID {questionId}");
+
         Send(new Packet
         {
-            type = "ANSWER",
-            payload = JsonConvert.SerializeObject(answerData)
+            type = "ANSWER", // Kiểm tra xem Server có đang đợi chữ "ANSWER" này không
+            payload = json
         });
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GameServer
 {
@@ -10,7 +11,10 @@ namespace GameServer
         public float LastX { get; set; }
         public float LastY { get; set; }
         public Room CurrentRoom { get; set; }
-        
+        public int CurrentQuestionIndex = 0; // Lưu câu hỏi hiện tại của Player này
+        public HashSet<int> CompletedMilestones = new HashSet<int>(); // Lưu ID các con quái đã vượt qua
+
+    
         // Tracking quiz progress
         public int CorrectAnswersCount { get; set; } = 0;
         public int TotalQuestionsAnswered { get; set; } = 0;
@@ -40,8 +44,6 @@ namespace GameServer
         }
     }
 
-    // If IClientConnection is missing, define a minimal interface as a placeholder
-    // Remove this if you already have the interface elsewhere in your project
     public interface IClientConnection
     {
         void Send(Packet packet);

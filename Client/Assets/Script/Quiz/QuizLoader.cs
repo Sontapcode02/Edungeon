@@ -5,9 +5,9 @@ using System.IO;
 public class QuizLoader : MonoBehaviour
 {
     // Hàm đọc file CSV thủ công (Thay thế CsvHelper)
-    public static List<Question> LoadCSV(string filePath)
+    public static List<QuestionData> LoadCSV(string filePath)
     {
-        List<Question> result = new List<Question>();
+        List<QuestionData> result = new List<QuestionData>();
 
         if (!File.Exists(filePath))
         {
@@ -32,9 +32,9 @@ public class QuizLoader : MonoBehaviour
             // Kiểm tra xem có đủ dữ liệu không (Câu hỏi + 4 đáp án + 1 đáp án đúng = 6 cột)
             if (parts.Length >= 6)
             {
-                Question q = new Question();
-                q.QuestionText = parts[0];
-                q.Answers = new string[]
+                QuestionData q = new QuestionData();
+                q.question = parts[0];
+                q.options = new List<string>
                 {
                     parts[1], parts[2], parts[3], parts[4]
                 };
@@ -42,10 +42,10 @@ public class QuizLoader : MonoBehaviour
                 // Parse số an toàn (tránh crash nếu nhập chữ vào ô số)
                 int correctIdx = 0;
                 int.TryParse(parts[5], out correctIdx);
-                q.CorrectIndex = correctIdx;
+                q.correctIndex = correctIdx;
 
                 // Mặc định 15s nếu không nhập cột thời gian
-                q.TimeLimit = 15;
+                q.timeLimit = 15;
 
                 result.Add(q);
             }

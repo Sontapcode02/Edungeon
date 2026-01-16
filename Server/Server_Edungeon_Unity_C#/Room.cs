@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json; // Đại ca nhớ cài NuGet package: Newtonsoft.Json
+using Newtonsoft.Json;
 
 namespace GameServer
 {
@@ -9,404 +8,258 @@ namespace GameServer
     {
         public string RoomId { get; private set; }
         public string HostId { get; private set; }
-        public string QuizFilePath { get; set; }
 
-        private List<PlayerSession> _players = new List<PlayerSession>();
-        // Lưu ý: Class Question và PlayerSession đại ca đã định nghĩa ở file khác
-        private List<Question> _questions;
-        private bool _isGameStarted = false;
-        public bool IsChatMuted = false;
+        // Dictionary lưu người chơi
+        public Dictionary<string, PlayerSession> Players = new Dictionary<string, PlayerSession>();
 
-        // Dictionary lưu câu hỏi hiện tại của mỗi player (khi gặp enemy)
-        private Dictionary<string, int> _playerCurrentQuestionId = new Dictionary<string, int>();
+        // Danh sách câu hỏi
+        public List<QuestionData> Questions { get; set; } = new List<QuestionData>();
 
-        public Room(string id, string hostId)
+        public bool IsChatMuted { get; private set; } = false;
+
+        public Room(string roomId, string hostId)
         {
-            RoomId = id;
+            RoomId = roomId;
             HostId = hostId;
-            Console.WriteLine($"[Room {RoomId}] Created by Host: {HostId}");
         }
 
-        public void Join(PlayerSession player)
+        // --- QUẢN LÝ CÂU HỎI ---
+        public QuestionData GetRandomQuestion()
         {
-            lock (_players)
+            if (Questions == null || Questions.Count == 0) return null;
+            Random rnd = new Random();
+            return Questions[rnd.Next(Questions.Count)];
+        }
+
+        public bool CheckAnswer(int questionId, int answerIndex)
+        {
+            var q = Questions.Find(x => x.id == questionId);
+            if (q == null) return false;
+            return q.correctIndex == answerIndex;
+        }
+        // -----------------------
+
+        public void Join(PlayerSession session)
+        {
+            if (!Players.ContainsKey(session.PlayerId))
             {
-                _players.Add(player);
-                player.CurrentRoom = this;
-                player.Score = 0;
-                player.CorrectAnswersCount = 0;
-                player.TotalQuestionsAnswered = 0;
-            }
+                Players.Add(session.PlayerId, session);
+                session.CurrentRoom = this;
 
-            Console.WriteLine($"[Room {RoomId}] Player {player.PlayerId} joined.");
-
-            var existingPlayers = _players
-                .Where(p => p != player)
-                .Select(p => new PlayerState
+                // --- [FIX LỖI JSON Ở ĐÂY] ---
+                // Thay vì gửi mỗi cái tên, ta gửi cả cục PlayerState (JSON)
+                PlayerState newState = new PlayerState
                 {
-                    playerId = p.PlayerId,
-                    playerName = p.PlayerName,
-                    score = p.Score,
-                    x = p.LastX,
-                    y = p.LastY
-                }).ToList();
+                    playerId = session.PlayerId,
+                    playerName = session.PlayerName,
+                    x = 0, // Vị trí mặc định
+                    y = 0,
+                    score = 0
+                };
 
-            player.Send(new Packet
-            {
-                type = "SYNC_PLAYERS",
-                payload = JsonHelper.ToJson(existingPlayers)
-            });
+                string jsonState = JsonConvert.SerializeObject(newState);
 
-            var newPlayerState = new PlayerState
-            {
-                playerId = player.PlayerId,
-                playerName = player.PlayerName,
-                x = 0,
-                y = 0
-            };
-
-            player.Send(new Packet { type = "ROOM_INFO", payload = HostId });
-            Broadcast(new Packet { type = "PLAYER_JOINED", payload = JsonHelper.ToJson(newPlayerState) }, null);
-        }
-
-        public void Leave(PlayerSession player)
-        {
-            lock (_players) _players.Remove(player);
-            Console.WriteLine($"[Room {RoomId}] Player {player.PlayerId} left.");
-
-            if (player.PlayerId == HostId)
-            {
-                Console.WriteLine($"[Room {RoomId}] Host left. Destroying room...");
-                Broadcast(new Packet { type = "ROOM_DESTROYED", payload = "Chủ phòng đã thoát!" });
-                QuestionManager.RemoveRoomQuizzes(RoomId);
-                // Giả sử Server.Rooms là ConcurrentDictionary
-                // Server.Rooms.TryRemove(RoomId, out _); 
-            }
-            else
-            {
-                Broadcast(new Packet { type = "PLAYER_LEFT", payload = player.PlayerId });
-            }
-        }
-
-        public void Broadcast(Packet packet, PlayerSession exclude = null)
-        {
-            lock (_players)
-            {
-                // --- DEBUG: Chỉ soi gói MOVE xem nó đi đâu về đâu ---
-                if (packet.type == "MOVE")
-                {
-                    Console.WriteLine($"[BROADCAST DEBUG] Đang phân phát gói MOVE từ {(exclude?.PlayerId ?? "Server")}");
-                    Console.WriteLine($"   - Tổng số người trong phòng: {_players.Count}");
-                }
-                // ---------------------------------------------------
-
-                foreach (var p in _players)
-                {
-                    if (p != exclude)
-                    {
-                        // Debug xem có thực sự gọi hàm Send cho Host không
-                        if (p.PlayerId.StartsWith("Host_") && packet.type == "MOVE")
-                        {
-                            Console.WriteLine($"   -> ✅ TÌM THẤY HOST ({p.PlayerId}). Đang gọi p.Send()...");
-                        }
-
-                        p.Send(packet);
-                    }
-                    else
-                    {
-                        // Debug xem ai bị bỏ qua (thường là người gửi)
-                        if (packet.type == "MOVE")
-                        {
-                            Console.WriteLine($"   -> ⛔ Bỏ qua (Exclude): {p.PlayerId}");
-                        }
-                    }
-                }
-            }
-        }
-
-        public void HandlePacket(PlayerSession sender, Packet packet)
-        {
-            packet.playerId = sender.PlayerId;
-
-            switch (packet.type)
-            {
-                case "MOVE":
-                    var moveData = JsonHelper.FromJson<PlayerState>(packet.payload);
-                    sender.LastX = moveData.x;
-                    sender.LastY = moveData.y;
-                    Broadcast(packet, sender);
-                    break;
-
-                case "ENEMY_ENCOUNTER":
-                    HandleEnemyEncounter(sender);
-                    break;
-
-                case "ANSWER":
-                    HandleAnswer(sender, packet.payload);
-                    break;
-
-                case "REACH_FINISH":
-                    HandleReachFinish(sender);
-                    break;
-
-                case "UPDATE_STATE":
-                    Broadcast(packet, sender);
-                    break;
-
-                case "CHAT":
-                    HandleChat(sender, packet.payload);
-                    break;
-
-                case "CHAT_MUTE":
-                    if (sender.PlayerId == HostId)
-                    {
-                        bool mute = packet.payload == "true";
-                        ToggleChat(mute);
-                    }
-                    break;
-
-                case "HOST_ACTION":
-                    if (sender.PlayerId == HostId)
-                    {
-                        HandleHostAction(packet.payload);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"[Cảnh báo] Player {sender.PlayerId} giả danh Host!");
-                    }
-                    break;
-            }
-        }
-
-        private void HandleEnemyEncounter(PlayerSession player)
-        {
-            Console.WriteLine($"[Room {RoomId}] Player {player.PlayerName} encountered an enemy!");
-
-            var questions = QuestionManager.GetRoomQuizzes(RoomId);
-            if (questions == null || questions.Count == 0)
-            {
-                player.Send(new Packet
-                {
-                    type = "QUIZ_ERROR",
-                    payload = "Không có câu hỏi trong phòng này!"
-                });
-                return;
-            }
-
-            var random = new Random();
-            var selectedQuestion = questions[random.Next(questions.Count)];
-
-            _playerCurrentQuestionId[player.PlayerId] = selectedQuestion.Id;
-
-            var questionPayload = new
-            {
-                id = selectedQuestion.Id,
-                text = selectedQuestion.QuestionText,
-                answers = selectedQuestion.Answers,
-                timeLimit = 15
-            };
-
-            player.Send(new Packet
-            {
-                type = "NEW_QUESTION",
-                payload = JsonHelper.ToJson(questionPayload)
-            });
-
-            Console.WriteLine($"[Room {RoomId}] Sent question {selectedQuestion.Id} to {player.PlayerName}");
-        }
-
-        private void HandleAnswer(PlayerSession player, string payload)
-        {
-            var data = JsonHelper.FromJson<AnswerPayload>(payload);
-
-            if (!_playerCurrentQuestionId.TryGetValue(player.PlayerId, out int questionId))
-            {
-                player.Send(new Packet { type = "ANSWER_RESULT", payload = "ERROR" });
-                return;
-            }
-
-            bool isCorrect = QuestionManager.CheckAnswer(RoomId, questionId, data.answerIndex);
-
-            player.TotalQuestionsAnswered++;
-
-            if (isCorrect)
-            {
-                player.CorrectAnswersCount++;
-                player.Score += 10;
-                player.Send(new Packet { type = "ANSWER_RESULT", payload = "CORRECT" });
-
-                Console.WriteLine($"[Room {RoomId}] {player.PlayerName} answered CORRECT! " +
-                    $"Progress: {player.CorrectAnswersCount}/{player.TotalQuestionsAnswered}");
-            }
-            else
-            {
-                player.Score = Math.Max(0, player.Score - 5);
-                player.Send(new Packet { type = "ANSWER_RESULT", payload = "WRONG" });
-
-                Console.WriteLine($"[Room {RoomId}] {player.PlayerName} answered WRONG! " +
-                    $"Progress: {player.CorrectAnswersCount}/{player.TotalQuestionsAnswered}");
-            }
-
-            _playerCurrentQuestionId.Remove(player.PlayerId);
-            BroadcastLeaderboard();
-        }
-
-        private void HandleReachFinish(PlayerSession player)
-        {
-            if (player.HasReachedFinish) return;
-
-            player.HasReachedFinish = true;
-            player.FinishTime = DateTime.Now;
-
-            Console.WriteLine($"[Room {RoomId}] {player.PlayerName} reached the finish line!");
-
-            Broadcast(new Packet
-            {
-                type = "PLAYER_FINISHED",
-                payload = JsonHelper.ToJson(new
-                {
-                    playerId = player.PlayerId,
-                    playerName = player.PlayerName,
-                    correctAnswers = player.CorrectAnswersCount,
-                    totalAnswered = player.TotalQuestionsAnswered,
-                    score = player.Score
-                })
-            });
-        }
-
-        private void HandleHostAction(string action)
-        {
-            Console.WriteLine($"[Room {RoomId}] Host action: {action}");
-
-            if (action == "START_GAME")
-            {
-                if (!_isGameStarted) StartGame();
-            }
-            else if (action == "END_GAME")
-            {
-                EndGame();
-            }
-        }
-
-        public void StartGame()
-        {
-            if (_isGameStarted) return;
-
-            _isGameStarted = true;
-
-            lock (_players)
-            {
-                foreach (var p in _players)
-                {
-                    p.CorrectAnswersCount = 0;
-                    p.TotalQuestionsAnswered = 0;
-                    p.HasReachedFinish = false;
-                }
-            }
-
-            Broadcast(new Packet { type = "GAME_STARTED", payload = "" });
-            Console.WriteLine($"[Room {RoomId}] Game started!");
-        }
-
-        private void EndGame()
-        {
-            _isGameStarted = false;
-            Console.WriteLine($"[Room {RoomId}] Game Over!");
-
-            lock (_players)
-            {
-                var finalLeaderboard = _players
-                    .OrderByDescending(p => p.Score)
-                    .ThenByDescending(p => p.CorrectAnswersCount)
-                    .Select((p, index) => new
-                    {
-                        rank = index + 1,
-                        playerId = p.PlayerId,
-                        playerName = p.PlayerName,
-                        score = p.Score,
-                        correctAnswers = p.CorrectAnswersCount,
-                        totalAnswered = p.TotalQuestionsAnswered,
-                        accuracy = p.TotalQuestionsAnswered > 0
-                            ? (p.CorrectAnswersCount * 100.0 / p.TotalQuestionsAnswered).ToString("F1") + "%"
-                            : "0%"
-                    })
-                    .ToList();
-
+                // Gửi cho tất cả người cũ biết có người mới vào
                 Broadcast(new Packet
                 {
-                    type = "FINAL_LEADERBOARD",
-                    payload = JsonHelper.ToJson(finalLeaderboard)
+                    type = "PLAYER_JOINED",
+                    payload = jsonState // Gửi JSON chuẩn
                 });
+
+                // Gửi danh sách người chơi hiện tại cho người mới
+                SyncPlayers(session); // Gửi riêng cho người mới
+
+                Console.WriteLine($"[Room {RoomId}] {session.PlayerName} joined.");
             }
+        }
+
+        public void Leave(PlayerSession session)
+        {
+            if (Players.ContainsKey(session.PlayerId))
+            {
+                Players.Remove(session.PlayerId);
+                session.CurrentRoom = null;
+
+                // Gửi ID người thoát để Client xóa nhân vật
+                Broadcast(new Packet
+                {
+                    type = "PLAYER_LEFT",
+                    payload = session.PlayerId // Client mong chờ ID (string), cái này OK
+                });
+
+                if (session.PlayerId == HostId)
+                {
+                    CloseRoom();
+                }
+            }
+        }
+
+        public void CloseRoom()
+        {
+            foreach (var player in Players.Values)
+            {
+                player.CurrentRoom = null;
+                player.Send(new Packet { type = "ROOM_DESTROYED", payload = "Host đã thoát." });
+            }
+            Players.Clear();
+            Questions.Clear();
+            Server.Rooms.TryRemove(RoomId, out _);
+            Console.WriteLine($"[Room {RoomId}] Closed.");
+        }
+
+        public void ToggleChat(bool isMuted)
+        {
+            IsChatMuted = isMuted;
+            string msg = isMuted ? "MUTED" : "UNMUTED";
+            Broadcast(new Packet { type = "CHAT_STATUS", payload = msg });
         }
 
         public void HandleChat(PlayerSession sender, string message)
         {
-            if (IsChatMuted && sender.PlayerId != HostId) return;
-
-            string nameColor = (sender.PlayerId == HostId) ? "red" : "blue";
-            string finalMessage = $"<color={nameColor}><b>{sender.PlayerName}</b></color>: {message}";
-
-            Broadcast(new Packet
+            if (IsChatMuted && sender.PlayerId != HostId)
             {
-                type = "CHAT_RECEIVE",
-                payload = finalMessage
-            });
+                sender.Send(new Packet { type = "ERROR", payload = "Chat đang bị khóa!" });
+                return;
+            }
+            string fullMsg = $"{sender.PlayerName}: {message}";
+            Broadcast(new Packet { type = "CHAT_RECEIVE", payload = fullMsg });
         }
 
-        public void ToggleChat(bool mute)
+        public void Broadcast(Packet packet)
         {
-            IsChatMuted = mute;
-            Broadcast(new Packet
+            foreach (var player in Players.Values)
             {
-                type = "CHAT_STATUS",
-                payload = IsChatMuted ? "MUTED" : "ACTIVE"
-            });
+                player.Send(packet);
+            }
         }
 
-        private void BroadcastLeaderboard()
+        public void HandlePacket(PlayerSession session, Packet packet)
         {
-            var stats = _players.Select(p => new
+            switch (packet.type)
             {
-                playerId = p.PlayerId,
-                playerName = p.PlayerName,
-                score = p.Score,
-                correctAnswers = p.CorrectAnswersCount,
-                totalAnswered = p.TotalQuestionsAnswered,
-                accuracy = p.TotalQuestionsAnswered > 0
-                    ? (p.CorrectAnswersCount * 100.0 / p.TotalQuestionsAnswered).ToString("F1") + "%"
-                    : "0%"
-            })
-            .OrderByDescending(x => x.score)
-            .ThenByDescending(x => x.correctAnswers)
-            .ToList();
+                case "MOVE":
+                    try { 
+                    // Broadcast vị trí JSON cho người khác
+                    Broadcast(new Packet
+                    {
+                        type = "MOVE",
+                        playerId = session.PlayerId,
+                        payload = packet.payload // Payload này từ Client gửi lên đã là JSON PlayerState rồi
+                    });
+                        } catch (Exception ex)
+                    {
+                        Console.WriteLine($"[Room {RoomId}] Lỗi xử lý MOVE: {ex.Message}");
+                    }
+                    break;
 
-            Broadcast(new Packet
+
+                case "REQUEST_QUESTION":
+                    try
+                    {
+                        string monsterId = packet.payload;
+                        if (session.CompletedMilestones.Contains(monsterId.GetHashCode())) // Ép về int để khớp với HashSet<int>
+                        {
+                            session.Send(new Packet { type = "ERROR", payload = "Quái này đại ca đã đánh bại rồi!" });
+                            return;
+                        }
+                        if (session.CurrentQuestionIndex < this.Questions.Count)
+                        {
+                            var question = this.Questions[session.CurrentQuestionIndex];
+                            session.Send(new Packet { type = "NEW_QUESTION", payload = JsonConvert.SerializeObject(question) });
+                        }
+                        else
+                        {
+                            session.Send(new Packet { type = "OUT_OF_QUESTIONS", payload = "Đại ca đã phá đảo tất cả câu hỏi!" });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Nếu lỗi xảy ra, in ra console thay vì để luồng xử lý bị chết
+                        Console.WriteLine($"❌ [CRITICAL] Lỗi REQUEST_QUESTION của {session.PlayerName}: {ex.Message}");
+                    }
+                    break;
+
+                case "ANSWER":
+                    try
+                    {
+                        var data = JsonConvert.DeserializeObject<dynamic>(packet.payload);
+                        int selectedIndex = (int)data.answerIndex;
+                        string mId = (string)data.monsterId;
+
+                        var currentQ = this.Questions[session.CurrentQuestionIndex];
+
+                        // --- DÙ ĐÚNG HAY SAI CŨNG LƯU MILESTONE ---
+                        session.CompletedMilestones.Add(mId.GetHashCode());
+                        session.CurrentQuestionIndex++; // Tăng index để lần sau ra câu tiếp theo
+
+                        if (selectedIndex == currentQ.correctIndex)
+                        {
+                            session.Score += 10;
+                            session.Send(new Packet { type = "ANSWER_RESULT", payload = "CHÍNH XÁC!" });
+
+                        }
+                        else
+                        {
+                            session.Send(new Packet { type = "ANSWER_RESULT", payload = "SAI RỒI!" });
+                            // Vẫn gửi gói tin này để Client biết mà làm mờ con quái
+                        }
+                        BroadcastLeaderboard();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"❌ Lỗi ANSWER: {ex.Message}");
+                    }
+                    break;
+            }
+        }
+
+        public void BroadcastLeaderboard()
+        {
+            // Tạo danh sách điểm mới từ tất cả Player trong phòng
+            List<PlayerProgress> progressList = new List<PlayerProgress>();
+
+            foreach (var p in Players.Values) // _players là danh sách session trong phòng
             {
-                type = "LEADERBOARD_UPDATE",
-                payload = JsonHelper.ToJson(stats)
-            });
-        }
-    }
+                if (p.PlayerId == HostId) continue;
+                // Tính % hoàn thành: (câu hiện tại / tổng số câu) * 100
+                float percent = (float)p.CurrentQuestionIndex / Questions.Count * 100f;
 
-    public class AnswerPayload
-    {
-        public int questionId;
-        public int answerIndex;
-    }
+                progressList.Add(new PlayerProgress
+                {
+                    playerId = p.PlayerId,
+                    playerName = p.PlayerName,
+                    score = p.Score,
+                    progressPercentage = percent,
+                    isAlive = true
+                });
+            }
 
-    // EM ĐÃ THÊM CLASS NÀY VÀO ĐÂY ĐỂ FIX LỖI "JsonHelper does not exist"
-    // Nếu đại ca đã có file JsonHelper.cs riêng thì xoá đoạn class này đi nhé.
-    public static class JsonHelper
-    {
-        public static string ToJson(object obj)
-        {
-            return JsonConvert.SerializeObject(obj);
+            string json = JsonConvert.SerializeObject(progressList);
+            Broadcast(new Packet { type = "PROGRESS_UPDATE", payload = json });
         }
 
-        public static T FromJson<T>(string json)
+        // --- [FIX LỖI JSON Ở ĐÂY] ---
+        // Hàm đồng bộ danh sách người chơi
+        private void SyncPlayers(PlayerSession newSession)
         {
-            return JsonConvert.DeserializeObject<T>(json);
+            // Tạo danh sách các PlayerState
+            List<PlayerState> states = new List<PlayerState>();
+
+            foreach (var p in Players.Values)
+            {
+                states.Add(new PlayerState
+                {
+                    playerId = p.PlayerId,
+                    playerName = p.PlayerName,
+                    x = 0,
+                    y = 0
+                });
+            }
+
+            string jsonList = JsonConvert.SerializeObject(states);
+
+            // Gửi riêng cho người mới vào
+            newSession.Send(new Packet { type = "SYNC_PLAYERS", payload = jsonList });
         }
     }
 }

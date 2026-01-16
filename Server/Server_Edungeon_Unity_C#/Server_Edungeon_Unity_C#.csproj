@@ -52,7 +52,6 @@
     <Compile Include="PlayerSession.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuestionManager.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="Server.cs" />
   </ItemGroup>

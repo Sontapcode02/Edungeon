@@ -30,7 +30,7 @@ public class QuizManager : MonoBehaviour
         {
             if (string.IsNullOrWhiteSpace(lines[i])) continue;
 
-            string[] parts = lines[i].Split('|');
+            string[] parts = lines[i].Split(',');
             if (parts.Length < 6) continue;
 
             QuizData quiz = new QuizData

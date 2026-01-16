@@ -2,13 +2,11 @@
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using System.Collections.Generic; // Thêm cái này để dùng List
 using Newtonsoft.Json;
 
 namespace GameServer
 {
-    // --- XÓA CÁI INTERFACE IClientConnection Ở ĐÂY ĐI NHÉ (VÌ NÓ CÓ CHỖ KHÁC RỒI) ---
-
-    // Giữ nguyên cái ": IClientConnection" này để nó biết là phải tuân thủ
     public class ClientHandler : IClientConnection
     {
         private TcpClient _client;
@@ -24,7 +22,6 @@ namespace GameServer
             _reader = new BinaryReader(_stream);
             _writer = new BinaryWriter(_stream);
 
-            // Dòng này giờ sẽ OK
             _session = new PlayerSession(string.Empty, string.Empty, this);
         }
 
@@ -71,6 +68,32 @@ namespace GameServer
                     }
 
                     Room newRoom = new Room(newRoomId, _session.PlayerId);
+
+                    // --- [MỚI] NHẬN BỘ CÂU HỎI TỪ CLIENT GỬI LÊN ---
+                    if (!string.IsNullOrEmpty(createData.questionsJson))
+                    {
+                        try
+                        {
+                            // Giải mã JSON thành List câu hỏi
+                            var clientQuestions = JsonConvert.DeserializeObject<List<QuestionData>>(createData.questionsJson);
+
+                            // Gán vào phòng (Giả sử class Room có biến Questions public)
+                            newRoom.Questions = clientQuestions;
+
+                            Console.WriteLine($"✅ [ROOM {newRoomId}] Đã nhận {clientQuestions.Count} câu hỏi từ Host.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"❌ [ERROR] Lỗi đọc câu hỏi từ Host: {ex.Message}");
+                            // Nếu lỗi thì có thể thêm vài câu mặc định ở đây để chống crash
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"⚠️ [ROOM {newRoomId}] Host không gửi câu hỏi nào.");
+                    }
+                    // ------------------------------------------------
+
                     Server.Rooms.TryAdd(newRoomId, newRoom);
                     newRoom.Join(_session);
 
@@ -129,7 +152,6 @@ namespace GameServer
             }
         }
 
-        // Hàm này đáp ứng yêu cầu của Interface
         public void Send(Packet packet)
         {
             try

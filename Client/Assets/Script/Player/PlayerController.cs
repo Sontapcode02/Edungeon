@@ -1,268 +1,239 @@
-﻿using UnityEngine;
+﻿using Cinemachine;
 using Newtonsoft.Json;
-using Cinemachine;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    // Singleton để truy cập nhanh từ các script khác (như MessageHandler)
+    public static PlayerController LocalInstance;
+    private HashSet<string> localFinishedMonsters = new HashSet<string>();
+    [Header("Identity")]
     public string PlayerId;
     public bool IsLocal = false;
 
     [Header("Settings")]
     public float moveSpeed = 5f;
+    public float networkSendInterval = 0.1f; // Tối ưu gửi 10 gói/giây
 
-    [Header("Network Smoothing")]
+    [Header("State")]
+    public string currentMonsterId; // Lưu ID/Tên con quái đang đụng độ
+    private bool isProcessingCollision = false;
+
+    [Header("Networking Smoothing")]
     private List<PositionSnapshot> serverSnapshots = new List<PositionSnapshot>();
 
     private Animator anim;
     private Rigidbody2D rb;
     private Vector3 lastPos;
     private float lastSendTime;
-
-    // Biến lưu input để dùng giữa Update và FixedUpdate
     private Vector2 currentInput;
 
     void Awake()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-
-        if (rb == null)
-        {
-            Debug.LogError($"[BẮT QUẢ TANG] Thằng '{gameObject.name}' (Parent: {transform.parent?.name}) đang kêu gào vì thiếu Rigidbody2D!");
-            this.enabled = false;
-        }
     }
 
+    /// <summary>
+    /// Khởi tạo nhân vật (Local hoặc Remote)
+    /// </summary>
     public void Initialize(string id, bool local)
     {
         PlayerId = id;
         IsLocal = local;
-        Debug.Log($"[PLAYER] Init ID: {id} | IsLocal: {IsLocal}");
-        serverSnapshots.Clear();
-        serverSnapshots.Add(new PositionSnapshot(transform.position, Time.time));
-
-        lastPos = transform.position;
 
         if (IsLocal)
         {
-            // --- SETUP CHO LOCAL PLAYER ---
-            rb.bodyType = RigidbodyType2D.Dynamic; // Để va chạm vật lý
+            LocalInstance = this;
+            rb.bodyType = RigidbodyType2D.Dynamic; // Local dùng vật lý đầy đủ
 
+            // Setup Camera
             var vcam = FindObjectOfType<CinemachineVirtualCamera>();
-            if (vcam != null)
-            {
-                vcam.Follow = transform;
-                Debug.Log("Cinemachine đã nhận mục tiêu: " + id);
-            }
+            if (vcam != null) vcam.Follow = transform;
+
+            Debug.Log($"<color=green>[Local Player]</color> ID: {id} đã sẵn sàng.");
         }
         else
         {
-            // --- SETUP CHO REMOTE PLAYER ---
-            // Quan trọng: Biến thành Kinematic để không bị vật lý đẩy lung tung
-            rb.bodyType = RigidbodyType2D.Kinematic;
-            rb.velocity = Vector2.zero;
+            rb.bodyType = RigidbodyType2D.Kinematic; // Remote chỉ nhận tọa độ
+            serverSnapshots.Clear();
+            serverSnapshots.Add(new PositionSnapshot(transform.position, Time.time));
         }
-    }
 
-    public void OnServerDataReceived(Vector3 newPos)
-    {
-        if (IsLocal) return; // Local thì không nghe Server chỉ đạo vị trí (tránh giật)
-        Debug.Log($"[PLAYER] {PlayerId} nhận tọa độ mới: {newPos}");
-        serverSnapshots.Add(new PositionSnapshot(newPos, Time.time));
-
-        // Dọn dẹp snapshot cũ
-        if (serverSnapshots.Count > 20)
-        {
-            serverSnapshots.RemoveAt(0);
-        }
+        lastPos = transform.position;
     }
 
     void Update()
     {
-        // 1. Xử lý Logic từng frame
         if (IsLocal)
         {
-            // Nếu là mình: Chỉ đọc Input (để dành cho FixedUpdate xử lý vật lý)
+            // 1. Đọc Input
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
             currentInput = new Vector2(h, v).normalized;
         }
         else
         {
-            // Nếu là người khác: Tính toán vị trí mượt (Interpolation)
+            // 2. Nội suy vị trí cho người chơi khác
             InterpolateMovement();
         }
 
-        // 2. Xử lý Animation (chung cho cả 2)
+        // 3. Xử lý Animation cho tất cả
         UpdateAnimation();
     }
 
     void FixedUpdate()
     {
-        // Logic vật lý chỉ chạy cho Local Player
         if (IsLocal)
         {
             MoveLocalPlayer();
         }
     }
 
-    // --- LOGIC DI CHUYỂN LOCAL ---
+    // --- DI CHUYỂN BẢN THÂN ---
     void MoveLocalPlayer()
     {
-        // Di chuyển bằng Rigidbody
         rb.MovePosition(rb.position + currentInput * moveSpeed * Time.fixedDeltaTime);
 
-        // Gửi vị trí lên Server (Chỉ gửi khi có di chuyển hoặc vừa dừng lại)
-        // Thêm điều kiện: Nếu input khác 0 hoặc (input = 0 nhưng frame trước vừa di chuyển)
-        if (currentInput != Vector2.zero || (Time.time - lastSendTime > 0.1f))
+        // Gửi tọa độ lên Server theo chu kỳ
+        if (Time.time - lastSendTime > networkSendInterval)
         {
-            SendPosition();
-        }
-    }
-
-    // --- LOGIC DI CHUYỂN REMOTE (MƯỢT) ---
-    void InterpolateMovement()
-    {
-        float renderTime = Time.time - 0.1f; // Độ trễ giả lập 100ms để mượt
-
-        if (serverSnapshots.Count >= 2)
-        {
-            PositionSnapshot snapshotA = serverSnapshots[0];
-            PositionSnapshot snapshotB = serverSnapshots[0];
-
-            // Tìm 2 điểm bao quanh thời gian renderTime
-            for (int i = serverSnapshots.Count - 1; i >= 1; i--)
+            if (currentInput != Vector2.zero || Vector3.Distance(transform.position, lastPos) > 0.01f)
             {
-                if (serverSnapshots[i].timestamp <= renderTime)
-                {
-                    snapshotA = serverSnapshots[i];
-                    if (i + 1 < serverSnapshots.Count)
-                        snapshotB = serverSnapshots[i + 1];
-                    else
-                        snapshotB = serverSnapshots[i];
-                    break;
-                }
+                SendPosition();
+                lastPos = transform.position;
             }
-
-            float timeInterval = snapshotB.timestamp - snapshotA.timestamp;
-            if (timeInterval > 0.0001f)
-            {
-                float t = (renderTime - snapshotA.timestamp) / timeInterval;
-                transform.position = Vector3.Lerp(snapshotA.position, snapshotB.position, t);
-            }
-            else
-            {
-                transform.position = snapshotB.position;
-            }
-        }
-        else if (serverSnapshots.Count == 1)
-        {
-            transform.position = Vector3.Lerp(transform.position, serverSnapshots[0].position, Time.deltaTime * 10f);
-        }
-    }
-
-    void UpdateAnimation()
-    {
-        if (anim == null) return;
-
-        float moveAmount = 0;
-        Vector2 dir = Vector2.zero;
-
-        if (IsLocal)
-        {
-            if (currentInput.sqrMagnitude > 0.01f)
-            {
-                moveAmount = 1f;
-                dir = currentInput;
-            }
-        }
-        else
-        {
-            // Tính toán dựa trên khoảng cách thực tế di chuyển được
-            float dist = Vector3.Distance(transform.position, lastPos);
-            if (dist > 0.001f) // Giảm ngưỡng xuống tí cho nhạy
-            {
-                moveAmount = 1f; // Chỉ cần có di chuyển là chạy
-                dir = (transform.position - lastPos).normalized;
-            }
-            lastPos = transform.position;
-        }
-
-        if (moveAmount > 0.01f)
-        {
-            anim.SetFloat("InputX", dir.x);
-            anim.SetFloat("InputY", dir.y);
-            anim.speed = 1f; // Chạy animation
-        }
-        else
-        {
-            anim.speed = 0f; // Dừng animation (đứng yên frame cuối)
         }
     }
 
     void SendPosition()
     {
-        // [QUAN TRỌNG] Thêm dòng này để chặn gửi nếu đứng im (tránh spam log do rơi tự do)
-        // Biến currentInput lấy từ hàm Update()
-        if (currentInput == Vector2.zero) return;
-
-        // Giới hạn tốc độ gửi (0.05s)
-        if (Time.time - lastSendTime > 0.05f)
+        var posData = new { x = transform.position.x, y = transform.position.y };
+        SocketClient.Instance.Send(new Packet
         {
-            var posData = new { x = transform.position.x, y = transform.position.y };
-            string payload = JsonConvert.SerializeObject(posData);
+            type = "MOVE",
+            payload = JsonConvert.SerializeObject(posData)
+        });
+        lastSendTime = Time.time;
+    }
 
-            // --- THÊM LOG NÀY ĐỂ KIỂM TRA ---
-            Debug.Log($"[GUEST] 📤 Đang gửi MOVE lên Server! Payload: {payload}");
+    // --- NỘI SUY NGƯỜI CHƠI KHÁC ---
+    public void OnServerDataReceived(Vector3 newPos)
+    {
+        if (IsLocal) return;
+        serverSnapshots.Add(new PositionSnapshot(newPos, Time.time));
+        if (serverSnapshots.Count > 10) serverSnapshots.RemoveAt(0);
+    }
 
-            SocketClient.Instance.Send(new Packet
+    void InterpolateMovement()
+    {
+        float renderTime = Time.time - networkSendInterval;
+        if (serverSnapshots.Count >= 2)
+        {
+            PositionSnapshot a = serverSnapshots[0];
+            PositionSnapshot b = serverSnapshots[0];
+
+            for (int i = serverSnapshots.Count - 1; i >= 1; i--)
             {
-                type = "MOVE",
-                payload = payload
-            });
-            lastSendTime = Time.time;
+                if (serverSnapshots[i].timestamp <= renderTime)
+                {
+                    a = serverSnapshots[i];
+                    b = (i + 1 < serverSnapshots.Count) ? serverSnapshots[i + 1] : serverSnapshots[i];
+                    break;
+                }
+            }
+
+            float t = (renderTime - a.timestamp) / (b.timestamp - a.timestamp);
+            if (float.IsNaN(t) || float.IsInfinity(t)) t = 1;
+            transform.position = Vector3.Lerp(a.position, b.position, t);
         }
     }
 
-    // --- XỬ LÝ VA CHẠM ---
+    // --- ANIMATION ---
+    void UpdateAnimation()
+    {
+        if (anim == null) return;
+
+        Vector2 moveDir = Vector2.zero;
+        if (IsLocal) moveDir = currentInput;
+        else
+        {
+            moveDir = (transform.position - lastPos);
+            lastPos = transform.position;
+        }
+
+        if (moveDir.sqrMagnitude > 0.001f)
+        {
+            anim.SetFloat("InputX", moveDir.x);
+            anim.SetFloat("InputY", moveDir.y);
+            anim.speed = 1f;
+        }
+        else
+        {
+            anim.speed = 0f; // Dừng animation khi đứng im
+        }
+    }
+
+    // --- VA CHẠM QUÁI ---
     void OnTriggerEnter2D(Collider2D collision)
     {
-        // Chỉ Local Player mới được quyền báo cáo va chạm lên Server
-        if (!IsLocal) return;
+        if (!IsLocal || isProcessingCollision) return;
 
         if (collision.CompareTag("Enemy"))
         {
-            Debug.Log("Đụng trúng địch!");
-            SocketClient.Instance.Send(new Packet
-            {
-                type = "ENEMY_ENCOUNTER",
-                payload = ""
-            });
-        }
+            string mId = collision.gameObject.name;
 
-        if (collision.CompareTag("Finish"))
-        {
-            Debug.Log("Về đích!");
+            // KIỂM TRA: Nếu con quái này mình làm xong rồi thì thôi, không xin câu hỏi nữa
+            if (localFinishedMonsters.Contains(mId))
+            {
+                Debug.Log($"<color=cyan>Đại ca ơi, con {mId} này mình làm rồi, đi tiếp thôi!</color>");
+                return;
+            }
+
+            isProcessingCollision = true;
+            currentMonsterId = mId;
+
             SocketClient.Instance.Send(new Packet
             {
-                type = "REACH_FINISH",
-                payload = ""
+                type = "REQUEST_QUESTION",
+                payload = currentMonsterId
             });
+
+            StartCoroutine(ResetCollisionFlag(1.5f));
         }
+    }
+    public void MarkMonsterAsFinished(string monsterName)
+    {
+        if (!localFinishedMonsters.Contains(monsterName))
+        {
+            localFinishedMonsters.Add(monsterName);
+
+            // HIỆU ỨNG: Làm mờ con quái đó đi (Chỉ máy đại ca thấy mờ)
+            GameObject monster = GameObject.Find(monsterName);
+            if (monster != null)
+            {
+                var renderer = monster.GetComponent<SpriteRenderer>();
+                if (renderer != null)
+                {
+                    renderer.color = new Color(0.5f, 0.5f, 0.5f, 0.5f); // Biến thành bóng ma
+                }
+            }
+        }
+    }
+
+    IEnumerator ResetCollisionFlag(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        isProcessingCollision = false;
     }
 }
 
-// Struct dữ liệu snapshot
 [System.Serializable]
 public struct PositionSnapshot
 {
     public Vector3 position;
     public float timestamp;
-
-    public PositionSnapshot(Vector3 pos, float time)
-    {
-        position = pos;
-        timestamp = time;
-    }
+    public PositionSnapshot(Vector3 pos, float time) { position = pos; timestamp = time; }
 }

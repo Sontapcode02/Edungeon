@@ -108,4 +108,5 @@ public class EnemyPatrol : MonoBehaviour
         scale.x = isFlippedLeft ? -Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
         transform.localScale = scale;
     }
+    
 }
