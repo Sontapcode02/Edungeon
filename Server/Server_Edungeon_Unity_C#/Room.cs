@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Timers;
 
 namespace GameServer
 {
@@ -16,7 +19,9 @@ namespace GameServer
         public List<QuestionData> Questions { get; set; } = new List<QuestionData>();
 
         public bool IsChatMuted { get; private set; } = false;
-
+        public DateTime StartTime { get; set; } // Thời điểm Host bấm Start
+        public bool IsGameStarted { get; set; } = false;
+        private DateTime? pauseStartTime;
         public Room(string roomId, string hostId)
         {
             RoomId = roomId;
@@ -210,19 +215,96 @@ namespace GameServer
                         Console.WriteLine($"❌ Lỗi ANSWER: {ex.Message}");
                     }
                     break;
-            }
+                case "REACHED_FINISH":
+                    if (!session.HasReachedFinish)
+                    {
+                        session.HasReachedFinish = true;
+                        TimeSpan elapsed = DateTime.Now - this.StartTime;
+                        session.FinishTime = (float)elapsed.TotalSeconds;
+
+                        Console.WriteLine($"[FINISH] {session.PlayerName} về đích: {session.FinishTime:F2}s");
+
+                        // 1. Cập nhật Leaderboard ngay lập tức
+                        BroadcastLeaderboard();
+
+                        // 2. Kiểm tra xem tất cả các Player (không tính Host) đã về đích hết chưa
+                        bool allFinished = Players.Values
+                            .Where(p => p.PlayerId != HostId)
+                            .All(p => p.HasReachedFinish);
+
+                        if (allFinished)
+                        {
+                            Console.WriteLine("🏁 Tất cả đã về đích! Đang gửi bảng tổng kết...");
+                            SendFinalSummary();
+                        }
+                    }
+                    break;
+
+
+                case "PAUSE_GAME":
+                    pauseStartTime = DateTime.Now;
+                    Broadcast(new Packet { type = "GAME_PAUSED", payload = "Trận đấu tạm dừng!" });
+                    break;
+
+                case "RESUME_GAME":
+                    if (pauseStartTime.HasValue)
+                     {
+                        TimeSpan pauseDuration = DateTime.Now - pauseStartTime.Value;
+                        this.StartTime = this.StartTime.Add(pauseDuration);
+                        pauseStartTime = null; // Reset lại
+                     }
+                    Broadcast(new Packet { type = "GAME_RESUMED", payload = "Tiếp tục đua nào!" });
+                    break;
+               }
         }
 
+        private void SendFinalSummary()
+        {
+            // Sắp xếp: Score Cao -> Time Thấp
+            var finalData = Players.Values
+                .Where(p => p.PlayerId != HostId)
+                .OrderByDescending(p => p.Score)
+                .ThenBy(p => p.FinishTime)
+                .Select(p => new {
+                    name = p.PlayerName,
+                    score = p.Score,
+                    time = p.FinishTime
+                }).ToList();
+
+            string json = JsonConvert.SerializeObject(finalData);
+            Broadcast(new Packet { type = "GAME_OVER_SUMMARY", payload = json });
+
+            // 3. Đợi 10 giây rồi đá người chơi ra (trừ Host)
+            Task.Delay(10000).ContinueWith(t => KickPlayersToHome());
+        }
+
+        private void KickPlayersToHome()
+        {
+            // Copy danh sách ra một mảng tạm để tránh lỗi "Collection was modified"
+            var playersToKick = Players.Values.Where(p => p.PlayerId != HostId).ToList();
+
+            foreach (var player in playersToKick)
+            {
+                player.Send(new Packet { type = "RETURN_TO_HOME", payload = "Game kết thúc!" });
+                // Không nên gọi Leave(player) ở đây ngay, hãy để Client tự thoát khi nhận lệnh
+            }
+            Console.WriteLine("🔔 Đã đá tất cả người chơi về Home (Trừ Host).");
+        }
         public void BroadcastLeaderboard()
         {
-            // Tạo danh sách điểm mới từ tất cả Player trong phòng
+            // Sắp xếp danh sách người chơi (loại bỏ Host)
+            var rankedPlayers = Players.Values
+                .Where(p => p.PlayerId != HostId)
+                .OrderByDescending(p => p.Score)        // 1. Ưu tiên Score cao
+                .ThenBy(p => p.FinishTime)              // 2. Bằng Score thì ưu tiên thời gian ít (nhanh hơn)
+                .ToList();
+
             List<PlayerProgress> progressList = new List<PlayerProgress>();
 
-            foreach (var p in Players.Values) // _players là danh sách session trong phòng
+            for (int i = 0; i < rankedPlayers.Count; i++)
             {
-                if (p.PlayerId == HostId) continue;
-                // Tính % hoàn thành: (câu hiện tại / tổng số câu) * 100
-                float percent = (float)p.CurrentQuestionIndex / Questions.Count * 100f;
+                var p = rankedPlayers[i];
+                float percent = (Questions.Count > 0) ? (float)p.CurrentQuestionIndex / Questions.Count * 100f : 0;
 
                 progressList.Add(new PlayerProgress
                 {
@@ -230,7 +312,8 @@ namespace GameServer
                     playerName = p.PlayerName,
                     score = p.Score,
                     progressPercentage = percent,
-                    isAlive = true
+                    // Đại ca có thể dùng isAlive làm cờ báo "Đã về đích" để UI đổi màu
+                    isAlive = !p.HasReachedFinish
                 });
             }
 

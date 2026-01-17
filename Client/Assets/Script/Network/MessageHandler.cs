@@ -1,8 +1,9 @@
-﻿using UnityEngine;
-using Newtonsoft.Json;
-using UnityEngine.SceneManagement;
-using TMPro;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 
 public class MessageHandler : MonoBehaviour
 {
@@ -139,12 +140,58 @@ public class MessageHandler : MonoBehaviour
             case "START_GAME":
                 Debug.Log("Game Start!");
                 break;
+            case "GAME_PAUSED":
+                Debug.Log("<color=yellow>⚠️ TRẬN ĐẤU TẠM DỪNG!</color>");
+
+                // 1. Khóa di chuyển của đại ca
+                if (PlayerController.LocalInstance != null)
+                    PlayerController.LocalInstance.isPaused = true;
+
+                // 2. Hiện thông báo UI (Nếu đại ca có bảng Popup)
+                string pauseMsg = packet.payload; // "Trận đấu tạm dừng!"
+                if (NotificationUI.Instance != null)
+                    NotificationUI.Instance.ShowMessage(pauseMsg, false); // false = không tự tắt
+                break;
+
+            case "GAME_RESUMED":
+                Debug.Log("<color=green>▶️ TIẾP TỤC ĐUA!</color>");
+
+                // 1. Mở khóa di chuyển
+                if (PlayerController.LocalInstance != null)
+                    PlayerController.LocalInstance.isPaused = false;
+
+                // 2. Tắt thông báo UI
+                if (NotificationUI.Instance != null)
+                    NotificationUI.Instance.HideMessage();
+                break;
 
             case "OPEN_GATE":
-                if (lobbyGate != null)
+                Debug.Log("<color=cyan>🔔 Game sắp bắt đầu! Chuẩn bị đếm ngược...</color>");
+                if (enemyContainer != null)
                 {
-                    lobbyGate.SetActive(false);
-                    if (enemyContainer) enemyContainer.SetActive(true);
+                    enemyContainer.SetActive(true);
+                }
+                // 1. Đảm bảo nhân vật đang bị khóa (isPaused = true)
+                if (PlayerController.LocalInstance != null)
+                    PlayerController.LocalInstance.isPaused = true;
+
+                // 2. Bắt đầu đếm ngược 3 giây
+                if (NotificationUI.Instance != null)
+                {
+                    NotificationUI.Instance.StartCountdown(3, () => {
+                        if (lobbyGate != null)
+                        {
+                            lobbyGate.SetActive(false); // Làm cái cổng biến mất
+                                                         // Hoặc nếu muốn chuyên nghiệp hơn, đại ca dùng:
+                                                         // gateObject.GetComponent<Collider2D>().enabled = false; 
+                            Debug.Log("<color=yellow>🚪 CỔNG ĐÃ MỞ!</color>");
+                        }
+                        // 3. Khi đếm xong (onFinished), mới cho phép di chuyển
+                        if (PlayerController.LocalInstance != null)
+                            PlayerController.LocalInstance.isPaused = false;
+
+                        Debug.Log("<color=green>🔥 XUẤT PHÁT!</color>");
+                    });
                 }
                 break;
 
@@ -269,6 +316,19 @@ public class MessageHandler : MonoBehaviour
 
             case "GAME_COMPLETED":
                 SceneManager.LoadScene("GameEnd");
+                break;
+            case "GAME_OVER_SUMMARY":
+                // packet.payload lúc này là JSON chứa list {name, score, time}
+                if (SummaryUI.Instance != null)
+                {
+                    SummaryUI.Instance.DisplaySummary(packet.payload);
+                }
+                break;
+
+            case "RETURN_TO_HOME":
+                Debug.Log("Game kết thúc, quay về màn hình chính...");
+                // Chuyển cảnh về Home
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Home");
                 break;
         }
     }

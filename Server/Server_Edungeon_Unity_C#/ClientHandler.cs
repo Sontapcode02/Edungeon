@@ -14,7 +14,7 @@ namespace GameServer
         private BinaryReader _reader;
         private BinaryWriter _writer;
         private PlayerSession _session;
-
+        public DateTime StartTime { get; private set; }
         public ClientHandler(TcpClient client)
         {
             _client = client;
@@ -148,6 +148,11 @@ namespace GameServer
             if (actionName == "START_GAME" && _session.CurrentRoom != null)
             {
                 Console.WriteLine($"Host {_session.PlayerId} started game. Broadcasting OPEN_GATE...");
+
+                // Gán thời gian bắt đầu vào Room để mọi Player dùng chung mốc này
+                _session.CurrentRoom.StartTime = DateTime.Now;
+                _session.CurrentRoom.IsGameStarted = true;
+
                 _session.CurrentRoom.Broadcast(new Packet { type = "OPEN_GATE", payload = "" });
             }
         }

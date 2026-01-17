@@ -13,13 +13,14 @@ namespace GameServer
         public Room CurrentRoom { get; set; }
         public int CurrentQuestionIndex = 0; // Lưu câu hỏi hiện tại của Player này
         public HashSet<int> CompletedMilestones = new HashSet<int>(); // Lưu ID các con quái đã vượt qua
+        public double FinishDuration { get; set; } = double.MaxValue; // Mặc định là vô cực nếu chưa về đích
+        public bool IsFinished { get; set; } = false;
 
-    
         // Tracking quiz progress
         public int CorrectAnswersCount { get; set; } = 0;
         public int TotalQuestionsAnswered { get; set; } = 0;
         public bool HasReachedFinish { get; set; } = false;
-        public DateTime FinishTime { get; set; }
+        public float FinishTime { get; set; } = 0f;
 
         private     IClientConnection _connection;
 

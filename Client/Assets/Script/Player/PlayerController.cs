@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     // Singleton để truy cập nhanh từ các script khác (như MessageHandler)
     public static PlayerController LocalInstance;
+    public bool isPaused = false;
     private HashSet<string> localFinishedMonsters = new HashSet<string>();
     [Header("Identity")]
     public string PlayerId;
@@ -78,6 +79,12 @@ public class PlayerController : MonoBehaviour
         {
             // 2. Nội suy vị trí cho người chơi khác
             InterpolateMovement();
+        }
+        if (isPaused)
+        {
+            // Reset vận tốc về 0 để nhân vật không bị trôi theo quán tính
+            rb.velocity = Vector2.zero;
+            return;
         }
 
         // 3. Xử lý Animation cho tất cả
@@ -202,6 +209,19 @@ public class PlayerController : MonoBehaviour
             });
 
             StartCoroutine(ResetCollisionFlag(1.5f));
+        }
+
+
+        if (collision.CompareTag("Finish"))
+        {
+            Debug.Log("<color=green>🏁 CHÚC MỪNG! ĐẠI CA ĐÃ VỀ ĐÍCH!</color>");
+
+            // Gửi lệnh về Server để tính thời gian và xếp hạng
+            SocketClient.Instance.Send(new Packet
+            {
+                type = "REACHED_FINISH",
+                payload = ""
+            });
         }
     }
     public void MarkMonsterAsFinished(string monsterName)
