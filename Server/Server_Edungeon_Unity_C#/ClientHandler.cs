@@ -2,26 +2,44 @@
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using System.Collections.Generic; // Thêm cái này để dùng List
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Net.WebSockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GameServer
 {
     public class ClientHandler : IClientConnection
     {
+        // TCP Fields
         private TcpClient _client;
         private NetworkStream _stream;
         private BinaryReader _reader;
         private BinaryWriter _writer;
+
+        // WebSocket Fields
+        private WebSocket _webSocket;
+
         private PlayerSession _session;
         public DateTime StartTime { get; private set; }
+
+        private bool IsWebSocket => _webSocket != null;
+
+        // Constructor TCP
         public ClientHandler(TcpClient client)
         {
             _client = client;
             _stream = client.GetStream();
             _reader = new BinaryReader(_stream);
             _writer = new BinaryWriter(_stream);
+            _session = new PlayerSession(string.Empty, string.Empty, this);
+        }
 
+        // Constructor WebSocket
+        public ClientHandler(WebSocket ws)
+        {
+            _webSocket = ws;
             _session = new PlayerSession(string.Empty, string.Empty, this);
         }
 
@@ -39,7 +57,51 @@ namespace GameServer
             }
             catch (Exception)
             {
-                Console.WriteLine($"[Client] {_session.PlayerId} disconnected.");
+                Console.WriteLine($"[Client-TCP] {_session.PlayerId} disconnected.");
+                Cleanup();
+            }
+        }
+
+        public async Task RunWebSocket()
+        {
+            byte[] buffer = new byte[1024 * 32]; // 32KB buffer
+            try
+            {
+                while (_webSocket.State == WebSocketState.Open)
+                {
+                    // WebSocket can read messages in chunks (frames)
+                    WebSocketReceiveResult result;
+                    using (var ms = new MemoryStream())
+                    {
+                        do
+                        {
+                            result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                            if (result.MessageType == WebSocketMessageType.Close)
+                            {
+                                await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                                break;
+                            }
+                            ms.Write(buffer, 0, result.Count);
+                        }
+                        while (!result.EndOfMessage);
+
+                        if (result.MessageType == WebSocketMessageType.Close) break;
+
+                        ms.Seek(0, SeekOrigin.Begin);
+                        using (var reader = new StreamReader(ms, Encoding.UTF8))
+                        {
+                            string json = await reader.ReadToEndAsync();
+                            ProcessPacket(json);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"[Client-WS] {_session.PlayerId} disconnected.");
+            }
+            finally
+            {
                 Cleanup();
             }
         }
@@ -63,34 +125,29 @@ namespace GameServer
 
                     if (Server.Rooms.ContainsKey(newRoomId))
                     {
-                        Send(new Packet { type = "ERROR", payload = "ID phòng đã tồn tại!" });
+                        Send(new Packet { type = "ERROR", payload = "Room ID already exists!" });
                         return;
                     }
 
                     Room newRoom = new Room(newRoomId, _session.PlayerId);
 
-                    // --- [MỚI] NHẬN BỘ CÂU HỎI TỪ CLIENT GỬI LÊN ---
+                    // --- [NEW] RECEIVE QUESTIONS FROM CLIENT ---
                     if (!string.IsNullOrEmpty(createData.questionsJson))
                     {
                         try
                         {
-                            // Giải mã JSON thành List câu hỏi
                             var clientQuestions = JsonConvert.DeserializeObject<List<QuestionData>>(createData.questionsJson);
-
-                            // Gán vào phòng (Giả sử class Room có biến Questions public)
                             newRoom.Questions = clientQuestions;
-
-                            Console.WriteLine($"✅ [ROOM {newRoomId}] Đã nhận {clientQuestions.Count} câu hỏi từ Host.");
+                            Console.WriteLine($"✅ [ROOM {newRoomId}] Received {clientQuestions.Count} questions from Host.");
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"❌ [ERROR] Lỗi đọc câu hỏi từ Host: {ex.Message}");
-                            // Nếu lỗi thì có thể thêm vài câu mặc định ở đây để chống crash
+                            Console.WriteLine($"❌ [ERROR] Error reading questions from Host: {ex.Message}");
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"⚠️ [ROOM {newRoomId}] Host không gửi câu hỏi nào.");
+                        Console.WriteLine($"⚠️ [ROOM {newRoomId}] Host sent no questions.");
                     }
                     // ------------------------------------------------
 
@@ -114,7 +171,7 @@ namespace GameServer
                     }
                     else
                     {
-                        Send(new Packet { type = "ERROR", payload = "Không tìm thấy phòng!" });
+                        Send(new Packet { type = "ERROR", payload = "Room not found!" });
                     }
                     break;
 
@@ -148,11 +205,8 @@ namespace GameServer
             if (actionName == "START_GAME" && _session.CurrentRoom != null)
             {
                 Console.WriteLine($"Host {_session.PlayerId} started game. Broadcasting OPEN_GATE...");
-
-                // Gán thời gian bắt đầu vào Room để mọi Player dùng chung mốc này
                 _session.CurrentRoom.StartTime = DateTime.Now;
                 _session.CurrentRoom.IsGameStarted = true;
-
                 _session.CurrentRoom.Broadcast(new Packet { type = "OPEN_GATE", payload = "" });
             }
         }
@@ -163,11 +217,23 @@ namespace GameServer
             {
                 string json = JsonConvert.SerializeObject(packet);
                 byte[] buffer = Encoding.UTF8.GetBytes(json);
-                lock (_writer)
+
+                if (IsWebSocket)
                 {
-                    _writer.Write(buffer.Length);
-                    _writer.Write(buffer);
-                    _writer.Flush();
+                    if (_webSocket.State == WebSocketState.Open)
+                    {
+                        // Fire and forget send
+                        _webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                    }
+                }
+                else
+                {
+                    lock (_writer)
+                    {
+                        _writer.Write(buffer.Length);
+                        _writer.Write(buffer);
+                        _writer.Flush();
+                    }
                 }
             }
             catch (Exception ex)
@@ -179,7 +245,9 @@ namespace GameServer
         private void Cleanup()
         {
             if (_session.CurrentRoom != null) _session.CurrentRoom.Leave(_session);
-            _client.Close();
+
+            if (_client != null) _client.Close();
+            if (_webSocket != null) _webSocket.Dispose();
         }
     }
 }

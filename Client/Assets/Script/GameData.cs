@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-// --- GÓI TIN CƠ BẢN ---
+// --- BASIC PACKET ---
 [System.Serializable]
 public class Packet
 {
@@ -15,10 +15,10 @@ public class HandshakeData
 {
     public string playerName;
     public string roomId;
-    public string questionsJson; // Chứa bộ câu hỏi từ CSV của Host
+    public string questionsJson; // Contains questions from Host CSV
 }
 
-// --- DỮ LIỆU CÂU HỎI ---
+// --- QUESTION DATA ---
 [System.Serializable]
 public class QuestionData
 {
@@ -30,7 +30,7 @@ public class QuestionData
     public int timeLimit = 15;
 }
 
-// --- TRẠNG THÁI NGƯỜI CHƠI (Để di chuyển & Đồng bộ) ---
+// --- PLAYER STATE (For movement & Sync) ---
 [System.Serializable]
 public class PlayerState
 {
@@ -42,13 +42,13 @@ public class PlayerState
     public bool isReady;
 }
 
-// --- TIẾN TRÌNH TRONG GAME (Để hiện Leaderboard) ---
+// --- GAME PROGRESS (For Leaderboard) ---
 [System.Serializable]
 public class PlayerProgress
 {
     public string playerId;
     public string playerName;
-    public float progressPercentage; // [THÊM] Để hiện % trên thanh Leaderboard
+    public float progressPercentage; // [NEW] To show % on Leaderboard
     public int score;
-    public bool isAlive = true;      // [THÊM] Để đổi màu dòng nếu người chơi thua
+    public bool isAlive = true;      // [NEW] To change color if player dies
 }

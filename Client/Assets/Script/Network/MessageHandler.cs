@@ -78,34 +78,34 @@ public class MessageHandler : MonoBehaviour
         }
     }
 
-    // --- HÀM XỬ LÝ GÓI TIN (ĐÃ FIX LỖI JSON) ---
+    // --- PACKET HANDLING FUNCTION (JSON ERROR FIXED) ---
     void HandlePacket(Packet packet)
     {
         switch (packet.type)
         {
-            // [QUAN TRỌNG] Các case này trả về string đơn giản (Success/FOUND)
-            // TUYỆT ĐỐI KHÔNG dùng JsonConvert.DeserializeObject ở đây!
+            // [IMPORTANT] These cases return simple strings (Success/FOUND)
+            // DO NOT use JsonConvert.DeserializeObject here!
 
             case "CHECK_ROOM_RESPONSE":
-                // Payload là "FOUND" hoặc "NOT_FOUND" -> Dùng luôn
+                // Payload is "FOUND" or "NOT_FOUND" -> Use directly
                 SocketClient.Instance.OnCheckRoomResult?.Invoke(packet.payload);
                 break;
 
             case "ROOM_CREATED":
-                // Payload là "Success" -> Dùng luôn, đừng Deserialize!
+                // Payload is "Success" -> Use directly, don't Deserialize!
                 string hostId = packet.playerId;
                 SocketClient.Instance.MyPlayerId = hostId;
 
-                // Báo cho HomeUIManager biết là thành công
+                // Notify HomeUIManager of success
                 SocketClient.Instance.OnCreateRoomResult?.Invoke("SUCCESS");
                 break;
 
             case "JOIN_SUCCESS":
-                // Payload là "Success"
+                // Payload is "Success"
                 string myId = packet.playerId;
                 SocketClient.Instance.MyPlayerId = myId;
 
-                // Xử lý nhân vật
+                // Handle character spawning
                 if (otherPlayers.ContainsKey(myId))
                 {
                     PlayerController myPlayerScript = otherPlayers[myId];
@@ -121,19 +121,19 @@ public class MessageHandler : MonoBehaviour
 
             case "ERROR":
                 string errorMsg = packet.payload;
-                if (errorMsg.Contains("đã đánh bại"))
+                if (errorMsg.Contains("defeated"))
                 {
-                    Debug.Log($"<color=cyan>[Hệ thống]</color>: {errorMsg}");
-                    // Nếu đại ca có script Toast hoặc Popup thông báo, hãy gọi ở đây
+                    Debug.Log($"<color=cyan>[System]</color>: {errorMsg}");
+                    // If you have Toast or Popup script, call it here
                     // UIHint.Show(errorMsg); 
 
-                    // TIÊU DIỆT con quái "ma" này trên màn hình đại ca luôn
+                    // DESTROY the "ghost" monster on the screen
                     GameObject monster = GameObject.Find(PlayerController.LocalInstance.currentMonsterId);
                     if (monster != null) monster.SetActive(false);
                 }
                 else
                 {
-                    Debug.LogError("Server báo lỗi: " + errorMsg);
+                    Debug.LogError("Server Error: " + errorMsg);
                 }
                 break;
 
@@ -141,56 +141,56 @@ public class MessageHandler : MonoBehaviour
                 Debug.Log("Game Start!");
                 break;
             case "GAME_PAUSED":
-                Debug.Log("<color=yellow>⚠️ TRẬN ĐẤU TẠM DỪNG!</color>");
+                Debug.Log("<color=yellow>⚠️ GAME PAUSED!</color>");
 
-                // 1. Khóa di chuyển của đại ca
+                // 1. Lock player movement
                 if (PlayerController.LocalInstance != null)
                     PlayerController.LocalInstance.isPaused = true;
 
-                // 2. Hiện thông báo UI (Nếu đại ca có bảng Popup)
-                string pauseMsg = packet.payload; // "Trận đấu tạm dừng!"
+                // 2. Show UI Notification
+                string pauseMsg = packet.payload;
                 if (NotificationUI.Instance != null)
-                    NotificationUI.Instance.ShowMessage(pauseMsg, false); // false = không tự tắt
+                    NotificationUI.Instance.ShowMessage(pauseMsg, false);
                 break;
 
             case "GAME_RESUMED":
-                Debug.Log("<color=green>▶️ TIẾP TỤC ĐUA!</color>");
+                Debug.Log("<color=green>▶️ RESUME RACING!</color>");
 
-                // 1. Mở khóa di chuyển
+                // 1. Unlock movement
                 if (PlayerController.LocalInstance != null)
                     PlayerController.LocalInstance.isPaused = false;
 
-                // 2. Tắt thông báo UI
+                // 2. Hide Notification
                 if (NotificationUI.Instance != null)
                     NotificationUI.Instance.HideMessage();
                 break;
 
             case "OPEN_GATE":
-                Debug.Log("<color=cyan>🔔 Game sắp bắt đầu! Chuẩn bị đếm ngược...</color>");
+                Debug.Log("<color=cyan>🔔 Game Starting! Countdown...</color>");
                 if (enemyContainer != null)
                 {
                     enemyContainer.SetActive(true);
                 }
-                // 1. Đảm bảo nhân vật đang bị khóa (isPaused = true)
+                // 1. Ensure player is locked (isPaused = true)
                 if (PlayerController.LocalInstance != null)
                     PlayerController.LocalInstance.isPaused = true;
 
-                // 2. Bắt đầu đếm ngược 3 giây
+                // 2. Start countdown 3 seconds
                 if (NotificationUI.Instance != null)
                 {
-                    NotificationUI.Instance.StartCountdown(3, () => {
+                    NotificationUI.Instance.StartCountdown(3, () =>
+                    {
                         if (lobbyGate != null)
                         {
-                            lobbyGate.SetActive(false); // Làm cái cổng biến mất
-                                                         // Hoặc nếu muốn chuyên nghiệp hơn, đại ca dùng:
-                                                         // gateObject.GetComponent<Collider2D>().enabled = false; 
-                            Debug.Log("<color=yellow>🚪 CỔNG ĐÃ MỞ!</color>");
+                            lobbyGate.SetActive(false);
+                            // gateObject.GetComponent<Collider2D>().enabled = false; 
+                            Debug.Log("<color=yellow>🚪 GATE OPEN!</color>");
                         }
-                        // 3. Khi đếm xong (onFinished), mới cho phép di chuyển
+                        // 3. Unpause when finished
                         if (PlayerController.LocalInstance != null)
                             PlayerController.LocalInstance.isPaused = false;
 
-                        Debug.Log("<color=green>🔥 XUẤT PHÁT!</color>");
+                        Debug.Log("<color=green>🔥 START!</color>");
                     });
                 }
                 break;
@@ -213,18 +213,18 @@ public class MessageHandler : MonoBehaviour
                 break;
 
             case "ANSWER_RESULT":
-                // Lấy tên con quái đang đụng độ
+                // Get current monster name
                 string mId = PlayerController.LocalInstance.currentMonsterId;
 
-                // Luôn đánh dấu là đã xong (truyền string mId vào)
+                // Mark monster as finished
                 PlayerController.LocalInstance.MarkMonsterAsFinished(mId);
 
-                // Kiểm tra nội dung tin nhắn từ Server
-                string resultFromServer = packet.payload; // Đây là string (VD: "CHÍNH XÁC!")
+                // Check message from Server
+                string resultFromServer = packet.payload; // e.g. "CORRECT!"
 
                 if (QuizUI.Instance != null)
                 {
-                    // TRUYỀN STRING VÀO ĐÂY (Thay vì truyền true/false)
+                    // PASS STRING HERE
                     QuizUI.Instance.ShowResult(resultFromServer);
                 }
                 break;
@@ -236,10 +236,10 @@ public class MessageHandler : MonoBehaviour
                 {
                     QuizUI.Instance.ShowQuiz(qData, (answerIndex) =>
                     {
-                        // LẤY TÊN QUÁI TỪ PLAYER CONTROLLER
+                        // GET MONSTER FROM PLAYER CONTROLLER
                         string mId = PlayerController.LocalInstance.currentMonsterId;
 
-                        // Gửi cả ID câu hỏi, Index trả lời và MonsterId lên Server
+                        // Send question ID, Answer Index and Monster ID to Server
                         var answerPayload = new
                         {
                             questionId = qData.id,
@@ -259,25 +259,25 @@ public class MessageHandler : MonoBehaviour
             case "LEADERBOARD_UPDATE":
                 if (leaderboardUI != null)
                 {
-                    // Hiện bảng lên nếu nó đang ẩn
+                    // Show board if hidden
                     leaderboardUI.gameObject.SetActive(true);
                     leaderboardUI.UpdateList(packet.payload);
                 }
                 else
                 {
-                    Debug.LogWarning("⚠️ Đại ca chưa kéo LeaderboardUI vào MessageHandler!");
+                    Debug.LogWarning("⚠️ LeaderboardUI not assigned in MessageHandler!");
                 }
                 break;
 
             case "SYNC_PLAYERS":
-                // 1. Spawn nhân vật (giữ nguyên code cũ của đại ca)
+                // 1. Spawn players
                 var list = JsonConvert.DeserializeObject<List<PlayerState>>(packet.payload);
                 foreach (var state in list)
                 {
                     SpawnPlayer(state.playerId, state.playerName, new Vector2(state.x, state.y));
                 }
 
-                // 2. [THÊM MỚI] Hiện tên lên Leaderboard ngay khi vào phòng
+                // 2. [NEW] Show names on Leaderboard immediately on join
                 if (LeaderboardUI.Instance != null)
                 {
                     LeaderboardUI.Instance.UpdateList(packet.payload);
@@ -299,7 +299,7 @@ public class MessageHandler : MonoBehaviour
                 break;
 
             case "PROGRESS_UPDATE":
-                // Khi có cập nhật điểm số/tiến độ trong game
+                // On score/progress update
                 if (LeaderboardUI.Instance != null)
                 {
                     LeaderboardUI.Instance.UpdateList(packet.payload);
@@ -318,7 +318,7 @@ public class MessageHandler : MonoBehaviour
                 SceneManager.LoadScene("GameEnd");
                 break;
             case "GAME_OVER_SUMMARY":
-                // packet.payload lúc này là JSON chứa list {name, score, time}
+                // packet.payload is JSON list {name, score, time}
                 if (SummaryUI.Instance != null)
                 {
                     SummaryUI.Instance.DisplaySummary(packet.payload);
@@ -326,8 +326,8 @@ public class MessageHandler : MonoBehaviour
                 break;
 
             case "RETURN_TO_HOME":
-                Debug.Log("Game kết thúc, quay về màn hình chính...");
-                // Chuyển cảnh về Home
+                Debug.Log("Game Ended, returning to Home...");
+                // Load Home scene
                 UnityEngine.SceneManagement.SceneManager.LoadScene("Home");
                 break;
         }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 
 public class SocketClient : MonoBehaviour
 {
@@ -14,21 +15,44 @@ public class SocketClient : MonoBehaviour
     [Header("Configuration")]
     public string serverIP = "127.0.0.1";
     public int serverPort = 7777;
+    // URL for WebSocket (used when building for WebGL)
+    public string wsServerUrl = "ws://127.0.0.1:7780";
 
+#if !UNITY_WEBGL || UNITY_EDITOR
     private TcpClient _client;
     private NetworkStream _stream;
     private BinaryReader _reader;
     private BinaryWriter _writer;
     private Thread _receiveThread;
+#endif
+
     private bool _isConnected;
     private ConcurrentQueue<Packet> _packetQueue = new ConcurrentQueue<Packet>();
     public Action<Packet> OnPacketReceived;
     public string MyPlayerId { get; set; }
     public Action<string> OnCheckRoomResult;
     public System.Action<string> OnCreateRoomResult;
-    
+
+    // --- DLL IMPORT FOR WEBGL ---
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [DllImport("__Internal")]
+    private static extern void WebSocketConnect(string url);
+
+    [DllImport("__Internal")]
+    private static extern void WebSocketSend(byte[] data, int length);
+
+    [DllImport("__Internal")]
+    private static extern void WebSocketClose();
+
+    [DllImport("__Internal")]
+    private static extern int WebSocketState();
+#endif
+
     void Awake()
     {
+        // [HOTFIX] Force use port 7780 to avoid Inspector caching old values
+        wsServerUrl = "ws://127.0.0.1:7780";
+
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
@@ -37,6 +61,20 @@ public class SocketClient : MonoBehaviour
     public void ConnectAndJoin(string playerName, string roomId, bool isHost)
     {
         MyPlayerId = null;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // --- WEBGL CONNECT ---
+        if (!_isConnected)
+        {
+             // Debug.Log($"[WebGL] Connecting to WS URL: {wsServerUrl}");
+             WebSocketConnect(wsServerUrl);
+             // WebGL connects asynchronously, we wait for OnWebSocketOpen callback
+             // Logic sends handshake immediately, so we use Coroutine to wait
+             StartCoroutine(WaitForConnectionAndSendHandshake(playerName, roomId, isHost));
+             return;
+        }
+#else
+        // --- TCP CONNECT ---
         if (!_isConnected)
         {
             try
@@ -51,16 +89,22 @@ public class SocketClient : MonoBehaviour
                 _receiveThread = new Thread(ReceiveLoop);
                 _receiveThread.IsBackground = true;
                 _receiveThread.Start();
-                Debug.Log("Đã tạo kết nối mới tới Server!");
+                Debug.Log("Connected to Server!");
             }
             catch (Exception e)
             {
-                Debug.LogError($"Lỗi kết nối chết người: {e.Message}");
+                Debug.LogError($"Fatal connection error: {e.Message}");
                 return;
             }
         }
+#endif
 
-        Debug.Log($"Đang gửi lệnh... Role: {(isHost ? "HOST" : "CLIENT")} | Room: {roomId}");
+        SendHandshake(playerName, roomId, isHost);
+    }
+
+    private void SendHandshake(string playerName, string roomId, bool isHost)
+    {
+        // Debug.Log($"Sending handshake... Role: {(isHost ? "HOST" : "CLIENT")} | Room: {roomId}");
 
         var handshake = new HandshakeData { playerName = playerName, roomId = roomId };
         string payloadJson = JsonConvert.SerializeObject(handshake);
@@ -72,10 +116,41 @@ public class SocketClient : MonoBehaviour
             payload = payloadJson
         });
     }
-    
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    private System.Collections.IEnumerator WaitForConnectionAndSendHandshake(string playerName, string roomId, bool isHost)
+    {
+        // Debug.Log("Waiting for WebSocket connection...");
+        // Wait max 5 seconds
+        float timeout = 5f;
+        while (WebSocketState() != 1 && timeout > 0) // 1 = OPEN
+        {
+            yield return null;
+            timeout -= Time.deltaTime;
+        }
+
+        if (WebSocketState() == 1)
+        {
+            _isConnected = true;
+            Debug.Log("WebSocket connected! Sending handshake.");
+            SendHandshake(playerName, roomId, isHost);
+        }
+        else
+        {
+            Debug.LogError("WebSocket connection failed (Timeout).");
+        }
+    }
+#endif
+
     public void ConnectOnly()
     {
         if (_isConnected) return;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // Debug.Log($"[WebGL] ConnectOnly - URL: {wsServerUrl}");
+        WebSocketConnect(wsServerUrl);
+        // For WebGL, isConnected will be set to true in OnWebSocketOpen callback
+#else
         try
         {
             _client = new TcpClient();
@@ -88,31 +163,58 @@ public class SocketClient : MonoBehaviour
             _receiveThread = new Thread(ReceiveLoop);
             _receiveThread.IsBackground = true;
             _receiveThread.Start();
-            Debug.Log("Đã kết nối TCP tới Server (Chưa vào phòng)");
+            Debug.Log("TCP Connected to Server");
         }
         catch (Exception e)
         {
-            Debug.LogError("Lỗi kết nối: " + e.Message);
+            Debug.LogError("Connection error: " + e.Message);
         }
+#endif
     }
-    
+
     public void SendCheckRoom(string roomId)
     {
         if (!_isConnected) ConnectOnly();
 
+        // For WebGL, ensure connection before sending
+#if UNITY_WEBGL && !UNITY_EDITOR
+         StartCoroutine(WaitConnectAndSendCheckRoom(roomId));
+#else
         Send(new Packet
         {
             type = "CHECK_ROOM",
             payload = roomId
         });
+#endif
     }
 
-    // --- THÊM HÀM NÀY ---
+#if UNITY_WEBGL && !UNITY_EDITOR
+    private System.Collections.IEnumerator WaitConnectAndSendCheckRoom(string roomId)
+    {
+         float timeout = 5f;
+         while (WebSocketState() != 1 && timeout > 0)
+         {
+             yield return null;
+             timeout -= Time.deltaTime;
+         }
+         
+         if (WebSocketState() == 1)
+         {
+             _isConnected = true;
+            Send(new Packet
+            {
+                type = "CHECK_ROOM",
+                payload = roomId
+            });
+         }
+    }
+#endif
+
     public void SendJoinRoom(string playerName, string roomId)
     {
         if (!_isConnected)
         {
-            Debug.LogError("[SocketClient] SendJoinRoom thất bại: Chưa kết nối Server!");
+            Debug.LogError("[SocketClient] SendJoinRoom failed: No connection!");
             return;
         }
 
@@ -131,12 +233,13 @@ public class SocketClient : MonoBehaviour
             payload = payloadJson
         });
 
-        Debug.Log($"[SocketClient] Đã gửi lệnh JOIN_ROOM: {playerName} vào phòng {roomId}");
+        // Debug.Log($"[SocketClient] Sent JOIN_ROOM: {playerName} to room {roomId}");
     }
 
+#if !UNITY_WEBGL || UNITY_EDITOR
     private void ReceiveLoop()
     {
-        Debug.Log(">>> [ReceiveLoop] Bắt đầu lắng nghe Server...");
+        Debug.Log(">>> [ReceiveLoop] Listening to Server...");
 
         while (_isConnected)
         {
@@ -149,7 +252,7 @@ public class SocketClient : MonoBehaviour
 
                     if (bytesRead < 4)
                     {
-                        Debug.LogWarning(">>> [ReceiveLoop] Đọc header thất bại (không đủ 4 byte). Ngắt kết nối.");
+                        Debug.LogWarning(">>> [ReceiveLoop] Read header failed. Disconnecting.");
                         _isConnected = false;
                         break;
                     }
@@ -169,37 +272,88 @@ public class SocketClient : MonoBehaviour
                     }
 
                     string json = Encoding.UTF8.GetString(buffer);
-                    
-                    
 
-                    // 3. Giải mã (Deserialize)
+                    // 3. Deserialize
                     Packet packet = JsonConvert.DeserializeObject<Packet>(json);
 
                     if (packet != null)
                     {
-                        Debug.Log($">>> [ReceiveLoop] Đã giải mã thành công! Type: {packet.type} | Queue: Đẩy vào hàng đợi.");
+                        // Debug.Log($">>> [ReceiveLoop] Decoded! Type: {packet.type} | Queue: Enqueued.");
                         _packetQueue.Enqueue(packet);
                     }
                     else
                     {
-                        Debug.LogError(">>> [ReceiveLoop] Giải mã thất bại: Packet bị null!");
+                        Debug.LogError(">>> [ReceiveLoop] Decode failed: Packet is null!");
                     }
                 }
                 else
                 {
-                    // Nghỉ 1 tí cho đỡ ngốn CPU nếu chưa có tin
                     Thread.Sleep(10);
                 }
             }
             catch (Exception e)
             {
-                Debug.LogError($">>> [ReceiveLoop] LỖI CHẾT NGƯỜI: {e.Message}\n{e.StackTrace}");
+                Debug.LogError($">>> [ReceiveLoop] FATAL ERROR: {e.Message}\n{e.StackTrace}");
                 _isConnected = false;
                 break;
             }
         }
-        Debug.Log(">>> [ReceiveLoop] Đã dừng lắng nghe.");
+        Debug.Log(">>> [ReceiveLoop] Stopped listening.");
     }
+#endif
+
+    // --- WEBGL CALLBACKS (Called from JS) ---
+    public void OnWebSocketOpen()
+    {
+        Debug.Log("WebSocket Connected (JS Callback)");
+        _isConnected = true;
+    }
+
+    public void OnWebSocketMessage(string jsonArgs)
+    {
+        // Args is JSON {ptr, length}
+        var args = JsonConvert.DeserializeObject<WebSocketMessageArgs>(jsonArgs);
+
+        byte[] buffer = new byte[args.length];
+        Marshal.Copy(new IntPtr(args.ptr), buffer, 0, args.length);
+
+        // Free memory on JS side if needed (depending on implementation, usually JS GC handles it or uses free() in JS)
+        // Here simplified convert buffer to string
+
+        string json = Encoding.UTF8.GetString(buffer);
+        Packet packet = JsonConvert.DeserializeObject<Packet>(json);
+        if (packet != null)
+        {
+            _packetQueue.Enqueue(packet);
+        }
+
+        // Note: Needs free memory if using _malloc in JS. 
+        // But in sample JS code we haven't added free function, this is simple demo.
+    }
+
+    public void OnWebSocketClose(int code)
+    {
+        Debug.Log($"WebSocket Loop Close: {code}");
+        _isConnected = false;
+    }
+
+    public void OnWebSocketError(string error)
+    {
+        Debug.LogError($"WebSocket Error: {error}");
+        _isConnected = false;
+    }
+
+    public void OnWebSocketMessageText(string json)
+    {
+        // Receive Text message directly from JS
+        Packet packet = JsonConvert.DeserializeObject<Packet>(json);
+        if (packet != null)
+        {
+            _packetQueue.Enqueue(packet);
+        }
+    }
+
+    private class WebSocketMessageArgs { public int ptr; public int length; }
 
     void Update()
     {
@@ -211,14 +365,13 @@ public class SocketClient : MonoBehaviour
             {
                 if (packet.type == "CHECK_ROOM_RESPONSE")
                 {
-                    Console.WriteLine(packet.type);
                     OnCheckRoomResult?.Invoke(packet.payload);
                 }
                 OnPacketReceived?.Invoke(packet);
                 if (packet.type == "ROOM_CREATED")
                 {
                     MyPlayerId = packet.playerId;
-                    Debug.Log($"✅ [HOST] Đã nhận danh tính từ Server: {MyPlayerId}");
+                    Debug.Log($"✅ [HOST] Identity received from Server: {MyPlayerId}");
                     OnCreateRoomResult?.Invoke("SUCCESS");
                 }
                 else if (packet.type == "ERROR")
@@ -234,7 +387,7 @@ public class SocketClient : MonoBehaviour
     {
         if (!_isConnected)
         {
-            Debug.LogWarning("[SocketClient] Send thất bại: Chưa kết nối Server!");
+            Debug.LogWarning("[SocketClient] Send failed: Not connected!");
             return;
         }
 
@@ -248,6 +401,9 @@ public class SocketClient : MonoBehaviour
             string json = JsonConvert.SerializeObject(packet);
             byte[] buffer = Encoding.UTF8.GetBytes(json);
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+            WebSocketSend(buffer, buffer.Length);
+#else
             if (_writer != null)
             {
                 lock (_writer)
@@ -257,22 +413,25 @@ public class SocketClient : MonoBehaviour
                     _writer.Flush();
                 }
             }
-
+#endif
         }
         catch (Exception e)
         {
-            Debug.LogError($"[SocketClient] Lỗi khi gửi tin: {e.Message}");
+            Debug.LogError($"[SocketClient] Error sending message: {e.Message}");
             _isConnected = false;
         }
     }
-    
+
     public void Disconnect()
     {
         if (!_isConnected) return;
 
-        Debug.Log("[SocketClient] Đang chủ động ngắt kết nối...");
+        Debug.Log("[SocketClient] Disconnecting...");
         _isConnected = false;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+        WebSocketClose();
+#else
         try
         {
             if (_stream != null) _stream.Close();
@@ -280,7 +439,7 @@ public class SocketClient : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogWarning($"Lỗi khi đóng kết nối: {e.Message}");
+            Debug.LogWarning($"Error closing connection: {e.Message}");
         }
         finally
         {
@@ -288,23 +447,20 @@ public class SocketClient : MonoBehaviour
             _client = null;
             _reader = null;
             _writer = null;
-
-            MyPlayerId = null;
-
-            Packet temp;
-            while (_packetQueue.TryDequeue(out temp)) { }
-
-            Debug.Log("[SocketClient] Đã ngắt kết nối thành công.");
         }
+#endif
+        MyPlayerId = null;
+        Packet temp;
+        while (_packetQueue.TryDequeue(out temp)) { }
+        Debug.Log("[SocketClient] Disconnected successfully.");
     }
-    
+
     void OnApplicationQuit()
     {
-        _isConnected = false;
-        _client?.Close();
+        Disconnect();
     }
 
-    // Thêm các method mới vào SocketClient:
+    // Add new methods to SocketClient:
     public void SendProgressUpdate(string playerId, float progress, int checkpoint)
     {
         var payload = new { playerId, progress, checkpoint };
@@ -350,11 +506,11 @@ public class SocketClient : MonoBehaviour
         var data = new { questionId = questionId, answerIndex = answerIndex };
         string json = JsonConvert.SerializeObject(data);
 
-        Debug.Log($">>> [NET] Đang gửi đáp án: Index {answerIndex} cho câu ID {questionId}");
+        // Debug.Log($">>> [NET] Sending answer: Index {answerIndex} for question ID {questionId}");
 
         Send(new Packet
         {
-            type = "ANSWER", // Kiểm tra xem Server có đang đợi chữ "ANSWER" này không
+            type = "ANSWER",
             payload = json
         });
     }

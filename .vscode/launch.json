@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Server (ChatOps)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            // Đường dẫn đến file dll sau khi build. 
+            // Lưu ý: Đại ca kiểm tra xem folder bin của đại ca là net6.0, net7.0 hay net8.0 nhé.
+            "program": "${workspaceFolder}/Server/bin/Debug/net6.0/Server_Edungeon_Unity_C#.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Server",
+            "console": "integratedTerminal", // Chuyển sang cái này để đại ca gõ lệnh chat trực tiếp được
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        }
+    ]
+}

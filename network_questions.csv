@@ -1,0 +1,11 @@
+Question,OptionA,OptionB,OptionC,OptionD,CorrectIndex,Category
+What protocol guarantees reliable and ordered data delivery?,UDP,TCP,IP,ICMP,1,Protocol
+Which OSI layer is responsible for logical addressing and routing?,Physical,Data Link,Network,Transport,2,OSI
+What is the standard IPv4 loopback address?,192.168.1.1,10.0.0.1,127.0.0.1,255.255.255.0,2,IP
+Which port is the default for secure web traffic (HTTPS)?,80,21,443,22,2,Port
+What is the URL scheme prefix for WebSocket connections?,http,ftp,ws,tcp,2,Protocol
+Which of these is a connectionless transport protocol?,TCP,UDP,HTTP,FTP,1,Protocol
+What implies the start of a TCP connection?,Fin,Ack,Syn,Rst,2,TCP
+In Unity WebGL what network tech is most commonly used?,System.Net.Sockets,WebSocket,Raw UDP,Bluetooth,1,Unity
+What command is used to close a socket connection?,Bind,Listen,Accept,Close,3,Socket
+Which class handles JSON serialization in this project?,JsonUtility,Newtonsoft.Json,SimpleJSON,LitJson,1,Coding

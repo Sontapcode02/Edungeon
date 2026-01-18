@@ -3,8 +3,9 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using System.IO;         // <--- THÊM DÒNG NÀY ĐỂ HẾT LỖI 'File'
+using System.IO;
 using Newtonsoft.Json;
+using System.Runtime.InteropServices; // [NEW] For DllImport
 
 
 // Chỉ dùng thư viện này trong Unity Editor để mở cửa sổ chọn file
@@ -37,9 +38,15 @@ public class HomeUIManager : MonoBehaviour
     [Header("--- NEW FEATURE ---")]
     public Button browseButton; // <--- Kéo nút "Chọn File" vào đây
 
-    // Biến lưu tạm để dùng khi Server phản hồi thành công
+    // Temp variables
     private string tempHostName;
     private string tempRoomId;
+    private string loadedCsvContent; // [NEW] Store content from WebGL upload
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [DllImport("__Internal")]
+    private static extern void UploadFile(string gameObjectName, string methodName, string filter);
+#endif
 
     void Start()
     {
@@ -80,22 +87,32 @@ public class HomeUIManager : MonoBehaviour
         }
     }
 
-    // --- TÍNH NĂNG CHỌN FILE (CHỈ EDITOR) ---
+    // --- FILE BROWSE FEATURE ---
     void OnBrowseFileClicked()
     {
 #if UNITY_EDITOR
-        // Mở cửa sổ Windows Explorer
-        string path = EditorUtility.OpenFilePanel("Chọn bộ câu hỏi (CSV)", "", "csv");
-
+        string path = EditorUtility.OpenFilePanel("Select Question File (CSV)", "", "csv");
         if (!string.IsNullOrEmpty(path))
         {
-            // Điền đường dẫn vào ô Input
             questionPathInput.text = path;
-            Debug.Log("✅ Đã chọn file: " + path);
+            Debug.Log("✅ File selected: " + path);
+            loadedCsvContent = null; // Reset web content if used in Editor
         }
-#else
-        Debug.LogWarning("⚠️ Chức năng chọn file này chỉ hỗ trợ trong Unity Editor thôi đại ca ơi!");
+#elif UNITY_WEBGL
+        // Call JS Plugin
+        // gameObjectName = "HomeUIManager" (Check GameObject name in Scene!)
+        // methodName = "OnFileUploaded"
+        // filter = ".csv"
+        UploadFile(gameObject.name, "OnFileUploaded", ".csv");
 #endif
+    }
+
+    // [NEW] Callback from WebGL
+    public void OnFileUploaded(string content)
+    {
+        loadedCsvContent = content;
+        questionPathInput.text = "File Loaded from WebGL"; // Fake path for UI
+        Debug.Log("✅ CSV Content received from WebGL!");
     }
 
     // --- PHẦN KHÁCH (JOIN) ---
@@ -167,23 +184,33 @@ public class HomeUIManager : MonoBehaviour
         string maxPlayers = maxPlayerInput.text;
         if (string.IsNullOrEmpty(maxPlayers)) maxPlayers = "4";
 
-        // --- BƯỚC 1: KIỂM TRA FILE TỒN TẠI KHÔNG ---
+        // --- STEP 1: GET FILE PATH (FOR EDITOR/DESKTOP) --- 
         string quizFilePath = questionPathInput.text;
-        if (string.IsNullOrEmpty(quizFilePath)) quizFilePath = @"D:\questions.csv"; // Mặc định
+        if (string.IsNullOrEmpty(quizFilePath)) quizFilePath = @"D:\questions.csv"; // Default
 
-        if (!File.Exists(quizFilePath))
-        {
-            ShowError("❌ Không tìm thấy file tại: " + quizFilePath);
-            confirmCreateButton.interactable = true; // Mở lại nút cho bấm lại
-            return; // ⛔ DỪNG NGAY: Không làm gì tiếp theo
-        }
-
-        // --- BƯỚC 2: ĐỌC VÀ KIỂM TRA CẤU TRÚC FILE ---
+        // --- STEP 2: READ FILE CONTENT ---
         List<QuestionData> processedQuestions = new List<QuestionData>();
 
         try
         {
-            string[] lines = File.ReadAllLines(quizFilePath);
+            string[] lines;
+
+            // Priority: WebGL Content -> Local File
+            if (!string.IsNullOrEmpty(loadedCsvContent))
+            {
+                // Split by newline (handle various line endings)
+                lines = loadedCsvContent.Split(new[] { "\r\n", "\r", "\n" }, System.StringSplitOptions.None);
+            }
+            else if (File.Exists(quizFilePath))
+            {
+                lines = File.ReadAllLines(quizFilePath);
+            }
+            else
+            {
+                ShowError("❌ File not found!");
+                confirmCreateButton.interactable = true;
+                return;
+            }
 
             // Kiểm tra nếu file quá ngắn (chỉ có header hoặc trống trơn)
             if (lines.Length <= 1)
