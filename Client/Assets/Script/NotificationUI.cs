@@ -21,6 +21,10 @@ public class NotificationUI : MonoBehaviour
         StartCoroutine(CountdownCoroutine(seconds, onFinished));
     }
 
+    [Header("Audio")]
+    public AudioClip countdownSFX; // Tiếng Beep
+    public AudioClip gameBGM;      // Nhạc nền trong game (thay thế Home BGM)
+
     private IEnumerator CountdownCoroutine(int seconds, Action onFinished)
     {
         messagePanel.SetActive(true);
@@ -30,11 +34,22 @@ public class NotificationUI : MonoBehaviour
             messageText.text = seconds.ToString();
             // Phóng to chữ một chút cho kịch tính
             messageText.transform.localScale = Vector3.one * 1.5f;
+
+            // --- AUDIO: Beep ---
+            if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(countdownSFX);
+
             seconds--;
             yield return new WaitForSeconds(1f);
         }
 
         messageText.text = "BẮT ĐẦU!";
+
+        // --- AUDIO: Switch BGM ---
+        if (AudioManager.Instance != null && gameBGM != null)
+        {
+            AudioManager.Instance.PlayBGM(gameBGM);
+        }
+
         yield return new WaitForSeconds(0.5f);
 
         messagePanel.SetActive(false);

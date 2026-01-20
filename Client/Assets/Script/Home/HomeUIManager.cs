@@ -38,6 +38,9 @@ public class HomeUIManager : MonoBehaviour
     [Header("--- NEW FEATURE ---")]
     public Button browseButton; // <--- Kéo nút "Chọn File" vào đây
 
+    [Header("--- AUDIO ---")]
+    public AudioClip homeBGM;
+
     // Temp variables
     private string tempHostName;
     private string tempRoomId;
@@ -50,23 +53,36 @@ public class HomeUIManager : MonoBehaviour
 
     void Start()
     {
+        // --- AUDIO: Play Home BGM ---
+        if (AudioManager.Instance != null && homeBGM != null)
+        {
+            AudioManager.Instance.PlayBGM(homeBGM);
+        }
+
         ShowPanel(joinPanel);
 
         // --- Gán sự kiện cho các nút ---
         joinButton.onClick.AddListener(OnJoinClicked);
+        joinButton.onClick.AddListener(PlayClickSound); // Audio
 
         confirmCreateButton.onClick.RemoveListener(OnConfirmHostSetup);
         confirmCreateButton.onClick.AddListener(OnConfirmHostSetup);
+        confirmCreateButton.onClick.AddListener(PlayClickSound); // Audio
 
         backButton.onClick.AddListener(OnBackClicked);
+        backButton.onClick.AddListener(PlayClickSound); // Audio
 
         if (openCreatePanelButton)
+        {
             openCreatePanelButton.onClick.AddListener(OnCreateRoomButton);
+            openCreatePanelButton.onClick.AddListener(PlayClickSound); // Audio
+        }
 
         // Gán sự kiện cho nút Chọn File (Browse)
         if (browseButton != null)
         {
             browseButton.onClick.AddListener(OnBrowseFileClicked);
+            browseButton.onClick.AddListener(PlayClickSound); // Audio
         }
 
         // 1. Kết nối Server ngay khi mở game
@@ -76,6 +92,11 @@ public class HomeUIManager : MonoBehaviour
         SocketClient.Instance.OnCheckRoomResult += HandleCheckRoomResult;
         SocketClient.Instance.OnCreateRoomResult -= HandleCreateRoomResult;
         SocketClient.Instance.OnCreateRoomResult += HandleCreateRoomResult;
+    }
+
+    void PlayClickSound()
+    {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayClickSound();
     }
 
     void OnDestroy()

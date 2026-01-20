@@ -100,9 +100,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76209d5c8e599e747a2daefc9340c1c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPaused: 0
   PlayerId: 
   IsLocal: 1
   moveSpeed: 5
+  networkSendInterval: 0.1
+  currentMonsterId: 
+  enemyCollisionSFX: {fileID: 8300000, guid: 2e68d5dc163fbce409dd9a4a16489369, type: 3}
+  gameFinishSFX: {fileID: 8300000, guid: 39960c91bf462a8429c409f42d1771a2, type: 3}
 --- !u!95 &4475226196333271508
 Animator:
   serializedVersion: 5

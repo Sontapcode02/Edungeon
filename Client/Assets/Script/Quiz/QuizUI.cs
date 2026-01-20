@@ -37,13 +37,18 @@ public class QuizUI : MonoBehaviour
 
     void Start()
     {
-        // Gán sự kiện Click cho 4 nút bấm
+        // Gán sự kiện cho 4 nút bấm
         for (int i = 0; i < optionButtons.Length; i++)
         {
             if (optionButtons[i] != null)
             {
                 int index = i;
                 optionButtons[i].onClick.AddListener(() => OnOptionSelected(index));
+                // --- AUDIO ---
+                optionButtons[i].onClick.AddListener(() =>
+                {
+                    if (AudioManager.Instance != null) AudioManager.Instance.PlayClickSound();
+                });
             }
         }
     }
@@ -120,6 +125,10 @@ public class QuizUI : MonoBehaviour
         onAnswerCallback?.Invoke(index);
     }
 
+    [Header("Audio")]
+    public AudioClip correctSFX;
+    public AudioClip wrongSFX;
+
     /// <summary>
     /// Hiển thị thông báo Đúng/Sai từ Server gửi về
     /// </summary>
@@ -127,6 +136,19 @@ public class QuizUI : MonoBehaviour
     {
         if (resultPanel) resultPanel.gameObject.SetActive(true);
         if (resultText) resultText.text = resultMessage;
+
+        // --- AUDIO ---
+        if (AudioManager.Instance != null)
+        {
+            if (resultMessage.Contains("Đúng") || resultMessage.ToLower().Contains("correct"))
+            {
+                AudioManager.Instance.PlaySFX(correctSFX);
+            }
+            else
+            {
+                AudioManager.Instance.PlaySFX(wrongSFX);
+            }
+        }
 
         // Đóng Quiz sau 1.5 giây (Dùng WaitForSecondsRealtime vì game đang Pause)
         StartCoroutine(CloseQuizAfterDelay(1.5f));

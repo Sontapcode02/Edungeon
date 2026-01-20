@@ -67,7 +67,10 @@ public class MessageHandler : MonoBehaviour
         {
             if (spectatorCameraPrefab)
             {
-                Vector3 spawnPos = (hostSpawnPoint != null) ? hostSpawnPoint.position : new Vector3(0, 0, -10);
+                if (spawnPoint == null) Debug.LogWarning("⚠️ MessageHandler: spawnPoint is NULL! Using default (0,0,-10).");
+                else Debug.Log($"✅ MessageHandler: Spawning Host at spawnPoint: {spawnPoint.position}");
+
+                Vector3 spawnPos = (spawnPoint != null) ? spawnPoint.position : new Vector3(0, 0, -10);
                 Instantiate(spectatorCameraPrefab, spawnPos, Quaternion.identity);
             }
             if (hostControlUI) hostControlUI.SetActive(true);

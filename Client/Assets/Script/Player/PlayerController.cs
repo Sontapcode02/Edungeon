@@ -184,6 +184,10 @@ public class PlayerController : MonoBehaviour
     }
 
     // --- VA CHẠM QUÁI ---
+    [Header("Audio")]
+    public AudioClip enemyCollisionSFX;
+    public AudioClip gameFinishSFX;
+
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (!IsLocal || isProcessingCollision) return;
@@ -198,6 +202,9 @@ public class PlayerController : MonoBehaviour
                 Debug.Log($"<color=cyan>Đại ca ơi, con {mId} này mình làm rồi, đi tiếp thôi!</color>");
                 return;
             }
+
+            // --- AUDIO ---
+            if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(enemyCollisionSFX);
 
             isProcessingCollision = true;
             currentMonsterId = mId;
@@ -215,6 +222,9 @@ public class PlayerController : MonoBehaviour
         if (collision.CompareTag("Finish"))
         {
             Debug.Log("<color=green>🏁 CHÚC MỪNG! ĐẠI CA ĐÃ VỀ ĐÍCH!</color>");
+
+            // --- AUDIO ---
+            if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(gameFinishSFX);
 
             // Gửi lệnh về Server để tính thời gian và xếp hạng
             SocketClient.Instance.Send(new Packet
