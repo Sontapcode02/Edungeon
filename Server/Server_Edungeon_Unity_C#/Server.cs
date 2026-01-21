@@ -24,30 +24,37 @@ namespace GameServer
 
         public void Start()
         {
-            // 1. TCP Listener (Legacy / Editor)
-            _listener = new TcpListener(IPAddress.Any, _port);
-            _listener.Start();
-            _isRunning = true;
-            Console.WriteLine($"[Server] TCP Started on port {_port}. Waiting for clients...");
-
-            Thread acceptThread = new Thread(AcceptClients);
-            acceptThread.Start();
-
-            // 2. WebSocket Listener (WebGL)
+            // 1. WebSocket Listener (Primary for WebGL/Render)
             try
             {
                 _httpListener = new HttpListener();
-                // Listen on port + 3 (e.g. 7780) because 7778 is busy
-                _httpListener.Prefixes.Add($"http://*:{_port + 3}/");
+                // Listen on PROXY Port (e.g. 7780)
+                _httpListener.Prefixes.Add($"http://*:{_port}/");
                 _httpListener.Start();
-                Console.WriteLine($"[Server] WebSocket Started on port {_port + 3}. Waiting for WebGL clients...");
+                Console.WriteLine($"[Server] WebSocket Started on port {_port}. Waiting for WebGL clients...");
 
                 Task.Run(AcceptWebSockets);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Server] Upload failed to start WebSocket Listener: {ex.Message}");
-                Console.WriteLine("Make sure to run as Administrator or add urlacl reservation.");
+                Console.WriteLine($"[Server] Failed to start WebSocket Listener: {ex.Message}");
+            }
+
+            // 2. TCP Listener (Legacy / Editor / Secondary)
+            try
+            {
+                int tcpPort = _port + 1;
+                _listener = new TcpListener(IPAddress.Any, tcpPort);
+                _listener.Start();
+                _isRunning = true;
+                Console.WriteLine($"[Server] TCP Started on port {tcpPort}. Waiting for Editor clients...");
+
+                Thread acceptThread = new Thread(AcceptClients);
+                acceptThread.Start();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Server] TCP Listener failed: {ex.Message}");
             }
         }
 
