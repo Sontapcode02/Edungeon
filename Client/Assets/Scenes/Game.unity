@@ -8402,6 +8402,8 @@ MonoBehaviour:
   playerPrefabs:
   - {fileID: 9118338774741821019, guid: bfb06d0d2cd79a54f83f247610b43d51, type: 3}
   - {fileID: 9206208414828873169, guid: 9292df150e80fb94284a543b7416315e, type: 3}
+  - {fileID: 2501026921783753498, guid: 80ea8b2c38275e744a529351e3839792, type: 3}
+  - {fileID: 6632043076476995292, guid: cd53127214b68cd40b20f648cdba4827, type: 3}
   playersContainer: {fileID: 1460553100}
   spawnPoint: {fileID: 1934285437}
   quizUI: {fileID: 1736056491}

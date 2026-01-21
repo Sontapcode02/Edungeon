@@ -15,15 +15,15 @@ public class NotificationUI : MonoBehaviour
         if (messagePanel != null) messagePanel.SetActive(false);
     }
 
-    // Hàm đếm ngược mới cho đại ca
+    // New Countdown function
     public void StartCountdown(int seconds, Action onFinished)
     {
         StartCoroutine(CountdownCoroutine(seconds, onFinished));
     }
 
     [Header("Audio")]
-    public AudioClip countdownSFX; // Tiếng Beep
-    public AudioClip gameBGM;      // Nhạc nền trong game (thay thế Home BGM)
+    public AudioClip countdownSFX; // Beep SFX
+    public AudioClip gameBGM;      // In-game BGM (replaces Home BGM)
 
     private IEnumerator CountdownCoroutine(int seconds, Action onFinished)
     {
@@ -32,7 +32,7 @@ public class NotificationUI : MonoBehaviour
         while (seconds > 0)
         {
             messageText.text = seconds.ToString();
-            // Phóng to chữ một chút cho kịch tính
+            // Scale up text for dramatic effect
             messageText.transform.localScale = Vector3.one * 1.5f;
 
             // --- AUDIO: Beep ---
@@ -42,7 +42,7 @@ public class NotificationUI : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
 
-        messageText.text = "BẮT ĐẦU!";
+        messageText.text = "GO!";
 
         // --- AUDIO: Switch BGM ---
         if (AudioManager.Instance != null && gameBGM != null)
@@ -53,7 +53,7 @@ public class NotificationUI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         messagePanel.SetActive(false);
-        // Sau khi đếm xong thì thực hiện hành động (mở khóa di chuyển)
+        // Execute action after countdown (unlock movement)
         onFinished?.Invoke();
     }
 

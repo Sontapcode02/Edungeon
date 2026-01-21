@@ -8,9 +8,9 @@ public class SummaryUI : MonoBehaviour
     public static SummaryUI Instance;
 
     [Header("UI References")]
-    public GameObject summaryPanel; // Kéo cái Panel tổng kết vào đây
-    public Transform container;     // Kéo cái Content của ScrollView vào đây
-    public GameObject rowPrefab;    // Kéo cái Prefab dòng kết quả vào đây
+    public GameObject summaryPanel; // Drag Summary Panel here
+    public Transform container;     // Drag ScrollView Content here
+    public GameObject rowPrefab;    // Drag Result Row Prefab here
 
     void Awake()
     {
@@ -20,11 +20,11 @@ public class SummaryUI : MonoBehaviour
 
     public void DisplaySummary(string json)
     {
-        // Phải để hàm này ở ngoài các hàm khác, nằm trực tiếp trong class
+        // Must keep this function outside others, directly in class
         var list = JsonConvert.DeserializeObject<List<FinalResultData>>(json);
         summaryPanel.SetActive(true);
 
-        // Xóa các dòng cũ
+        // Clear old rows
         foreach (Transform child in container)
         {
             Destroy(child.gameObject);
@@ -37,16 +37,16 @@ public class SummaryUI : MonoBehaviour
 
             if (texts.Length >= 4)
             {
-                texts[0].text = (i + 1).ToString();      // Hạng
-                texts[1].text = list[i].name;            // Tên
-                texts[2].text = list[i].score.ToString(); // Điểm
-                texts[3].text = string.Format("{0:0.0}s", list[i].time); // Thời gian
+                texts[0].text = (i + 1).ToString();      // Rank
+                texts[1].text = list[i].name;            // Name
+                texts[2].text = list[i].score.ToString(); // Score
+                texts[3].text = string.Format("{0:0.0}s", list[i].time); // Time
             }
         }
     }
 }
 
-// Class dữ liệu để hứng JSON
+// Data class to catch JSON
 public class FinalResultData
 {
     public string name;

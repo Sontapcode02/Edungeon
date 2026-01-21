@@ -2,19 +2,19 @@
 
 public class SpectatorController : MonoBehaviour
 {
-    public float panSpeed = 20f;   // Tốc độ di chuyển
-    public float zoomSpeed = 5f;   // Tốc độ zoom
-    public float minZoom = 5f;     // Zoom gần nhất
-    public float maxZoom = 20f;    // Zoom xa nhất
+    public float panSpeed = 20f;   // Movement speed
+    public float zoomSpeed = 5f;   // Zoom speed
+    public float minZoom = 5f;     // Min zoom
+    public float maxZoom = 20f;    // Max zoom
 
     [Header("Map Limits (Relative to Spawn)")]
     public bool useMapLimit = true;
-    [Tooltip("Giới hạn Trái/Dưới so với vị trí ban đầu (VD: -50, -50)")]
+    [Tooltip("Left/Bottom limit relative to start (e.g. -50, -50)")]
     public Vector2 limitOffsetMin = new Vector2(-50, -50);
-    [Tooltip("Giới hạn Phải/Trên so với vị trí ban đầu (VD: 50, 50)")]
+    [Tooltip("Right/Top limit relative to start (e.g. 50, 50)")]
     public Vector2 limitOffsetMax = new Vector2(50, 50);
 
-    // Biến private để lưu giới hạn thực tế sau khi cộng spawn pos
+    // Private vars to store actual bounds after adding spawn pos
     private Vector2 _actualMinBounds;
     private Vector2 _actualMaxBounds;
 
@@ -25,7 +25,7 @@ public class SpectatorController : MonoBehaviour
         myCam = GetComponentInChildren<Camera>(); // Fixed: removed local declaration shadowing field
         if (myCam == null)
         {
-            Debug.LogError("LỖI: Script này phải gắn vào GameObject có chứa Camera!");
+            Debug.LogError("ERROR: This script must be attached to a GameObject with a Camera!");
         }
 
         // --- FIX AUDIO LISTENER CONFLICT ---
@@ -64,17 +64,17 @@ public class SpectatorController : MonoBehaviour
 
     void Update()
     {
-        // 1. Lấy tín hiệu từ bàn phím (Cả WASD và Mũi tên đều nhận)
-        float h = Input.GetAxis("Horizontal"); // Trái/Phải (A/D, Mũi tên)
-        float v = Input.GetAxis("Vertical");   // Lên/Xuống (W/S, Mũi tên)
+        // 1. Get keyboard input (WASD and Arrows)
+        float h = Input.GetAxis("Horizontal"); // Left/Right
+        float v = Input.GetAxis("Vertical");   // Up/Down
 
-        // Debug xem phím có ăn không
+        // Debug input
         if (h != 0 || v != 0)
         {
             // Debug.Log($"Đang bấm di chuyển: {h}, {v}");
         }
 
-        // 2. Tính toán vị trí mới
+        // 2. Calculate new position
         Vector3 pos = transform.position;
         pos.x += h * panSpeed * Time.deltaTime;
         pos.y += v * panSpeed * Time.deltaTime;
@@ -87,7 +87,7 @@ public class SpectatorController : MonoBehaviour
 
         transform.position = pos;
 
-        // 3. Xử lý Zoom (Lăn chuột)
+        // 3. Handle Zoom (Scroll Wheel)
         if (myCam != null)
         {
             float scroll = Input.GetAxis("Mouse ScrollWheel");

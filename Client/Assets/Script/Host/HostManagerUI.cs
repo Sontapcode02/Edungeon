@@ -1,19 +1,19 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // Đảm bảo đại ca đã cài TextMeshPro
+using TMPro; // Ensure TextMeshPro is installed
 
 public class HostUIManager : MonoBehaviour
 {
     [Header("UI Components")]
-    public Button actionBtn;           // Nút bấm chính (Start/Pause/Resume)
-    public TextMeshProUGUI btnText;    // Text hiển thị trên nút
+    public Button actionBtn;           // Main Action Button (Start/Pause/Resume)
+    public TextMeshProUGUI btnText;    // Text on button
 
     [Header("Settings")]
     public Color startColor = Color.green;
     public Color pauseColor = Color.yellow;
     public Color resumeColor = Color.cyan;
 
-    // Các trạng thái của Game
+    // Game States
     private enum GameState { Ready, Playing, Paused }
     private GameState currentState = GameState.Ready;
 
@@ -21,10 +21,10 @@ public class HostUIManager : MonoBehaviour
     {
         if (actionBtn != null)
         {
-            // Gán sự kiện Click cho nút
+            // Assign Click event
             actionBtn.onClick.AddListener(HandleButtonClick);
 
-            // Khởi tạo trạng thái ban đầu cho nút
+            // Init button state
             UpdateBtnUI("START", startColor);
         }
     }
@@ -34,7 +34,7 @@ public class HostUIManager : MonoBehaviour
         switch (currentState)
         {
             case GameState.Ready:
-                // --- TRẠNG THÁI: CHUẨN BỊ BẮT ĐẦU ---
+                // --- STATE: READY TO START ---
                 SendHostAction("START_GAME");
                 UpdateBtnUI("PAUSE", pauseColor);
                 currentState = GameState.Playing;
@@ -42,7 +42,7 @@ public class HostUIManager : MonoBehaviour
                 break;
 
             case GameState.Playing:
-                // --- TRẠNG THÁI: ĐANG CHƠI -> BẤM ĐỂ TẠM DỪNG ---
+                // --- STATE: PLAYING -> CLICK TO PAUSE ---
                 SendHostAction("PAUSE_GAME");
                 UpdateBtnUI("RESUME", resumeColor);
                 currentState = GameState.Paused;
@@ -50,7 +50,7 @@ public class HostUIManager : MonoBehaviour
                 break;
 
             case GameState.Paused:
-                // --- TRẠNG THÁI: ĐANG DỪNG -> BẤM ĐỂ CHƠI TIẾP ---
+                // --- STATE: PAUSED -> CLICK TO RESUME ---
                 SendHostAction("RESUME_GAME");
                 UpdateBtnUI("PAUSE", pauseColor);
                 currentState = GameState.Playing;
@@ -59,17 +59,17 @@ public class HostUIManager : MonoBehaviour
         }
     }
 
-    // Hàm cập nhật giao diện nút bấm
+    // Update Button UI
     private void UpdateBtnUI(string text, Color color)
     {
         if (btnText != null) btnText.text = text;
 
-        // Đổi màu nền nút cho đại ca dễ nhìn
+        // Change button visual for clarity
         Image btnImg = actionBtn.GetComponent<Image>();
         if (btnImg != null) btnImg.color = color;
     }
 
-    // Gửi gói tin lên Server
+    // Send packet to Server
     private void SendHostAction(string actionName)
     {
         if (SocketClient.Instance != null)
@@ -82,7 +82,7 @@ public class HostUIManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("SocketClient chưa được khởi tạo đại ca ơi!");
+            Debug.LogError("SocketClient not initialized!");
         }
     }
 }

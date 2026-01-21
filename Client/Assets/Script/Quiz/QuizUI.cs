@@ -6,22 +6,22 @@ using System.Collections.Generic;
 
 public class QuizUI : MonoBehaviour
 {
-    // 1. Singleton để các script khác (như MessageHandler) gọi dễ dàng
+    // 1. Singleton for easy access from other scripts
     public static QuizUI Instance;
 
     [Header("UI References")]
-    public GameObject quizPanel;          // Kéo Quiz_banner vào đây
-    public TextMeshProUGUI questionText; // Kéo Text câu hỏi vào đây
-    public Button[] optionButtons = new Button[4]; // Danh sách 4 nút đáp án
-    public TextMeshProUGUI resultText;   // Text báo Đúng/Sai
-    public GameObject resultPanel;            // Panel chứa text kết quả
+    public GameObject quizPanel;          // Drag Quiz_banner here
+    public TextMeshProUGUI questionText; // Drag Question Text here
+    public Button[] optionButtons = new Button[4]; // List of 4 option buttons
+    public TextMeshProUGUI resultText;   // Correct/Wrong text
+    public GameObject resultPanel;            // Panel containing result text
 
     private bool isQuizActive = false;
     private System.Action<int> onAnswerCallback;
 
     void Awake()
     {
-        // Khởi tạo Singleton ngay khi game chạy
+        // Init Singleton immediately
         if (Instance == null)
         {
             Instance = this;
@@ -31,13 +31,13 @@ public class QuizUI : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // Đảm bảo Banner ẩn lúc mới vào game
+        // Ensure Banner is hidden on start
         if (quizPanel != null) quizPanel.SetActive(false);
     }
 
     void Start()
     {
-        // Gán sự kiện cho 4 nút bấm
+        // Assign events to 4 buttons
         for (int i = 0; i < optionButtons.Length; i++)
         {
             if (optionButtons[i] != null)
@@ -54,37 +54,37 @@ public class QuizUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Hiển thị bảng câu hỏi lên màn hình
+    /// Show quiz panel on screen
     /// </summary>
     public void ShowQuiz(QuestionData quiz, System.Action<int> callback)
     {
         if (resultPanel != null)
         {
-            resultPanel.SetActive(false); // Ẩn cái bảng kết quả đi
+            resultPanel.SetActive(false); // Hide result panel
         }
         if (resultText != null)
         {
-            resultText.text = ""; // Xóa chữ "Chính xác/Sai rồi" cũ đi cho sạch
+            resultText.text = ""; // Clear old Correct/Wrong text
         }
-        // Log kiểm tra xem hàm có thực sự được gọi không
-        Debug.Log($"🔍 [CHECK] Hàm ShowQuiz ĐÃ CHẠY từ Object: {gameObject.name}", gameObject);
+        // Check if function is running
+        Debug.Log($"🔍 [CHECK] ShowQuiz RUNNING from Object: {gameObject.name}", gameObject);
 
         if (quiz == null) return;
 
-        // KIỂM TRA AN TOÀN: Nếu chưa kéo dây trong Inspector sẽ báo lỗi ngay
+        // SAFETY CHECK: If not assigned in Inspector, log error
         if (quizPanel == null)
         {
-            Debug.LogError($"❌ [QuizUI] Thằng {gameObject.name} bị thiếu Quiz Panel! Kiểm tra lại Inspector ngay.", this);
+            Debug.LogError($"❌ [QuizUI] {gameObject.name} missing Quiz Panel! Check Inspector.", this);
             return;
         }
 
         onAnswerCallback = callback;
         isQuizActive = true;
 
-        // 1. Đánh thức Object này dậy (nếu nó đang bị tắt ở Hierarchy)
+        // 1. Activate this Object (if disabled in Hierarchy)
         this.gameObject.SetActive(true);
 
-        // 2. Hiện Banner và đổ dữ liệu
+        // 2. Show Banner and fill data
         quizPanel.SetActive(true);
         questionText.text = quiz.question;
 
@@ -104,10 +104,10 @@ public class QuizUI : MonoBehaviour
 
         if (resultPanel) resultPanel.gameObject.SetActive(false);
 
-        // 3. Tạm dừng game để tập trung trả lời câu hỏi
+        // 3. Pause game to focus on answering
         Time.timeScale = 0f;
 
-        Debug.Log($"✅ [UI CHECK] Panel đang hiển thị: {quizPanel.activeSelf} | TimeScale: {Time.timeScale}");
+        Debug.Log($"✅ [UI CHECK] Panel showing: {quizPanel.activeSelf} | TimeScale: {Time.timeScale}");
     }
 
     void OnOptionSelected(int index)
@@ -115,13 +115,13 @@ public class QuizUI : MonoBehaviour
         if (!isQuizActive) return;
         isQuizActive = false;
 
-        // Khóa các nút lại để tránh spam click
+        // Lock buttons to avoid spam click
         foreach (var btn in optionButtons)
         {
             if (btn != null) btn.interactable = false;
         }
 
-        // Gửi kết quả về MessageHandler để báo lên Server
+        // Send result to MessageHandler to report to Server
         onAnswerCallback?.Invoke(index);
     }
 
@@ -130,7 +130,7 @@ public class QuizUI : MonoBehaviour
     public AudioClip wrongSFX;
 
     /// <summary>
-    /// Hiển thị thông báo Đúng/Sai từ Server gửi về
+    /// Show Correct/Wrong notification from Server
     /// </summary>
     public void ShowResult(string resultMessage)
     {
@@ -140,10 +140,8 @@ public class QuizUI : MonoBehaviour
         // --- AUDIO ---
         if (AudioManager.Instance != null)
         {
-            // [FIXED] Thêm "CHÍNH XÁC" để khớp với Server
-            if (resultMessage.Contains("Đúng") ||
-                resultMessage.ToLower().Contains("correct") ||
-                resultMessage.Contains("CHÍNH XÁC"))
+            // [FIXED] Updated to match English Server message
+            if (resultMessage.ToUpper().Contains("CORRECT"))
             {
                 AudioManager.Instance.PlaySFX(correctSFX);
             }
@@ -153,7 +151,7 @@ public class QuizUI : MonoBehaviour
             }
         }
 
-        // Đóng Quiz sau 1.5 giây (Dùng WaitForSecondsRealtime vì game đang Pause)
+        // Close Quiz after 1.5s (Use WaitForSecondsRealtime because game is Paused)
         StartCoroutine(CloseQuizAfterDelay(1.5f));
     }
 
@@ -168,8 +166,8 @@ public class QuizUI : MonoBehaviour
         isQuizActive = false;
         if (quizPanel) quizPanel.SetActive(false);
 
-        // Cho game chạy tiếp tục
+        // Resume game
         Time.timeScale = 1f;
-        Debug.Log(">>> Quiz đã đóng, game tiếp tục!");
+        Debug.Log(">>> Quiz closed, game resumed!");
     }
 }

@@ -202,12 +202,22 @@ namespace GameServer
 
         void HandleHostAction(string actionName)
         {
-            if (actionName == "START_GAME" && _session.CurrentRoom != null)
+            if (_session.CurrentRoom == null) return;
+
+            // Security check: Only Host can perform actions
+            if (_session.PlayerId != _session.CurrentRoom.HostId) return;
+
+            if (actionName == "START_GAME")
             {
                 Console.WriteLine($"Host {_session.PlayerId} started game. Broadcasting OPEN_GATE...");
                 _session.CurrentRoom.StartTime = DateTime.Now;
                 _session.CurrentRoom.IsGameStarted = true;
                 _session.CurrentRoom.Broadcast(new Packet { type = "OPEN_GATE", payload = "" });
+            }
+            else if (actionName == "PAUSE_GAME" || actionName == "RESUME_GAME")
+            {
+                // Delegate to Room's HandlePacket which already has logic for these types
+                _session.CurrentRoom.HandlePacket(_session, new Packet { type = actionName, payload = "" });
             }
         }
 

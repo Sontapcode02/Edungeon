@@ -12,14 +12,14 @@ namespace GameServer
         public string RoomId { get; private set; }
         public string HostId { get; private set; }
 
-        // Dictionary lưu người chơi
+        // Dictionary storing players
         public Dictionary<string, PlayerSession> Players = new Dictionary<string, PlayerSession>();
 
-        // Danh sách câu hỏi
+        // List of questions
         public List<QuestionData> Questions { get; set; } = new List<QuestionData>();
 
         public bool IsChatMuted { get; private set; } = false;
-        public DateTime StartTime { get; set; } // Thời điểm Host bấm Start
+        public DateTime StartTime { get; set; } // Time when Host starts the game
         public bool IsGameStarted { get; set; } = false;
         private DateTime? pauseStartTime;
         public Room(string roomId, string hostId)
@@ -28,7 +28,7 @@ namespace GameServer
             HostId = hostId;
         }
 
-        // --- QUẢN LÝ CÂU HỎI ---
+        // --- QUESTION MANAGEMENT ---
         public QuestionData GetRandomQuestion()
         {
             if (Questions == null || Questions.Count == 0) return null;
@@ -51,28 +51,28 @@ namespace GameServer
                 Players.Add(session.PlayerId, session);
                 session.CurrentRoom = this;
 
-                // --- [FIX LỖI JSON Ở ĐÂY] ---
-                // Thay vì gửi mỗi cái tên, ta gửi cả cục PlayerState (JSON)
+                // --- [FIX JSON ERROR HERE] ---
+                // Instead of sending just the name, send the full PlayerState (JSON)
                 PlayerState newState = new PlayerState
                 {
                     playerId = session.PlayerId,
                     playerName = session.PlayerName,
-                    x = 0, // Vị trí mặc định
+                    x = 0, // Default position
                     y = 0,
                     score = 0
                 };
 
                 string jsonState = JsonConvert.SerializeObject(newState);
 
-                // Gửi cho tất cả người cũ biết có người mới vào
+                // Broadcast to existing players that a new player joined
                 Broadcast(new Packet
                 {
                     type = "PLAYER_JOINED",
-                    payload = jsonState // Gửi JSON chuẩn
+                    payload = jsonState // Send standard JSON
                 });
 
-                // Gửi danh sách người chơi hiện tại cho người mới
-                SyncPlayers(session); // Gửi riêng cho người mới
+                // Send current player list to the new player
+                SyncPlayers(session); // Send specifically to new player
 
                 Console.WriteLine($"[Room {RoomId}] {session.PlayerName} joined.");
             }
@@ -85,11 +85,11 @@ namespace GameServer
                 Players.Remove(session.PlayerId);
                 session.CurrentRoom = null;
 
-                // Gửi ID người thoát để Client xóa nhân vật
+                // Send ID of leaver so Client can remove character
                 Broadcast(new Packet
                 {
                     type = "PLAYER_LEFT",
-                    payload = session.PlayerId // Client mong chờ ID (string), cái này OK
+                    payload = session.PlayerId // Client expects ID (string)
                 });
 
                 if (session.PlayerId == HostId)
@@ -104,7 +104,7 @@ namespace GameServer
             foreach (var player in Players.Values)
             {
                 player.CurrentRoom = null;
-                player.Send(new Packet { type = "ROOM_DESTROYED", payload = "Host đã thoát." });
+                player.Send(new Packet { type = "ROOM_DESTROYED", payload = "Host has left." });
             }
             Players.Clear();
             Questions.Clear();
@@ -123,7 +123,7 @@ namespace GameServer
         {
             if (IsChatMuted && sender.PlayerId != HostId)
             {
-                sender.Send(new Packet { type = "ERROR", payload = "Chat đang bị khóa!" });
+                sender.Send(new Packet { type = "ERROR", payload = "Chat is muted!" });
                 return;
             }
             string fullMsg = $"{sender.PlayerName}: {message}";
@@ -143,17 +143,24 @@ namespace GameServer
             switch (packet.type)
             {
                 case "MOVE":
-                    try { 
-                    // Broadcast vị trí JSON cho người khác
-                    Broadcast(new Packet
+                    try
                     {
-                        type = "MOVE",
-                        playerId = session.PlayerId,
-                        payload = packet.payload // Payload này từ Client gửi lên đã là JSON PlayerState rồi
-                    });
-                        } catch (Exception ex)
+                        // 1. Deserialize to update Server state
+                        var moveState = JsonConvert.DeserializeObject<PlayerState>(packet.payload);
+                        session.LastX = moveState.x;
+                        session.LastY = moveState.y;
+
+                        // 2. Broadcast position JSON to others
+                        Broadcast(new Packet
+                        {
+                            type = "MOVE",
+                            playerId = session.PlayerId,
+                            payload = packet.payload
+                        });
+                    }
+                    catch (Exception ex)
                     {
-                        Console.WriteLine($"[Room {RoomId}] Lỗi xử lý MOVE: {ex.Message}");
+                        Console.WriteLine($"[Room {RoomId}] MOVE Error: {ex.Message}");
                     }
                     break;
 
@@ -162,9 +169,9 @@ namespace GameServer
                     try
                     {
                         string monsterId = packet.payload;
-                        if (session.CompletedMilestones.Contains(monsterId.GetHashCode())) // Ép về int để khớp với HashSet<int>
+                        if (session.CompletedMilestones.Contains(monsterId.GetHashCode())) // Cast to int to match HashSet<int>
                         {
-                            session.Send(new Packet { type = "ERROR", payload = "Quái này đại ca đã đánh bại rồi!" });
+                            session.Send(new Packet { type = "ERROR", payload = "You have already defeated this monster!" });
                             return;
                         }
                         if (session.CurrentQuestionIndex < this.Questions.Count)
@@ -174,13 +181,13 @@ namespace GameServer
                         }
                         else
                         {
-                            session.Send(new Packet { type = "OUT_OF_QUESTIONS", payload = "Đại ca đã phá đảo tất cả câu hỏi!" });
+                            session.Send(new Packet { type = "OUT_OF_QUESTIONS", payload = "You have answered all questions!" });
                         }
                     }
                     catch (Exception ex)
                     {
                         // Nếu lỗi xảy ra, in ra console thay vì để luồng xử lý bị chết
-                        Console.WriteLine($"❌ [CRITICAL] Lỗi REQUEST_QUESTION của {session.PlayerName}: {ex.Message}");
+                        Console.WriteLine($"❌ [CRITICAL] WARNING REQUEST_QUESTION from {session.PlayerName}: {ex.Message}");
                     }
                     break;
 
@@ -193,26 +200,26 @@ namespace GameServer
 
                         var currentQ = this.Questions[session.CurrentQuestionIndex];
 
-                        // --- DÙ ĐÚNG HAY SAI CŨNG LƯU MILESTONE ---
+                        // --- SAVE MILESTONE REGARDLESS OF ACCURACY ---
                         session.CompletedMilestones.Add(mId.GetHashCode());
-                        session.CurrentQuestionIndex++; // Tăng index để lần sau ra câu tiếp theo
+                        session.CurrentQuestionIndex++; // Increment index for next question
 
                         if (selectedIndex == currentQ.correctIndex)
                         {
                             session.Score += 10;
-                            session.Send(new Packet { type = "ANSWER_RESULT", payload = "CHÍNH XÁC!" });
+                            session.Send(new Packet { type = "ANSWER_RESULT", payload = "CORRECT!" });
 
                         }
                         else
                         {
-                            session.Send(new Packet { type = "ANSWER_RESULT", payload = "SAI RỒI!" });
-                            // Vẫn gửi gói tin này để Client biết mà làm mờ con quái
+                            session.Send(new Packet { type = "ANSWER_RESULT", payload = "WRONG!" });
+                            // Still send packet so Client knows to fade the monster
                         }
                         BroadcastLeaderboard();
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"❌ Lỗi ANSWER: {ex.Message}");
+                        Console.WriteLine($"❌ ANSWER Error: {ex.Message}");
                     }
                     break;
                 case "REACHED_FINISH":
@@ -222,19 +229,19 @@ namespace GameServer
                         TimeSpan elapsed = DateTime.Now - this.StartTime;
                         session.FinishTime = (float)elapsed.TotalSeconds;
 
-                        Console.WriteLine($"[FINISH] {session.PlayerName} về đích: {session.FinishTime:F2}s");
+                        Console.WriteLine($"[FINISH] {session.PlayerName} reached finish line: {session.FinishTime:F2}s");
 
-                        // 1. Cập nhật Leaderboard ngay lập tức
+                        // 1. Update Leaderboard immediately
                         BroadcastLeaderboard();
 
-                        // 2. Kiểm tra xem tất cả các Player (không tính Host) đã về đích hết chưa
+                        // 2. Check if all Players (excluding Host) have finished
                         bool allFinished = Players.Values
                             .Where(p => p.PlayerId != HostId)
                             .All(p => p.HasReachedFinish);
 
                         if (allFinished)
                         {
-                            Console.WriteLine("🏁 Tất cả đã về đích! Đang gửi bảng tổng kết...");
+                            Console.WriteLine("🏁 All finished! Sending summary...");
                             SendFinalSummary();
                         }
                     }
@@ -243,29 +250,30 @@ namespace GameServer
 
                 case "PAUSE_GAME":
                     pauseStartTime = DateTime.Now;
-                    Broadcast(new Packet { type = "GAME_PAUSED", payload = "Trận đấu tạm dừng!" });
+                    Broadcast(new Packet { type = "GAME_PAUSED", payload = "Game Paused!" });
                     break;
 
                 case "RESUME_GAME":
                     if (pauseStartTime.HasValue)
-                     {
+                    {
                         TimeSpan pauseDuration = DateTime.Now - pauseStartTime.Value;
                         this.StartTime = this.StartTime.Add(pauseDuration);
-                        pauseStartTime = null; // Reset lại
-                     }
-                    Broadcast(new Packet { type = "GAME_RESUMED", payload = "Tiếp tục đua nào!" });
+                        pauseStartTime = null; // Reset
+                    }
+                    Broadcast(new Packet { type = "GAME_RESUMED", payload = "Game Resumed!" });
                     break;
-               }
+            }
         }
 
         private void SendFinalSummary()
         {
-            // Sắp xếp: Score Cao -> Time Thấp
+            // Sort: High Score -> Low Time
             var finalData = Players.Values
                 .Where(p => p.PlayerId != HostId)
                 .OrderByDescending(p => p.Score)
                 .ThenBy(p => p.FinishTime)
-                .Select(p => new {
+                .Select(p => new
+                {
                     name = p.PlayerName,
                     score = p.Score,
                     time = p.FinishTime
@@ -274,29 +282,29 @@ namespace GameServer
             string json = JsonConvert.SerializeObject(finalData);
             Broadcast(new Packet { type = "GAME_OVER_SUMMARY", payload = json });
 
-            // 3. Đợi 10 giây rồi đá người chơi ra (trừ Host)
+            // 3. Wait 10 seconds then kick players (except Host)
             Task.Delay(10000).ContinueWith(t => KickPlayersToHome());
         }
 
         private void KickPlayersToHome()
         {
-            // Copy danh sách ra một mảng tạm để tránh lỗi "Collection was modified"
+            // Copy list to temporary array to avoid "Collection was modified" error
             var playersToKick = Players.Values.Where(p => p.PlayerId != HostId).ToList();
 
             foreach (var player in playersToKick)
             {
-                player.Send(new Packet { type = "RETURN_TO_HOME", payload = "Game kết thúc!" });
-                // Không nên gọi Leave(player) ở đây ngay, hãy để Client tự thoát khi nhận lệnh
+                player.Send(new Packet { type = "RETURN_TO_HOME", payload = "Game Over!" });
+                // Should not call Leave(player) here immediately, let Client disconnect itself
             }
-            Console.WriteLine("🔔 Đã đá tất cả người chơi về Home (Trừ Host).");
+            Console.WriteLine("🔔 Kicked all players to Home (except Host).");
         }
         public void BroadcastLeaderboard()
         {
-            // Sắp xếp danh sách người chơi (loại bỏ Host)
+            // Sort player list (exclude Host)
             var rankedPlayers = Players.Values
                 .Where(p => p.PlayerId != HostId)
-                .OrderByDescending(p => p.Score)        // 1. Ưu tiên Score cao
-                .ThenBy(p => p.FinishTime)              // 2. Bằng Score thì ưu tiên thời gian ít (nhanh hơn)
+                .OrderByDescending(p => p.Score)        // 1. High Score priority
+                .ThenBy(p => p.FinishTime)              // 2. Same Score -> Lower Time priority
                 .ToList();
 
             List<PlayerProgress> progressList = new List<PlayerProgress>();
@@ -312,7 +320,7 @@ namespace GameServer
                     playerName = p.PlayerName,
                     score = p.Score,
                     progressPercentage = percent,
-                    // Đại ca có thể dùng isAlive làm cờ báo "Đã về đích" để UI đổi màu
+                    // Can use isAlive as "Finished" flag for UI coloring
                     isAlive = !p.HasReachedFinish
                 });
             }
@@ -321,11 +329,11 @@ namespace GameServer
             Broadcast(new Packet { type = "PROGRESS_UPDATE", payload = json });
         }
 
-        // --- [FIX LỖI JSON Ở ĐÂY] ---
-        // Hàm đồng bộ danh sách người chơi
+        // --- [FIX JSON ERROR HERE] ---
+        // Sync player list function
         private void SyncPlayers(PlayerSession newSession)
         {
-            // Tạo danh sách các PlayerState
+            // Create list of PlayerState
             List<PlayerState> states = new List<PlayerState>();
 
             foreach (var p in Players.Values)
@@ -334,14 +342,14 @@ namespace GameServer
                 {
                     playerId = p.PlayerId,
                     playerName = p.PlayerName,
-                    x = 0,
-                    y = 0
+                    x = p.LastX,
+                    y = p.LastY
                 });
             }
 
             string jsonList = JsonConvert.SerializeObject(states);
 
-            // Gửi riêng cho người mới vào
+            // Send specifically to new player
             newSession.Send(new Packet { type = "SYNC_PLAYERS", payload = jsonList });
         }
     }

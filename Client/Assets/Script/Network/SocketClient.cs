@@ -51,7 +51,9 @@ public class SocketClient : MonoBehaviour
     void Awake()
     {
         // [HOTFIX] Force use port 7780 to avoid Inspector caching old values
-        wsServerUrl = "ws://127.0.0.1:7780";
+        // [PRODUCTION] Public Render Server (WSS for Secure WebSocket)
+        wsServerUrl = "wss://edungeon-4.onrender.com";
+        // wsServerUrl = "ws://127.0.0.1:7780"; // [DEV] Localhost
 
         if (Instance == null) Instance = this;
         else Destroy(gameObject);

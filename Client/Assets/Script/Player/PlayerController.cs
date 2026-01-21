@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // Singleton để truy cập nhanh từ các script khác (như MessageHandler)
+    // Singleton for quick access from other scripts (like MessageHandler)
     public static PlayerController LocalInstance;
     public bool isPaused = false;
     private HashSet<string> localFinishedMonsters = new HashSet<string>();
@@ -18,10 +18,10 @@ public class PlayerController : MonoBehaviour
 
     [Header("Settings")]
     public float moveSpeed = 5f;
-    public float networkSendInterval = 0.1f; // Tối ưu gửi 10 gói/giây
+    public float networkSendInterval = 0.1f; // Optimized to send 10 packets/second
 
     [Header("State")]
-    public string currentMonsterId; // Lưu ID/Tên con quái đang đụng độ
+    public string currentMonsterId; // Store ID/Name of current monster encounter
     private bool isProcessingCollision = false;
 
     [Header("Networking Smoothing")]
@@ -72,7 +72,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// Khởi tạo nhân vật (Local hoặc Remote)
+    /// Initialize Player (Local or Remote)
     /// </summary>
     public void Initialize(string id, string name, bool local)
     {
@@ -102,17 +102,17 @@ public class PlayerController : MonoBehaviour
         if (IsLocal)
         {
             LocalInstance = this;
-            rb.bodyType = RigidbodyType2D.Dynamic; // Local dùng vật lý đầy đủ
+            rb.bodyType = RigidbodyType2D.Dynamic; // Local uses full physics
 
             // Setup Camera
             var vcam = FindObjectOfType<CinemachineVirtualCamera>();
             if (vcam != null) vcam.Follow = transform;
 
-            Debug.Log($"<color=green>[Local Player]</color> ID: {id}, Name: {name} đã sẵn sàng.");
+            Debug.Log($"<color=green>[Local Player]</color> ID: {id}, Name: {name} is ready.");
         }
         else
         {
-            rb.bodyType = RigidbodyType2D.Kinematic; // Remote chỉ nhận tọa độ
+            rb.bodyType = RigidbodyType2D.Kinematic; // Remote only receives coordinates
             serverSnapshots.Clear();
             serverSnapshots.Add(new PositionSnapshot(transform.position, Time.time));
         }
@@ -124,24 +124,24 @@ public class PlayerController : MonoBehaviour
     {
         if (IsLocal)
         {
-            // 1. Đọc Input
+            // 1. Read Input
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
             currentInput = new Vector2(h, v).normalized;
         }
         else
         {
-            // 2. Nội suy vị trí cho người chơi khác
+            // 2. Interpolate position for other players
             InterpolateMovement();
         }
         if (isPaused)
         {
-            // Reset vận tốc về 0 để nhân vật không bị trôi theo quán tính
+            // Reset velocity to 0 to prevent drifting
             rb.velocity = Vector2.zero;
             return;
         }
 
-        // 3. Xử lý Animation cho tất cả
+        // 3. Handle Animation for all
         UpdateAnimation();
     }
 
@@ -153,12 +153,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // --- DI CHUYỂN BẢN THÂN ---
+    // --- MOVE SELF ---
     void MoveLocalPlayer()
     {
         rb.MovePosition(rb.position + currentInput * moveSpeed * Time.fixedDeltaTime);
 
-        // Gửi tọa độ lên Server theo chu kỳ
+        // Send position to Server periodically
         if (Time.time - lastSendTime > networkSendInterval)
         {
             if (currentInput != Vector2.zero || Vector3.Distance(transform.position, lastPos) > 0.01f)
@@ -180,7 +180,7 @@ public class PlayerController : MonoBehaviour
         lastSendTime = Time.time;
     }
 
-    // --- NỘI SUY NGƯỜI CHƠI KHÁC ---
+    // --- INTERPOLATE OTHER PLAYERS ---
     public void OnServerDataReceived(Vector3 newPos)
     {
         if (IsLocal) return;
@@ -233,11 +233,11 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            anim.speed = 0f; // Dừng animation khi đứng im
+            anim.speed = 0f; // Stop animation when standing still
         }
     }
 
-    // --- VA CHẠM QUÁI ---
+    // --- MONSTER COLLISION ---
     [Header("Audio")]
     public AudioClip enemyCollisionSFX;
     public AudioClip gameFinishSFX;
@@ -250,10 +250,10 @@ public class PlayerController : MonoBehaviour
         {
             string mId = collision.gameObject.name;
 
-            // KIỂM TRA: Nếu con quái này mình làm xong rồi thì thôi, không xin câu hỏi nữa
+            // CHECK: If this monster is already finished, don't ask for question again
             if (localFinishedMonsters.Contains(mId))
             {
-                Debug.Log($"<color=cyan>Đại ca ơi, con {mId} này mình làm rồi, đi tiếp thôi!</color>");
+                Debug.Log($"<color=cyan>Hey boss, we finished {mId} already, let's keep moving!</color>");
                 return;
             }
 
@@ -275,12 +275,12 @@ public class PlayerController : MonoBehaviour
 
         if (collision.CompareTag("Finish"))
         {
-            Debug.Log("<color=green>🏁 CHÚC MỪNG! ĐẠI CA ĐÃ VỀ ĐÍCH!</color>");
+            Debug.Log("<color=green>🏁 CONGRATULATIONS! YOU REACHED THE FINISH LINE!</color>");
 
             // --- AUDIO ---
             if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(gameFinishSFX);
 
-            // Gửi lệnh về Server để tính thời gian và xếp hạng
+            // Send command to Server to calculate time and ranking
             SocketClient.Instance.Send(new Packet
             {
                 type = "REACHED_FINISH",
@@ -294,14 +294,14 @@ public class PlayerController : MonoBehaviour
         {
             localFinishedMonsters.Add(monsterName);
 
-            // HIỆU ỨNG: Làm mờ con quái đó đi (Chỉ máy đại ca thấy mờ)
+            // EFFECT: Fade out the monster (Local view only)
             GameObject monster = GameObject.Find(monsterName);
             if (monster != null)
             {
                 var renderer = monster.GetComponent<SpriteRenderer>();
                 if (renderer != null)
                 {
-                    renderer.color = new Color(0.5f, 0.5f, 0.5f, 0.5f); // Biến thành bóng ma
+                    renderer.color = new Color(0.5f, 0.5f, 0.5f, 0.5f); // Turn into ghost
                 }
             }
         }
