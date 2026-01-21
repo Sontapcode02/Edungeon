@@ -7,10 +7,16 @@ public class SpectatorController : MonoBehaviour
     public float minZoom = 5f;     // Zoom gần nhất
     public float maxZoom = 20f;    // Zoom xa nhất
 
-    [Header("Map Limits")]
+    [Header("Map Limits (Relative to Spawn)")]
     public bool useMapLimit = true;
-    public Vector2 minBounds = new Vector2(-50, -50);
-    public Vector2 maxBounds = new Vector2(50, 50);
+    [Tooltip("Giới hạn Trái/Dưới so với vị trí ban đầu (VD: -50, -50)")]
+    public Vector2 limitOffsetMin = new Vector2(-50, -50);
+    [Tooltip("Giới hạn Phải/Trên so với vị trí ban đầu (VD: 50, 50)")]
+    public Vector2 limitOffsetMax = new Vector2(50, 50);
+
+    // Biến private để lưu giới hạn thực tế sau khi cộng spawn pos
+    private Vector2 _actualMinBounds;
+    private Vector2 _actualMaxBounds;
 
     private Camera myCam;
 
@@ -22,19 +28,33 @@ public class SpectatorController : MonoBehaviour
             Debug.LogError("LỖI: Script này phải gắn vào GameObject có chứa Camera!");
         }
 
-        // Safety check: if spawned outside valid bounds, move to center
+        // --- FIX AUDIO LISTENER CONFLICT ---
+        // If this camera has a listener, disable others to prevent "2 Audio Listeners" warning
+        AudioListener myListener = GetComponentInChildren<AudioListener>();
+        if (myListener != null)
+        {
+            var allListeners = FindObjectsOfType<AudioListener>();
+            foreach (var l in allListeners)
+            {
+                if (l != myListener && l.enabled)
+                {
+                    l.enabled = false;
+                    Debug.Log($"🔊 SpectatorController: Disabled AudioListener on {l.gameObject.name} to avoid conflict.");
+                }
+            }
+        }
+
+        // Safety check: if spawned outside valid bounds, EXPAND bounds to include us
+        // instead of resetting position (which causes the bug).
         if (useMapLimit)
         {
-            Debug.Log($"📷 SpectatorController: Init Pos: {transform.position}. Bounds: {minBounds} to {maxBounds}");
-            float clampedX = Mathf.Clamp(transform.position.x, minBounds.x, maxBounds.x);
-            float clampedY = Mathf.Clamp(transform.position.y, minBounds.y, maxBounds.y);
+            // [NEW LOGIC] Calculate bounds relative to Spawn Point
+            Vector2 spawnPos = transform.position;
 
-            if (transform.position.x != clampedX || transform.position.y != clampedY)
-            {
-                Vector3 newPos = new Vector3((minBounds.x + maxBounds.x) / 2, (minBounds.y + maxBounds.y) / 2, transform.position.z);
-                Debug.LogWarning($"⚠️ SpectatorController: Out of bounds! Moving to center: {newPos}");
-                transform.position = newPos;
-            }
+            _actualMinBounds = spawnPos + limitOffsetMin;
+            _actualMaxBounds = spawnPos + limitOffsetMax;
+
+            Debug.Log($"📷 SpectatorController: Init Pos: {spawnPos}. Calculated Absolute Bounds: {_actualMinBounds} to {_actualMaxBounds}");
         }
         else
         {
@@ -61,8 +81,8 @@ public class SpectatorController : MonoBehaviour
 
         if (useMapLimit)
         {
-            pos.x = Mathf.Clamp(pos.x, minBounds.x, maxBounds.x);
-            pos.y = Mathf.Clamp(pos.y, minBounds.y, maxBounds.y);
+            pos.x = Mathf.Clamp(pos.x, _actualMinBounds.x, _actualMaxBounds.x);
+            pos.y = Mathf.Clamp(pos.y, _actualMinBounds.y, _actualMaxBounds.y);
         }
 
         transform.position = pos;

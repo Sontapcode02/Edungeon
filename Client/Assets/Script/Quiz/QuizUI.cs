@@ -140,7 +140,10 @@ public class QuizUI : MonoBehaviour
         // --- AUDIO ---
         if (AudioManager.Instance != null)
         {
-            if (resultMessage.Contains("Đúng") || resultMessage.ToLower().Contains("correct"))
+            // [FIXED] Thêm "CHÍNH XÁC" để khớp với Server
+            if (resultMessage.Contains("Đúng") ||
+                resultMessage.ToLower().Contains("correct") ||
+                resultMessage.Contains("CHÍNH XÁC"))
             {
                 AudioManager.Instance.PlaySFX(correctSFX);
             }

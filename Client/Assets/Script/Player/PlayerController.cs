@@ -12,7 +12,9 @@ public class PlayerController : MonoBehaviour
     private HashSet<string> localFinishedMonsters = new HashSet<string>();
     [Header("Identity")]
     public string PlayerId;
+    public string PlayerName;
     public bool IsLocal = false;
+    public TMPro.TextMeshPro playerNameText; // Reference to TextMeshPro component
 
     [Header("Settings")]
     public float moveSpeed = 5f;
@@ -35,15 +37,67 @@ public class PlayerController : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+
+        // [COLLISION SETUP]
+        // Set Player to Layer 3 (Unnamed User Layer)
+        int playerLayer = 3;
+        gameObject.layer = playerLayer;
+        // Ignore collision between Player Layer vs Player Layer
+        Physics2D.IgnoreLayerCollision(playerLayer, playerLayer, true);
+
+        // Auto-find TextMeshPro if not assigned
+        if (playerNameText == null)
+        {
+            playerNameText = GetComponentInChildren<TMPro.TextMeshPro>();
+            if (playerNameText == null) Debug.LogWarning($"⚠️ PlayerController: No TextMeshPro found on {gameObject.name}");
+            else Debug.Log($"✅ PlayerController: Found TextMeshPro on {gameObject.name}");
+        }
+
+        // Ensure Text is visible above sprites
+        if (playerNameText != null)
+        {
+            var meshRenderer = playerNameText.GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+            {
+                // Force VERY high sorting order to cover everything
+                meshRenderer.sortingOrder = 5000;
+                meshRenderer.sortingLayerName = "Default";
+
+                // Also check if text is on the "UI" layer instead of "Default"
+                // If your Camera is culling the UI layer, it won't show.
+                // Let's force it to "Default" layer (Layer 0)
+                playerNameText.gameObject.layer = 0;
+            }
+        }
     }
 
     /// <summary>
     /// Khởi tạo nhân vật (Local hoặc Remote)
     /// </summary>
-    public void Initialize(string id, bool local)
+    public void Initialize(string id, string name, bool local)
     {
         PlayerId = id;
+        PlayerName = name;
         IsLocal = local;
+
+        // --- NAME TAG SETUP ---
+        if (playerNameText != null)
+        {
+            Debug.Log($"🏷️ Setting NameTag for {id}: {name}");
+            playerNameText.text = name;
+            // playerNameText.fontSize = 5; // [REMOVED] Used Prefab settings instead
+
+            // Text alignment
+            playerNameText.alignment = TMPro.TextAlignmentOptions.Center;
+
+            // Optionally: Set color for local player vs others
+            if (IsLocal) playerNameText.color = Color.green;
+            else playerNameText.color = Color.white;
+        }
+        else
+        {
+            Debug.LogError($"❌ Cannot set name '{name}' because playerNameText is NULL on {gameObject.name}");
+        }
 
         if (IsLocal)
         {
@@ -54,7 +108,7 @@ public class PlayerController : MonoBehaviour
             var vcam = FindObjectOfType<CinemachineVirtualCamera>();
             if (vcam != null) vcam.Follow = transform;
 
-            Debug.Log($"<color=green>[Local Player]</color> ID: {id} đã sẵn sàng.");
+            Debug.Log($"<color=green>[Local Player]</color> ID: {id}, Name: {name} đã sẵn sàng.");
         }
         else
         {

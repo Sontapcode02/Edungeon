@@ -17,7 +17,7 @@ public class MessageHandler : MonoBehaviour
     public Transform hostSpawnPoint;
 
     [Header("Player Settings")]
-    public GameObject playerPrefab;
+    public GameObject[] playerPrefabs; // Array of prefabs for random selection
     public Transform playersContainer;
     public Transform spawnPoint;
 
@@ -107,17 +107,19 @@ public class MessageHandler : MonoBehaviour
                 // Payload is "Success"
                 string myId = packet.playerId;
                 SocketClient.Instance.MyPlayerId = myId;
+                // Get my name from PlayerPrefs since JOIN_SUCCESS might not have it or it's just 'Success'
+                string myName = PlayerPrefs.GetString("PLAYER_NAME", "Me");
 
                 // Handle character spawning
                 if (otherPlayers.ContainsKey(myId))
                 {
                     PlayerController myPlayerScript = otherPlayers[myId];
-                    myPlayerScript.Initialize(myId, true);
+                    myPlayerScript.Initialize(myId, myName, true);
                     otherPlayers.Remove(myId);
                 }
                 else
                 {
-                    SpawnPlayer(myId, "Me", Vector2.zero);
+                    SpawnPlayer(myId, myName, Vector2.zero);
                 }
                 break;
             // -----------------------------------------------------------
@@ -344,11 +346,26 @@ public class MessageHandler : MonoBehaviour
 
         Vector3 finalPos = (initialPos == Vector2.zero && spawnPoint != null) ? spawnPoint.position : (Vector3)initialPos;
 
-        GameObject playerObj = Instantiate(playerPrefab, finalPos, Quaternion.identity, playersContainer);
+        // --- RANDOM PLAYER MODEL SELECTION ---
+        GameObject selectedPrefab = null;
+        if (playerPrefabs != null && playerPrefabs.Length > 0)
+        {
+            // Deterministic random based on ID hash so all clients see the same model for this ID
+            int index = Mathf.Abs(id.GetHashCode()) % playerPrefabs.Length;
+            selectedPrefab = playerPrefabs[index];
+        }
+
+        if (selectedPrefab == null)
+        {
+            Debug.LogError("No Player Prefab assigned in MessageHandler!");
+            return;
+        }
+
+        GameObject playerObj = Instantiate(selectedPrefab, finalPos, Quaternion.identity, playersContainer);
         PlayerController pCtrl = playerObj.GetComponent<PlayerController>();
 
         bool isMe = (id == SocketClient.Instance.MyPlayerId);
-        pCtrl.Initialize(id, isMe);
+        pCtrl.Initialize(id, playerName, isMe);
 
         otherPlayers.Add(id, pCtrl);
     }
