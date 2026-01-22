@@ -132,7 +132,7 @@ namespace GameServer
                         return;
                     }
 
-                    Room newRoom = new Room(newRoomId, _session.PlayerId);
+                    Room newRoom = new Room(newRoomId, _session.PlayerId, createData.maxPlayers); // [UPDATED]
 
                     // --- [NEW] RECEIVE QUESTIONS FROM CLIENT ---
                     if (!string.IsNullOrEmpty(createData.questionsJson))
@@ -169,8 +169,8 @@ namespace GameServer
                     {
                         string clientId = "Guest_" + Guid.NewGuid().ToString().Substring(0, 6);
                         _session.PlayerId = clientId;
-                        room.Join(_session);
                         Send(new Packet { type = "JOIN_SUCCESS", payload = "Success", playerId = clientId });
+                        room.Join(_session);
                     }
                     else
                     {

@@ -4363,7 +4363,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverIP: 127.0.0.1
-  serverPort: 7777
+  serverPort: 7781
   wsServerUrl: ws://127.0.0.1:7780
 --- !u!4 &2016458426
 Transform:

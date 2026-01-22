@@ -306,7 +306,8 @@ public class HomeUIManager : MonoBehaviour
         {
             roomId = roomId,
             playerName = tempHostName,
-            questionsJson = JsonConvert.SerializeObject(processedQuestions) // Pack and send
+            questionsJson = JsonConvert.SerializeObject(processedQuestions), // Pack and send
+            maxPlayers = int.TryParse(maxPlayers, out int mp) ? mp : 4 // [ADDED]
         };
 
         SocketClient.Instance.Send(new Packet

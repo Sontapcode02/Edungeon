@@ -279,12 +279,19 @@ public class MessageHandler : MonoBehaviour
                 var list = JsonConvert.DeserializeObject<List<PlayerState>>(packet.payload);
                 foreach (var state in list)
                 {
+                    // [FIX] Skip my own data (handled by JOIN_SUCCESS)
+                    if (state.playerId == SocketClient.Instance.MyPlayerId) continue;
+
                     // [FIX] If player exists, update position! 
                     // This fixes the bug where Late Joiners see existing players at (0,0)
                     if (otherPlayers.ContainsKey(state.playerId))
                     {
+                        // [FIX] Don't move Local Player! Local Player controls their own position.
+                        PlayerController p = otherPlayers[state.playerId];
+                        if (p.IsLocal) continue;
+
                         // Snap to position immediately
-                        otherPlayers[state.playerId].transform.position = new Vector3(state.x, state.y, 0);
+                        p.transform.position = new Vector3(state.x, state.y, 0);
                     }
                     else
                     {

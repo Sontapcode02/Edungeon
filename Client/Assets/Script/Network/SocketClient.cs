@@ -14,7 +14,7 @@ public class SocketClient : MonoBehaviour
 
     [Header("Configuration")]
     public string serverIP = "127.0.0.1";
-    public int serverPort = 7777;
+    public int serverPort = 7781; // Matches Server default (7780 + 1 for TCP)
     // URL for WebSocket (used when building for WebGL)
     public string wsServerUrl = "ws://127.0.0.1:7780";
 
@@ -54,6 +54,11 @@ public class SocketClient : MonoBehaviour
         // [PRODUCTION] Public Render Server (WSS for Secure WebSocket)
         wsServerUrl = "wss://edungeon-4.onrender.com";
         // wsServerUrl = "ws://127.0.0.1:7780"; // [DEV] Localhost
+
+        // [FIX] Force TCP Port to 7781 (Matches Server default 7780 + 1)
+        // This overrides any old value cached in the Unity Inspector
+        serverPort = 7781;
+        Debug.Log($"[SocketClient] Configured TCP Port to: {serverPort}");
 
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
@@ -155,6 +160,7 @@ public class SocketClient : MonoBehaviour
 #else
         try
         {
+            Debug.Log($"[SocketClient] Attempting TCP connection to {serverIP}:{serverPort}...");
             _client = new TcpClient();
             _client.Connect(serverIP, serverPort);
             _stream = _client.GetStream();

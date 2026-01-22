@@ -11,6 +11,7 @@ namespace GameServer
     {
         public string RoomId { get; private set; }
         public string HostId { get; private set; }
+        public int MaxPlayers { get; private set; } // [ADDED]
 
         // Dictionary storing players
         public Dictionary<string, PlayerSession> Players = new Dictionary<string, PlayerSession>();
@@ -22,10 +23,11 @@ namespace GameServer
         public DateTime StartTime { get; set; } // Time when Host starts the game
         public bool IsGameStarted { get; set; } = false;
         private DateTime? pauseStartTime;
-        public Room(string roomId, string hostId)
+        public Room(string roomId, string hostId, int maxPlayers) // [UPDATED]
         {
             RoomId = roomId;
             HostId = hostId;
+            MaxPlayers = maxPlayers; // [ADDED]
         }
 
         // --- QUESTION MANAGEMENT ---
@@ -46,6 +48,13 @@ namespace GameServer
 
         public void Join(PlayerSession session)
         {
+            if (Players.Count >= MaxPlayers)
+            {
+                session.Send(new Packet { type = "ERROR", payload = "Room is full!" });
+                Console.WriteLine($"[Room {RoomId}] Join refused: Room Full ({Players.Count}/{MaxPlayers}).");
+                return;
+            }
+
             if (!Players.ContainsKey(session.PlayerId))
             {
                 Players.Add(session.PlayerId, session);
@@ -74,7 +83,11 @@ namespace GameServer
                 // Send current player list to the new player
                 SyncPlayers(session); // Send specifically to new player
 
-                Console.WriteLine($"[Room {RoomId}] {session.PlayerName} joined.");
+                // [ADDED] Sync Leaderboard to new player immediately
+                // This ensures they see the current scores/ranking upon joining
+                BroadcastLeaderboard();
+
+                Console.WriteLine($"[Room {RoomId}] {session.PlayerName} joined ({Players.Count}/{MaxPlayers}).");
             }
         }
 

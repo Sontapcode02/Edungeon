@@ -16,6 +16,7 @@ public class HandshakeData
     public string playerName;
     public string roomId;
     public string questionsJson; // Contains questions from Host CSV
+    public int maxPlayers = 4; // [ADDED]
 }
 
 // --- QUESTION DATA ---
