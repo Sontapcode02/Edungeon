@@ -10,7 +10,7 @@ public class ChatManager : MonoBehaviour
     public GameObject chatBox;          // Drag cái panel chứa chat vào đây
     public Button chatOpenBtn;          // Nút icon để mở chat
     public Button chatCloseBtn;         // Nút X để đóng chat
-    
+
     public ScrollRect chatScrollRect;
     public TMP_InputField chatInput;
     public Button sendBtn;
@@ -29,7 +29,7 @@ public class ChatManager : MonoBehaviour
         // --- Bật/Tắt Chat Box ---
         if (chatOpenBtn != null)
             chatOpenBtn.onClick.AddListener(OpenChatBox);
-        
+
         if (chatCloseBtn != null)
             chatCloseBtn.onClick.AddListener(CloseChatBox);
 
@@ -53,6 +53,10 @@ public class ChatManager : MonoBehaviour
         // --- Mặc định Chat Box Bị Ẩn ---
         if (chatBox != null)
             chatBox.SetActive(false);
+
+        // [FIX] Force default text color to black
+        if (chatContentText != null)
+            chatContentText.color = Color.black;
     }
 
     // --- MỞ CHAT BOX ---
@@ -116,13 +120,20 @@ public class ChatManager : MonoBehaviour
     // 3. Nhận tin nhắn từ Server (Gọi từ NetworkManager/SocketClient)
     public void OnMessageReceived(string message)
     {
-        chatContentText.text += message + "\n";
+        // [FIX] Force black color for every message
+        string coloredMessage = $"<color=#000000>{message}</color>";
+        chatContentText.text += coloredMessage + "\n";
+
         StartCoroutine(ScrollToBottom());
     }
-    
+
     IEnumerator ScrollToBottom()
     {
         yield return new WaitForEndOfFrame();
+
+        // [FIX] Force rebuild layout to ensure text height is calculated correctly
+        LayoutRebuilder.ForceRebuildLayoutImmediate(chatScrollRect.content);
+
         Canvas.ForceUpdateCanvases();
         chatScrollRect.verticalNormalizedPosition = 0f;
     }
@@ -137,11 +148,11 @@ public class ChatManager : MonoBehaviour
 
         if (isMuted)
         {
-            chatInput.placeholder.GetComponent<Text>().text = "Chat bị khóa...";
+            chatInput.placeholder.GetComponent<Text>().text = "Chat muted...";
         }
         else
         {
-            chatInput.placeholder.GetComponent<Text>().text = "Nhập tin nhắn...";
+            chatInput.placeholder.GetComponent<Text>().text = "Enter message...";
         }
     }
 }

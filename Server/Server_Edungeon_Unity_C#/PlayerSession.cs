@@ -11,9 +11,9 @@ namespace GameServer
         public float LastX { get; set; }
         public float LastY { get; set; }
         public Room CurrentRoom { get; set; }
-        public int CurrentQuestionIndex = 0; // Lưu câu hỏi hiện tại của Player này
-        public HashSet<int> CompletedMilestones = new HashSet<int>(); // Lưu ID các con quái đã vượt qua
-        public double FinishDuration { get; set; } = double.MaxValue; // Mặc định là vô cực nếu chưa về đích
+        public int CurrentQuestionIndex = 0; // Store current player's question index
+        public HashSet<int> CompletedMilestones = new HashSet<int>(); // Store IDs of defeated monsters
+        public double FinishDuration { get; set; } = double.MaxValue; // Default is infinite if not finished
         public bool IsFinished { get; set; } = false;
 
         // Tracking quiz progress
@@ -22,7 +22,7 @@ namespace GameServer
         public bool HasReachedFinish { get; set; } = false;
         public float FinishTime { get; set; } = 0f;
 
-        private     IClientConnection _connection;
+        private IClientConnection _connection;
 
         public PlayerSession(string id, string name, IClientConnection connection)
         {
@@ -33,7 +33,7 @@ namespace GameServer
 
         public void Send(Packet packet)
         {
-        
+
             _connection?.Send(packet);
         }
 

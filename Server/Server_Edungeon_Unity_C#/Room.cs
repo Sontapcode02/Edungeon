@@ -151,6 +151,9 @@ namespace GameServer
                         session.LastY = moveState.y;
 
                         // 2. Broadcast position JSON to others
+                        // [DEBUG] Track movement on Server
+                        // Console.WriteLine($"[Room {RoomId}] {session.PlayerName} moved to ({moveState.x}, {moveState.y})");
+
                         Broadcast(new Packet
                         {
                             type = "MOVE",
@@ -186,7 +189,7 @@ namespace GameServer
                     }
                     catch (Exception ex)
                     {
-                        // Nếu lỗi xảy ra, in ra console thay vì để luồng xử lý bị chết
+                        // If error occurs, print to console instead of crashing the thread
                         Console.WriteLine($"❌ [CRITICAL] WARNING REQUEST_QUESTION from {session.PlayerName}: {ex.Message}");
                     }
                     break;
@@ -348,6 +351,9 @@ namespace GameServer
             }
 
             string jsonList = JsonConvert.SerializeObject(states);
+
+            // [DEBUG] Show what we are sending to new player
+            Console.WriteLine($"[Room {RoomId}] SyncPlayers for {newSession.PlayerName}: {jsonList}");
 
             // Send specifically to new player
             newSession.Send(new Packet { type = "SYNC_PLAYERS", payload = jsonList });

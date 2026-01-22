@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using System.Runtime.InteropServices; // [NEW] For DllImport
 
 
-// Chỉ dùng thư viện này trong Unity Editor để mở cửa sổ chọn file
+// Only use this namespace in Unity Editor to open file selection window
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -36,7 +36,7 @@ public class HomeUIManager : MonoBehaviour
     public Button backButton;
 
     [Header("--- NEW FEATURE ---")]
-    public Button browseButton; // <--- Kéo nút "Chọn File" vào đây
+    public Button browseButton; // <--- Drag "Browse File" button here
 
     [Header("--- AUDIO ---")]
     public AudioClip homeBGM;
@@ -61,7 +61,7 @@ public class HomeUIManager : MonoBehaviour
 
         ShowPanel(joinPanel);
 
-        // --- Gán sự kiện cho các nút ---
+        // --- Assign events to buttons ---
         joinButton.onClick.AddListener(OnJoinClicked);
         joinButton.onClick.AddListener(PlayClickSound); // Audio
 
@@ -78,17 +78,17 @@ public class HomeUIManager : MonoBehaviour
             openCreatePanelButton.onClick.AddListener(PlayClickSound); // Audio
         }
 
-        // Gán sự kiện cho nút Chọn File (Browse)
+        // Assign event for Browse File button
         if (browseButton != null)
         {
             browseButton.onClick.AddListener(OnBrowseFileClicked);
             browseButton.onClick.AddListener(PlayClickSound); // Audio
         }
 
-        // 1. Kết nối Server ngay khi mở game
+        // 1. Connect to Server immediately on game start
         SocketClient.Instance.ConnectOnly();
 
-        // 2. Lắng nghe các sự kiện từ Server trả về
+        // 2. Listen to events from Server
         SocketClient.Instance.OnCheckRoomResult += HandleCheckRoomResult;
         SocketClient.Instance.OnCreateRoomResult -= HandleCreateRoomResult;
         SocketClient.Instance.OnCreateRoomResult += HandleCreateRoomResult;
@@ -136,7 +136,7 @@ public class HomeUIManager : MonoBehaviour
         Debug.Log("✅ CSV Content received from WebGL!");
     }
 
-    // --- PHẦN KHÁCH (JOIN) ---
+    // --- CLIENT SECTION (JOIN) ---
     void OnJoinClicked()
     {
         string playerName = nameInput.text;
@@ -144,16 +144,16 @@ public class HomeUIManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(roomId))
         {
-            ShowError("Nhập đủ tên và ID phòng đi đại ca!");
+            ShowError("Please enter both Name and Room ID!");
             return;
         }
 
-        // Hiện Loading
+        // Show Loading
         ShowPanel(loadingPanel);
-        statusText.text = "Đang kiểm tra phòng...";
+        statusText.text = "Checking room...";
         statusText.color = Color.yellow;
 
-        // Gửi lệnh check
+        // Send Check command
         SocketClient.Instance.SendCheckRoom(roomId);
     }
 
@@ -161,44 +161,44 @@ public class HomeUIManager : MonoBehaviour
     {
         if (result == "FOUND")
         {
-            Debug.Log("Phòng tồn tại -> Vào game!");
+            Debug.Log("Room exists -> Entering game!");
 
-            // Lưu info
+            // Save info
             PlayerPrefs.SetString("PLAYER_NAME", nameInput.text);
             PlayerPrefs.SetString("ROOM_ID", idRoomInput.text);
-            PlayerPrefs.SetInt("IS_HOST", 0); // Khách
+            PlayerPrefs.SetInt("IS_HOST", 0); // Client
             PlayerPrefs.Save();
 
             SceneManager.LoadScene("Game");
         }
         else
         {
-            Debug.Log("Không tìm thấy phòng!");
-            ShowError("Phòng không tồn tại hoặc sai ID!");
+            Debug.Log("Room not found!");
+            ShowError("Room not found or incorrect ID!");
             Invoke("BackToJoin", 2f);
         }
     }
 
-    // --- PHẦN CHỦ PHÒNG (HOST) ---
+    // --- HOST SECTION (CREATE) ---
     void OnCreateRoomButton()
     {
         string playerName = nameInput.text;
         if (string.IsNullOrEmpty(playerName))
         {
-            ShowError("Đại ca nhập tên trước đã!");
+            ShowError("Please enter your name first!");
             return;
         }
-        // Lưu tạm tên
+        // Save temporary name
         tempHostName = playerName;
 
-        // Chuyển sang màn hình Setup
+        // Switch to Setup panel
         ShowPanel(hostSetupPanel);
     }
 
-    // Nút xác nhận tạo phòng
+    // Confirm create room button
     void OnConfirmHostSetup()
     {
-        // 1. Khóa nút để tránh bấm nhiều lần
+        // 1. Lock button to avoid multiple clicks
         confirmCreateButton.interactable = false;
 
         string roomId = GenerateRoomID();
@@ -233,27 +233,27 @@ public class HomeUIManager : MonoBehaviour
                 return;
             }
 
-            // Kiểm tra nếu file quá ngắn (chỉ có header hoặc trống trơn)
+            // Check if file is too short (only header or empty)
             if (lines.Length <= 1)
             {
-                ShowError("❌ File trống rỗng! Đại ca kiểm tra lại nội dung.");
+                ShowError("❌ File is empty! Please check content.");
                 confirmCreateButton.interactable = true;
-                return; // ⛔ DỪNG NGAY
+                return; // ⛔ STOP IMMEDIATELY
             }
 
-            // Bắt đầu từ i=1 để bỏ qua dòng tiêu đề
+            // Start from i=1 to skip header line
             for (int i = 1; i < lines.Length; i++)
             {
                 string line = lines[i].Trim();
                 if (string.IsNullOrEmpty(line)) continue;
 
-                string[] parts = line.Split(','); // Tách bằng dấu gạch đứng
+                string[] parts = line.Split(','); // Split by comma
 
-                // Kiểm tra đủ cột không (Ít nhất phải có Câu hỏi + 4 Đáp án + Đáp án đúng = 6 cột)
+                // Check column count (Must have Question + 4 Options + Correct Answer = 6 columns)
                 if (parts.Length < 6)
                 {
-                    // Log cảnh báo dòng lỗi (nhưng không dừng, bỏ qua dòng này đọc dòng tiếp)
-                    Debug.LogWarning($"⚠️ Dòng {i + 1} sai định dạng: {line}");
+                    // Log warning for error line (but don't stop, skip this line)
+                    Debug.LogWarning($"⚠️ Line {i + 1} invalid format: {line}");
                     continue;
                 }
 
@@ -261,7 +261,7 @@ public class HomeUIManager : MonoBehaviour
                 q.id = i;
                 q.question = parts[0];
 
-                // Chỗ này hôm qua đại ca sửa List rồi nè
+                // Fixed List here
                 q.options = new List<string> { parts[1], parts[2], parts[3], parts[4] };
 
                 if (int.TryParse(parts[5], out int correctIdx))
@@ -270,7 +270,7 @@ public class HomeUIManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning($"⚠️ Dòng {i + 1}: Đáp án đúng không phải là số!");
+                    Debug.LogWarning($"⚠️ Line {i + 1}: Correct Answer is not a number!");
                     continue;
                 }
 
@@ -281,32 +281,32 @@ public class HomeUIManager : MonoBehaviour
         }
         catch (System.Exception ex)
         {
-            ShowError("❌ Lỗi khi đọc file: " + ex.Message);
+            ShowError("❌ Error reading file: " + ex.Message);
             confirmCreateButton.interactable = true;
-            return; // ⛔ DỪNG NGAY
+            return; // ⛔ STOP IMMEDIATELY
         }
 
-        // --- BƯỚC 3: KIỂM TRA SỐ LƯỢNG CÂU HỎI HỢP LỆ ---
+        // --- STEP 3: CHECK VALID QUESTION COUNT ---
         if (processedQuestions.Count == 0)
         {
-            ShowError("❌ File không có câu nào hợp lệ! (Kiểm tra xem có dùng dấu '|' không?)");
+            ShowError("❌ No valid questions found! (Check CSV format)");
             confirmCreateButton.interactable = true;
-            return; // ⛔ DỪNG NGAY: Không gửi gói tin rỗng
+            return; // ⛔ STOP IMMEDIATELY: Don't send empty packet
         }
 
-        // --- BƯỚC 4: MỌI THỨ NGON LÀNH -> GỬI SERVER ---
-        Debug.Log($"✅ Duyệt thành công {processedQuestions.Count} câu hỏi -> Đang gửi Server...");
+        // --- STEP 4: ALL GOOD -> SEND TO SERVER ---
+        Debug.Log($"✅ Successfully parsed {processedQuestions.Count} questions -> Sending to Server...");
 
         tempRoomId = roomId;
         ShowPanel(loadingPanel);
-        statusText.text = "Đang tải dữ liệu lên Server...";
+        statusText.text = "Uploading data to Server...";
         statusText.color = Color.yellow;
 
         HandshakeData data = new HandshakeData
         {
             roomId = roomId,
             playerName = tempHostName,
-            questionsJson = JsonConvert.SerializeObject(processedQuestions) // Đóng gói gửi đi
+            questionsJson = JsonConvert.SerializeObject(processedQuestions) // Pack and send
         };
 
         SocketClient.Instance.Send(new Packet
@@ -316,25 +316,25 @@ public class HomeUIManager : MonoBehaviour
         });
     }
 
-    // Hàm xử lý khi Server báo "Tạo thành công"
+    // Handler when Server reports "Create Success"
     void HandleCreateRoomResult(string result)
     {
         confirmCreateButton.interactable = true;
         if (result == "SUCCESS")
         {
-            // Lưu Prefs
+            // Save Prefs
             PlayerPrefs.SetString("PLAYER_NAME", tempHostName);
             PlayerPrefs.SetString("ROOM_ID", tempRoomId);
             PlayerPrefs.SetInt("IS_HOST", 1); // Host
             PlayerPrefs.SetString("MAX_PLAYERS", maxPlayerInput.text);
             PlayerPrefs.Save();
 
-            // Lúc này mới chuyển cảnh
+            // Now switch scene
             SceneManager.LoadScene("Game");
         }
         else
         {
-            ShowError("Tạo phòng thất bại: " + result);
+            ShowError("Create room failed: " + result);
             Invoke("BackToJoin", 2f);
         }
     }

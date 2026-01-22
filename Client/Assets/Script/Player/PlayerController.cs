@@ -147,6 +147,9 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        // [FIX] Stop Physics calculation when Paused
+        if (isPaused) return;
+
         if (IsLocal)
         {
             MoveLocalPlayer();

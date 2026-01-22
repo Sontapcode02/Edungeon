@@ -59,6 +59,9 @@ public class NotificationUI : MonoBehaviour
 
     public void ShowMessage(string msg, bool autoHide = true)
     {
+        // [FIX] Clear any pending Hide commands so "Game Paused" doesn't disappear
+        CancelInvoke(nameof(HideMessage));
+
         if (messagePanel == null || messageText == null) return;
         messageText.text = msg;
         messagePanel.SetActive(true);
