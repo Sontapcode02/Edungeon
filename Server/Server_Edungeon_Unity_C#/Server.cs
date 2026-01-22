@@ -65,7 +65,7 @@ namespace GameServer
                 try
                 {
                     TcpClient client = _listener.AcceptTcpClient();
-                    Console.WriteLine("[Server-TCP] New client connected.");
+                    // Console.WriteLine("[Server-TCP] New client connected."); // Silenced to reduce health-check spam
 
                     ClientHandler handler = new ClientHandler(client);
                     Thread clientThread = new Thread(handler.Run);

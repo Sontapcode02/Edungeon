@@ -57,7 +57,10 @@ namespace GameServer
             }
             catch (Exception)
             {
-                Console.WriteLine($"[Client-TCP] {_session.PlayerId} disconnected.");
+                if (!string.IsNullOrEmpty(_session.PlayerId))
+                {
+                    Console.WriteLine($"[Client-TCP] {_session.PlayerId} disconnected.");
+                }
                 Cleanup();
             }
         }
