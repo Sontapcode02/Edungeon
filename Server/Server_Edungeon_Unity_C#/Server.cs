@@ -31,7 +31,6 @@ namespace GameServer
                 // Listen on PROXY Port (e.g. 7780)
                 _httpListener.Prefixes.Add($"http://*:{_port}/");
                 _httpListener.Start();
-                _httpListener.Start();
                 Console.WriteLine($"[Server] WebSocket Started on port {_port}. Waiting for WebGL clients...");
                 Console.WriteLine($"[VERSION] 1.0.1 - FIXED ROOM FULL CHECK (Wait for this log on Render)");
 
