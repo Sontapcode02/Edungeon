@@ -159,6 +159,8 @@ public class HomeUIManager : MonoBehaviour
 
     void HandleCheckRoomResult(string result)
     {
+        Debug.Log($"[DEBUG] HandleCheckRoomResult received: '{result}'");
+
         if (result == "FOUND")
         {
             Debug.Log("Room exists -> Entering game!");

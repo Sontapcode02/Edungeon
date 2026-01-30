@@ -202,6 +202,7 @@ namespace GameServer
                     string roomIdToCheck = packet.payload;
                     if (Server.Rooms.TryGetValue(roomIdToCheck, out Room checkRoom))
                     {
+                        Console.WriteLine($"[DEBUG] CHECK_ROOM {roomIdToCheck}: Count={checkRoom.Players.Count}, Max={checkRoom.MaxPlayers}");
                         if (checkRoom.Players.Count >= checkRoom.MaxPlayers)
                         {
                             Send(new Packet { type = "CHECK_ROOM_RESPONSE", payload = "FULL" });
@@ -213,6 +214,7 @@ namespace GameServer
                     }
                     else
                     {
+                        Console.WriteLine($"[DEBUG] CHECK_ROOM {roomIdToCheck}: NOT FOUND");
                         Send(new Packet { type = "CHECK_ROOM_RESPONSE", payload = "NOT_FOUND" });
                     }
                     break;
