@@ -167,6 +167,13 @@ namespace GameServer
 
                     if (Server.Rooms.TryGetValue(roomIdToJoin, out Room room))
                     {
+                        // [FIX] Check for Full Room BEFORE sending Success
+                        if (room.Players.Count >= room.MaxPlayers)
+                        {
+                            Send(new Packet { type = "ERROR", payload = "Room is full!" });
+                            return;
+                        }
+
                         string clientId = "Guest_" + Guid.NewGuid().ToString().Substring(0, 6);
                         _session.PlayerId = clientId;
                         Send(new Packet { type = "JOIN_SUCCESS", payload = "Success", playerId = clientId });
@@ -193,8 +200,21 @@ namespace GameServer
 
                 case "CHECK_ROOM":
                     string roomIdToCheck = packet.payload;
-                    bool exists = Server.Rooms.ContainsKey(roomIdToCheck);
-                    Send(new Packet { type = "CHECK_ROOM_RESPONSE", payload = exists ? "FOUND" : "NOT_FOUND" });
+                    if (Server.Rooms.TryGetValue(roomIdToCheck, out Room checkRoom))
+                    {
+                        if (checkRoom.Players.Count >= checkRoom.MaxPlayers)
+                        {
+                            Send(new Packet { type = "CHECK_ROOM_RESPONSE", payload = "FULL" });
+                        }
+                        else
+                        {
+                            Send(new Packet { type = "CHECK_ROOM_RESPONSE", payload = "FOUND" });
+                        }
+                    }
+                    else
+                    {
+                        Send(new Packet { type = "CHECK_ROOM_RESPONSE", payload = "NOT_FOUND" });
+                    }
                     break;
 
                 default:

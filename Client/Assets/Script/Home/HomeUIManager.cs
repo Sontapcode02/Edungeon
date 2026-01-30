@@ -171,6 +171,12 @@ public class HomeUIManager : MonoBehaviour
 
             SceneManager.LoadScene("Game");
         }
+        else if (result == "FULL")
+        {
+            Debug.Log("Room is FULL!");
+            ShowError("Room is full! Cannot join.");
+            Invoke("BackToJoin", 2f);
+        }
         else
         {
             Debug.Log("Room not found!");
