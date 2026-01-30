@@ -219,6 +219,10 @@ namespace GameServer
                     }
                     break;
 
+                case "PING":
+                    Send(new Packet { type = "PONG", payload = packet.payload });
+                    break;
+
                 default:
                     if (_session.CurrentRoom != null) _session.CurrentRoom.HandlePacket(_session, packet);
                     break;

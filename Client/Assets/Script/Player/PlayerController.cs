@@ -221,30 +221,14 @@ public class PlayerController : MonoBehaviour
         if (anim == null) return;
 
         Vector2 moveDir = Vector2.zero;
-        if (IsLocal)
-        {
-            moveDir = currentInput;
-        }
+        if (IsLocal) moveDir = currentInput;
         else
         {
-            // [FIX] Calculate real velocity for correct animation
-            Vector3 diff = transform.position - lastPos;
-            
-            // Use a small threshold to avoid jitter
-            if (diff.sqrMagnitude > 0.0001f)
-            {
-                Vector3 velocity = diff / Time.deltaTime;
-                // If moving fast enough, normalize to get direction (length 1)
-                // This makes the animator Blend Tree go to full stride
-                if (velocity.sqrMagnitude > 0.1f)
-                {
-                    moveDir = velocity.normalized;
-                }
-            }
+            moveDir = (transform.position - lastPos);
             lastPos = transform.position;
         }
 
-        if (moveDir.sqrMagnitude > 0.01f)
+        if (moveDir.sqrMagnitude > 0.001f)
         {
             anim.SetFloat("InputX", moveDir.x);
             anim.SetFloat("InputY", moveDir.y);

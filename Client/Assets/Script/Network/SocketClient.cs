@@ -32,6 +32,7 @@ public class SocketClient : MonoBehaviour
     public string MyPlayerId { get; set; }
     public Action<string> OnCheckRoomResult;
     public System.Action<string> OnCreateRoomResult;
+    public Action<float> OnPingUpdate; // [NEW] Event for UI
 
     // --- DLL IMPORT FOR WEBGL ---
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -52,7 +53,7 @@ public class SocketClient : MonoBehaviour
     {
         // [HOTFIX] Force use port 7780 to avoid Inspector caching old values
         // [PRODUCTION] Public Render Server (WSS for Secure WebSocket)
-        wsServerUrl = "wss://edungeon-4.onrender.com";
+        wsServerUrl = "wss://edungeon.onrender.com";
         // wsServerUrl = "ws://127.0.0.1:7780"; // [DEV] Localhost
 
         // [FIX] Force TCP Port to 7781 (Matches Server default 7780 + 1)
@@ -365,6 +366,12 @@ public class SocketClient : MonoBehaviour
 
     void Update()
     {
+        // [NEW] Simple Ping Loop
+        if (_isConnected && Time.frameCount % 120 == 0) // Approx every 2 seconds (assuming 60fps)
+        {
+            SendPing();
+        }
+
         int processLimit = 20;
         int processedCount = 0;
         while (_packetQueue.Count > 0 && processedCount < processLimit)
@@ -375,7 +382,18 @@ public class SocketClient : MonoBehaviour
                 {
                     OnCheckRoomResult?.Invoke(packet.payload);
                 }
+                else if (packet.type == "PONG")
+                {
+                    if (float.TryParse(packet.payload, out float sentTime))
+                    {
+                        float rtt = (Time.realtimeSinceStartup - sentTime) * 1000f;
+                        Debug.Log($"<color=yellow>[PING] Latency: {rtt:F1}ms</color>");
+                        OnPingUpdate?.Invoke(rtt); // [NEW] Notify UI
+                    }
+                }
+
                 OnPacketReceived?.Invoke(packet);
+
                 if (packet.type == "ROOM_CREATED")
                 {
                     MyPlayerId = packet.playerId;
@@ -389,6 +407,11 @@ public class SocketClient : MonoBehaviour
             }
             processedCount++;
         }
+    }
+
+    void SendPing()
+    {
+        Send(new Packet { type = "PING", payload = Time.realtimeSinceStartup.ToString() });
     }
 
     public void Send(Packet packet)
