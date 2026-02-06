@@ -18,6 +18,10 @@ public class SocketClient : MonoBehaviour
     // URL for WebSocket (used when building for WebGL)
     public string wsServerUrl = "ws://127.0.0.1:7780";
 
+    // [SECURITY] Cloudflare Turnstile
+    public string turnstileSiteKey = "0x4AAAAAACYhvLeSfXWlyslK";
+    public string captchaToken;
+
 #if !UNITY_WEBGL || UNITY_EDITOR
     private TcpClient _client;
     private NetworkStream _stream;
@@ -47,6 +51,16 @@ public class SocketClient : MonoBehaviour
 
     [DllImport("__Internal")]
     private static extern int WebSocketState();
+
+    // [SECURITY] Turnstile Imports
+    [DllImport("__Internal")]
+    private static extern void ShowTurnstile(string siteKey);
+
+    [DllImport("__Internal")]
+    private static extern string GetTurnstileToken();
+
+    [DllImport("__Internal")]
+    private static extern void ResetTurnstile();
 #endif
 
     void Awake()
@@ -75,10 +89,10 @@ public class SocketClient : MonoBehaviour
         if (!_isConnected)
         {
              // Debug.Log($"[WebGL] Connecting to WS URL: {wsServerUrl}");
-             WebSocketConnect(wsServerUrl);
-             // WebGL connects asynchronously, we wait for OnWebSocketOpen callback
-             // Logic sends handshake immediately, so we use Coroutine to wait
-             StartCoroutine(WaitForConnectionAndSendHandshake(playerName, roomId, isHost));
+             // WebSocketConnect(wsServerUrl); // MOVED to after Captcha
+             
+             // [SECURITY] Start Captcha Flow
+             StartCoroutine(WaitForCaptchaAndConnect(playerName, roomId, isHost));
              return;
         }
 #else
@@ -114,7 +128,15 @@ public class SocketClient : MonoBehaviour
     {
         // Debug.Log($"Sending handshake... Role: {(isHost ? "HOST" : "CLIENT")} | Room: {roomId}");
 
-        var handshake = new HandshakeData { playerName = playerName, roomId = roomId };
+        // [SECURITY] Bypass Captcha for Editor/Desktop
+        if (string.IsNullOrEmpty(captchaToken)) captchaToken = "DEV_BYPASS";
+
+        var handshake = new HandshakeData
+        {
+            playerName = playerName,
+            roomId = roomId,
+            captchaToken = this.captchaToken // [SECURITY] Include Token
+        };
         string payloadJson = JsonConvert.SerializeObject(handshake);
 
         Send(new Packet
@@ -126,10 +148,37 @@ public class SocketClient : MonoBehaviour
     }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-    private System.Collections.IEnumerator WaitForConnectionAndSendHandshake(string playerName, string roomId, bool isHost)
+    private System.Collections.IEnumerator WaitForCaptchaAndConnect(string playerName, string roomId, bool isHost)
     {
-        // Debug.Log("Waiting for WebSocket connection...");
-        // Wait max 5 seconds
+        Debug.Log("[Security] Showing Turnstile Widget...");
+        ShowTurnstile(turnstileSiteKey);
+
+        // Wait for token
+        float captchaTimeout = 60f; // Give user time to solve
+        captchaToken = "";
+
+        while (string.IsNullOrEmpty(captchaToken) && captchaTimeout > 0)
+        {
+            captchaToken = GetTurnstileToken();
+            if(!string.IsNullOrEmpty(captchaToken)) break;
+            
+            yield return new WaitForSeconds(0.5f);
+            captchaTimeout -= 0.5f;
+        }
+
+        if (string.IsNullOrEmpty(captchaToken))
+        {
+            Debug.LogError("[Security] Captcha failed or timed out.");
+             // Notify UI error?
+             yield break;
+        }
+
+        Debug.Log("[Security] Captcha Solved! Connecting to Server...");
+
+        // Connect WS
+        WebSocketConnect(wsServerUrl);
+
+        // Wait for Open
         float timeout = 5f;
         while (WebSocketState() != 1 && timeout > 0) // 1 = OPEN
         {
@@ -141,7 +190,7 @@ public class SocketClient : MonoBehaviour
         {
             _isConnected = true;
             Debug.Log("WebSocket connected! Sending handshake.");
-            SendHandshake(playerName, roomId, isHost);
+            SendHandshake(playerName, roomId, isHost); // Now includes token
         }
         else
         {

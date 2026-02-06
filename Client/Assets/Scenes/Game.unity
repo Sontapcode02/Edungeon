@@ -1636,7 +1636,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -36.192566, y: -31.458435}
+  m_AnchoredPosition: {x: -36.192627, y: -31.458435}
   m_SizeDelta: {x: 365.615, y: 708.263}
   m_Pivot: {x: 1, y: 1}
 --- !u!1 &310779089
@@ -8264,11 +8264,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 469404003}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 809.19, y: 507}
-  m_SizeDelta: {x: 200, y: 38.347}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -50.81006, y: -14.826538}
+  m_SizeDelta: {x: 351, y: 38.767}
+  m_Pivot: {x: 1, y: 1}
 --- !u!114 &1655900383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9165,6 +9165,8 @@ MonoBehaviour:
   serverIP: 127.0.0.1
   serverPort: 7777
   wsServerUrl: ws://127.0.0.1:7780
+  turnstileSiteKey: 0x4AAAAAACYhvLeSfXWlyslK
+  captchaToken: 
 --- !u!1 &1819852150
 GameObject:
   m_ObjectHideFlags: 0

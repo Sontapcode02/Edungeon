@@ -17,6 +17,7 @@ public class HandshakeData
     public string roomId;
     public string questionsJson; // Contains question set from Host's CSV
     public int maxPlayers = 4; // [ADDED]
+    public string captchaToken; // [SECURITY] Turnstile Token
 }
 
 // --- QUESTION DATA ---

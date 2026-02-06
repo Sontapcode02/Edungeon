@@ -17,6 +17,10 @@ namespace GameServer
         // Thread-safe dictionary for Rooms
         public static ConcurrentDictionary<string, Room> Rooms = new ConcurrentDictionary<string, Room>();
 
+        // [SECURITY] Connection Throttling
+        private static ConcurrentDictionary<string, int> _ipConnectionCounts = new ConcurrentDictionary<string, int>();
+        private const int MAX_CONNECTIONS_PER_IP = 20; // Increased to 20 to allow small groups (NAT)
+
         public Server(int port)
         {
             _port = port;
@@ -66,6 +70,17 @@ namespace GameServer
                 try
                 {
                     TcpClient client = _listener.AcceptTcpClient();
+
+                    // [SECURITY] Check Connection Limit
+                    string clientIp = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
+                    if (!TryAddConnection(clientIp))
+                    {
+                        Console.WriteLine($"[Security] Blocked connection from {clientIp} (Limit reached)");
+                        client.Close();
+                        continue;
+                    }
+
+                    client.NoDelay = true; // [OPTIMIZE] Disable Nagle's Algorithm for lower latency
                     // Console.WriteLine("[Server-TCP] New client connected."); // Silenced to reduce health-check spam
 
                     ClientHandler handler = new ClientHandler(client);
@@ -89,6 +104,16 @@ namespace GameServer
                     if (context.Request.IsWebSocketRequest)
                     {
                         var wsContext = await context.AcceptWebSocketAsync(null);
+
+                        // [SECURITY] Check Connection Limit
+                        string clientIp = context.Request.RemoteEndPoint.Address.ToString();
+                        if (!TryAddConnection(clientIp))
+                        {
+                            Console.WriteLine($"[Security] Blocked WS connection from {clientIp} (Limit reached)");
+                            wsContext.WebSocket.Abort();
+                            continue;
+                        }
+
                         Console.WriteLine("[Server-WS] New WebGL client connected.");
 
                         ClientHandler handler = new ClientHandler(wsContext.WebSocket);
@@ -106,6 +131,28 @@ namespace GameServer
                     Console.WriteLine($"[Server-WS] Error accepting client: {ex.Message}");
                 }
             }
+        }
+
+
+        // [SECURITY] Connection Throttling Methods
+        private bool TryAddConnection(string ip)
+        {
+            _ipConnectionCounts.AddOrUpdate(ip, 1, (key, oldValue) => oldValue + 1);
+            if (_ipConnectionCounts[ip] > MAX_CONNECTIONS_PER_IP)
+            {
+                // Rollback if exceeded
+                RemoveConnection(ip);
+                return false;
+            }
+            return true;
+        }
+
+        public static void RemoveConnection(string ip)
+        {
+            if (string.IsNullOrEmpty(ip)) return;
+
+            _ipConnectionCounts.AddOrUpdate(ip, 0, (key, oldValue) => Math.Max(0, oldValue - 1));
+            // Console.WriteLine($"[Security] Connection removed for {ip}. Current count: {_ipConnectionCounts[ip]}");
         }
     }
 }
