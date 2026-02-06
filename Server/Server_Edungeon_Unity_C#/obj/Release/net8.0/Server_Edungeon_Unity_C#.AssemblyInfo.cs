@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Server_Edungeon_Unity_C#")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7fb959a84b3faf2fa8f0d7e0d6fed7d329567e57")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a7c56b850cf16318da07f2ed8153507dbf9fdd41")]
 [assembly: System.Reflection.AssemblyProductAttribute("Server_Edungeon_Unity_C#")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Server_Edungeon_Unity_C#")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

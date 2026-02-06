@@ -162,7 +162,7 @@ namespace GameServer
                     string hostId = "Host_" + Guid.NewGuid().ToString().Substring(0, 6);
                     _session.PlayerId = hostId;
 
-                    Console.WriteLine($"[DEBUG] Payload: {packet.payload}"); // [DEBUG] Check raw JSON
+                    // Console.WriteLine($"[DEBUG] Payload: {packet.payload}"); // [DEBUG] Removed to clean up log
 
                     var createData = JsonConvert.DeserializeObject<HandshakeData>(packet.payload);
 
@@ -211,7 +211,7 @@ namespace GameServer
                     break;
 
                 case "JOIN_ROOM":
-                    Console.WriteLine($"[DEBUG] Payload: {packet.payload}"); // [DEBUG] Check raw JSON
+                    // Console.WriteLine($"[DEBUG] Payload: {packet.payload}"); // [DEBUG] Removed to clean up log
                     var joinData = JsonConvert.DeserializeObject<HandshakeData>(packet.payload);
 
                     // [SECURITY] Verify Captcha
