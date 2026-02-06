@@ -315,7 +315,8 @@ public class HomeUIManager : MonoBehaviour
             roomId = roomId,
             playerName = tempHostName,
             questionsJson = JsonConvert.SerializeObject(processedQuestions), // Pack and send
-            maxPlayers = int.TryParse(maxPlayers, out int mp) ? mp : 4 // [ADDED]
+            maxPlayers = int.TryParse(maxPlayers, out int mp) ? mp : 4, // [ADDED]
+            captchaToken = SocketClient.Instance.captchaToken // [SECURITY] Add Token
         };
 
         SocketClient.Instance.Send(new Packet

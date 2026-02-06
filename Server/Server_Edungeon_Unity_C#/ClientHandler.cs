@@ -152,6 +152,8 @@ namespace GameServer
             Packet packet = JsonConvert.DeserializeObject<Packet>(json);
             if (packet == null) return;
 
+            // Debug.Log($"[Server] Received Packet: {packet.type}"); // [DEBUG]
+
             if (string.IsNullOrEmpty(_session.PlayerId)) _session.PlayerId = packet.playerId;
 
             switch (packet.type)
@@ -159,6 +161,8 @@ namespace GameServer
                 case "CREATE_ROOM":
                     string hostId = "Host_" + Guid.NewGuid().ToString().Substring(0, 6);
                     _session.PlayerId = hostId;
+
+                    Console.WriteLine($"[DEBUG] Payload: {packet.payload}"); // [DEBUG] Check raw JSON
 
                     var createData = JsonConvert.DeserializeObject<HandshakeData>(packet.payload);
 
@@ -207,6 +211,7 @@ namespace GameServer
                     break;
 
                 case "JOIN_ROOM":
+                    Console.WriteLine($"[DEBUG] Payload: {packet.payload}"); // [DEBUG] Check raw JSON
                     var joinData = JsonConvert.DeserializeObject<HandshakeData>(packet.payload);
 
                     // [SECURITY] Verify Captcha
@@ -364,8 +369,9 @@ namespace GameServer
         // [SECURITY] Cloudflare Turnstile Verification
         private async Task<bool> VerifyTurnstileToken(string token)
         {
+            Console.WriteLine($"[Security] Verifying Token: '{token}'"); // DEBUG: moved up
+
             if (string.IsNullOrEmpty(token)) return false; // Token required
-            Console.WriteLine($"[Security] Verifying Token: {token}"); // DEBUG
 
             if (token == "DEV_BYPASS")
             {

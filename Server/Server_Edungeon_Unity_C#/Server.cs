@@ -81,7 +81,8 @@ namespace GameServer
                     }
 
                     client.NoDelay = true; // [OPTIMIZE] Disable Nagle's Algorithm for lower latency
-                    // Console.WriteLine("[Server-TCP] New client connected."); // Silenced to reduce health-check spam
+                    client.NoDelay = true; // [OPTIMIZE] Disable Nagle's Algorithm for lower latency
+                    Console.WriteLine("[Server-TCP] New client connected."); // [DEBUG] Simple log
 
                     ClientHandler handler = new ClientHandler(client);
                     Thread clientThread = new Thread(handler.Run);

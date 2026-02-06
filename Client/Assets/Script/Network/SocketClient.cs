@@ -67,6 +67,7 @@ public class SocketClient : MonoBehaviour
     {
         // [HOTFIX] Force use port 7780 to avoid Inspector caching old values
         // [PRODUCTION] Public Render Server (WSS for Secure WebSocket)
+        // [PRODUCTION] Public Render Server (WSS for Secure WebSocket)
         wsServerUrl = "wss://edungeon.onrender.com";
         // wsServerUrl = "ws://127.0.0.1:7780"; // [DEV] Localhost
 
@@ -78,6 +79,12 @@ public class SocketClient : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
+
+        // [SECURITY] Init Token for Editor
+#if UNITY_EDITOR
+        captchaToken = "DEV_BYPASS";
+        Debug.Log("[SocketClient] Init: DEV_BYPASS token set for Editor.");
+#endif
     }
 
     public void ConnectAndJoin(string playerName, string roomId, bool isHost)
@@ -129,7 +136,12 @@ public class SocketClient : MonoBehaviour
         // Debug.Log($"Sending handshake... Role: {(isHost ? "HOST" : "CLIENT")} | Room: {roomId}");
 
         // [SECURITY] Bypass Captcha for Editor/Desktop
+#if UNITY_EDITOR
+        captchaToken = "DEV_BYPASS";
+        Debug.Log("[Security] Forced DEV_BYPASS token for Editor.");
+#else
         if (string.IsNullOrEmpty(captchaToken)) captchaToken = "DEV_BYPASS";
+#endif
 
         var handshake = new HandshakeData
         {
@@ -138,6 +150,7 @@ public class SocketClient : MonoBehaviour
             captchaToken = this.captchaToken // [SECURITY] Include Token
         };
         string payloadJson = JsonConvert.SerializeObject(handshake);
+        Debug.Log($"[Security] Sending Handshake Payload: {payloadJson}");
 
         Send(new Packet
         {
@@ -279,7 +292,8 @@ public class SocketClient : MonoBehaviour
         var handshakeData = new HandshakeData
         {
             playerName = playerName,
-            roomId = roomId
+            roomId = roomId,
+            captchaToken = this.captchaToken // [SECURITY] Add Token
         };
 
         string payloadJson = JsonConvert.SerializeObject(handshakeData);
