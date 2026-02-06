@@ -365,7 +365,13 @@ namespace GameServer
         private async Task<bool> VerifyTurnstileToken(string token)
         {
             if (string.IsNullOrEmpty(token)) return false; // Token required
-            if (token == "DEV_BYPASS") return true; // Backdoor for Editor testing
+            Console.WriteLine($"[Security] Verifying Token: {token}"); // DEBUG
+
+            if (token == "DEV_BYPASS")
+            {
+                Console.WriteLine("[Security] DEV_BYPASS accepted.");
+                return true;
+            }
 
             try
             {
@@ -377,6 +383,8 @@ namespace GameServer
 
                 var response = await _httpClient.PostAsync("https://challenges.cloudflare.com/turnstile/v0/siteverify", content);
                 var json = await response.Content.ReadAsStringAsync();
+
+                Console.WriteLine($"[Security] Cloudflare Response: {json}"); // [DEBUG] Print full response
 
                 // Simple parsing for success
                 return json.Contains("\"success\":true");
